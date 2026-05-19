@@ -373,34 +373,48 @@ function renderRows(tbodyId, docs) {
 // ── CHROME ────────────────────────────────────────────────────────────────────
 async function loadChrome() {
   let files = [];
+  let agentOnline = false;
+
   try {
-    // Appel à l'agent Python local
     const r = await fetch(API_URL + '/chrome-downloads', {signal: AbortSignal.timeout(3000)});
-    if (r.ok) files = await r.json();
-  } catch {
-    // Fallback données démo si agent hors ligne
-    files = [
-      {id:1, name:'releve_notes_2026.pdf',    source:'etudes.univ-paris.fr', date:'19 mai 2026', size:'312 Ko'},
-      {id:2, name:'contrat_stage_ACME.pdf',   source:'acme-corp.fr',         date:'18 mai 2026', size:'89 Ko'},
-      {id:3, name:'facture_adobe_mai.pdf',    source:'adobe.com',            date:'17 mai 2026', size:'54 Ko'},
-      {id:4, name:'attestation_emploi.pdf',   source:'rh.societe.fr',        date:'15 mai 2026', size:'128 Ko'},
-    ];
+    if (!r.ok) throw new Error(await r.text());
+    files = await r.json();
+    agentOnline = true;
+  } catch (e) {
+    console.warn('Agent MOTSA indisponible', e);
+    files = [];
+    agentOnline = false;
   }
+
   chromeFiles = files;
 
   const {data:existing} = await sb.from('documents').select('file_name').eq('user_id',user.id);
   const done = new Set((existing||[]).map(d => d.file_name));
-  renderChrome('clist',  files, done);
-  renderChrome('clist2', files, done);
+  renderChrome('clist',  files, done, agentOnline);
+  renderChrome('clist2', files, done, agentOnline);
 }
-
-function renderChrome(listId, files, done) {
+function renderChrome(listId, files, done, agentOnline = true) {
   const list = document.getElementById(listId);
   if (!list) return;
-  if (!files.length) {
-    list.innerHTML = '<div class="empty" style="padding:32px"><p>Aucun PDF récent détecté.</p></div>';
+
+  if (!agentOnline) {
+    list.innerHTML = `<div class="empty" style="padding:32px">
+      <div class="empty-i"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2v6M10 12v.01"/><circle cx="10" cy="10" r="8"/></svg></div>
+      <h3>Agent MOTSA non détecté</h3>
+      <p>Lancez l’agent local MOTSA sur cet ordinateur, puis cliquez sur “Actualiser”.</p>
+    </div>`;
     return;
   }
+
+  if (!files.length) {
+    list.innerHTML = `<div class="empty" style="padding:32px">
+      <div class="empty-i"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h9l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M13 2v4h4"/></svg></div>
+      <h3>Aucun PDF récent détecté</h3>
+      <p>Téléchargez un PDF avec Chrome, puis actualisez la liste.</p>
+    </div>`;
+    return;
+  }
+
   list.innerHTML = files.map(f => {
     const isDone = done.has(f.name);
     return `<div class="ci">
@@ -408,13 +422,12 @@ function renderChrome(listId, files, done) {
       <div class="cicon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg></div>
       <div class="cinfo">
         <div class="cname">${esc(f.name)}</div>
-        <div class="cmeta">${esc(f.source)} · ${f.date} · ${f.size}</div>
+        <div class="cmeta">${esc(f.source || 'source inconnue')} · ${esc(f.date || '')} · ${esc(f.size || '')}</div>
       </div>
       <span class="cbadge ${isDone?'done':'new'}">${isDone?'Certifié':'Nouveau'}</span>
     </div>`;
   }).join('');
 }
-
 function toggleSel(id, listId) {
   sel.has(id) ? sel.delete(id) : sel.add(id);
   ['clist','clist2'].forEach(l => {
@@ -431,7 +444,7 @@ function toggleSel(id, listId) {
 }
 
 function syncImportPage() {
-  const {data:existing} = sb.from('documents').select('file_name').eq('user_id',user.id);
+  renderChrome('clist2', chromeFiles, new Set(), true);
 }
 
 // ── CERTIFY ───────────────────────────────────────────────────────────────────
@@ -445,6 +458,9 @@ async function runCertify(progId, fillId, labelId, btnId) {
   document.getElementById(btnId).disabled = true;
   document.getElementById(progId).style.display = 'block';
 
+  let success = 0;
+  let failed = 0;
+
   for (let i=0; i<files.length; i++) {
     const f   = files[i];
     const pct = Math.round(((i+.5)/files.length)*100);
@@ -452,35 +468,24 @@ async function runCertify(progId, fillId, labelId, btnId) {
     document.getElementById(labelId).textContent = `Certification de ${f.name}...`;
 
     try {
-      // Appel au backend Python
       const r = await fetch(API_URL+'/certify', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
-          file_id:    f.id,
+          path:       f.path,
           file_name:  f.name,
-          source_url: 'https://'+f.source,
+          source_url: f.source_url || (f.source ? 'https://' + f.source : ''),
           user_id:    user.id,
           access_token: (await sb.auth.getSession()).data.session.access_token,
         })
       });
       if (!r.ok) throw new Error(await r.text());
+      success++;
     } catch(e) {
-      console.warn('API indisponible, insertion directe en base', e);
-      // Fallback direct Supabase (sans vrai PDF certifié — démo uniquement)
-      const fakeHash = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');
-      const token    = Array.from(crypto.getRandomValues(new Uint8Array(12))).map(b=>b.toString(16).padStart(2,'0')).join('');
-      const {data:doc} = await sb.from('documents').insert({
-        user_id:f.id&&user.id, file_name:f.name, sha256:fakeHash,
-        source_url:'https://'+f.source, file_url:null
-      }).select().single();
-      if (doc) await sb.from('certificates').insert({
-        document_id:doc.id, verification_token:token,
-        certificate_url:`https://motsa.tech/verify?token=${token}`
-      });
+      failed++;
+      console.error('Certification impossible', e);
+      toast(`Erreur sur ${f.name}. Vérifiez que l’agent MOTSA est lancé.`, 'err');
     }
-
-    await new Promise(r => setTimeout(r, 500));
   }
 
   document.getElementById(fillId).style.width = '100%';
@@ -490,14 +495,15 @@ async function runCertify(progId, fillId, labelId, btnId) {
     document.getElementById(progId).style.display  = 'none';
     document.getElementById(fillId).style.width    = '0%';
     document.getElementById(btnId).style.opacity   = '.4';
+    document.getElementById(btnId).disabled        = true;
     sel.clear();
     ['selCount','selCount2'].forEach(id => document.getElementById(id).textContent='0');
-    toast(`${files.length} document(s) certifié(s).`,'ok');
+    if (success) toast(`${success} document(s) certifié(s).`, 'ok');
+    if (failed && !success) toast(`Aucun document certifié. Agent MOTSA requis.`, 'err');
     await loadDocs();
     await loadChrome();
   }, 700);
 }
-
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function toast(msg, type='') {
   const el = document.getElementById('toast');
