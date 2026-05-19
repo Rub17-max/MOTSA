@@ -31,11 +31,12 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
 
 from supabase import create_client
-
+from dotenv import load_dotenv
+load_dotenv()
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 
-SUPABASE_URL  = "https://cggtyaklofxywlmaatam.supabase.co"
-SUPABASE_KEY  = "REMPLACE_PAR_TA_SERVICE_ROLE_KEY"   # Settings → API → service_role
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 CHROME_HISTORY = Path.home() / "Library/Application Support/Google/Chrome/Default/History"
 TEMP_DB        = "/tmp/motsa_chrome.db"
