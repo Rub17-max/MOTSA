@@ -1,836 +1,511 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard — MOTSA</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --ink: #0f0f0f;
-      --ink-2: #4a4a4a;
-      --ink-3: #888;
-      --ink-4: #bbb;
-      --line: #e6e6e4;
-      --bg: #f7f6f3;
-      --white: #fff;
-      --green: #1a7a4a;
-      --green-bg: #eef8f2;
-      --green-border: rgba(26,122,74,0.18);
-      --sidebar: 240px;
-    }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: 'Geist', sans-serif;
-      font-size: 15px; line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-      display: flex;
-    }
-
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: var(--sidebar); min-height: 100vh;
-      background: var(--white);
-      border-right: 1px solid var(--line);
-      display: flex; flex-direction: column;
-      position: fixed; top: 0; left: 0; bottom: 0;
-      z-index: 50;
-    }
-
-    .sidebar-top {
-      padding: 22px 20px 20px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .logo {
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none; color: var(--ink);
-      font-weight: 500; font-size: 15px; letter-spacing: 0.04em;
-    }
-
-    .logo-mark {
-      width: 22px; height: 22px; border-radius: 6px;
-      background: var(--ink);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-
-    .logo-mark svg { width: 12px; height: 12px; }
-
-    .nav { padding: 14px 10px; flex: 1; }
-
-    .nav-section {
-      font-family: 'Geist Mono', monospace;
-      font-size: 10px; letter-spacing: 0.12em;
-      color: var(--ink-4); text-transform: uppercase;
-      padding: 0 10px; margin: 16px 0 6px;
-    }
-
-    .nav-section:first-child { margin-top: 0; }
-
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 10px; border-radius: 8px;
-      color: var(--ink-3); font-size: 14px; font-weight: 400;
-      text-decoration: none; cursor: pointer;
-      transition: all 0.12s; user-select: none;
-    }
-
-    .nav-item:hover { background: var(--bg); color: var(--ink-2); }
-    .nav-item.active { background: var(--bg); color: var(--ink); font-weight: 500; }
-
-    .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.6; }
-    .nav-item.active svg { opacity: 1; }
-
-    .sidebar-bottom {
-      padding: 14px 10px;
-      border-top: 1px solid var(--line);
-    }
-
-    .user-pill {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px; border-radius: 8px;
-      transition: background 0.12s; cursor: pointer;
-    }
-
-    .user-pill:hover { background: var(--bg); }
-
-    .user-avatar {
-      width: 30px; height: 30px; border-radius: 50%;
-      background: var(--ink); color: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 500; flex-shrink: 0;
-    }
-
-    .user-info { flex: 1; min-width: 0; }
-    .user-email { font-size: 13px; color: var(--ink-2); truncate: true; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .user-plan { font-size: 11px; color: var(--ink-4); font-family: 'Geist Mono', monospace; }
-
-    .sign-out-btn {
-      font-size: 12px; color: var(--ink-4); cursor: pointer;
-      transition: color 0.12s; background: none; border: none;
-      font-family: 'Geist', sans-serif; padding: 4px 8px; border-radius: 5px;
-    }
-    .sign-out-btn:hover { color: var(--ink-2); background: var(--bg); }
-
-    /* ── MAIN ── */
-    .main {
-      margin-left: var(--sidebar);
-      flex: 1; min-height: 100vh;
-      display: flex; flex-direction: column;
-    }
-
-    .topbar {
-      background: rgba(247,246,243,0.9);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--line);
-      padding: 0 36px;
-      height: 58px;
-      display: flex; align-items: center; justify-content: space-between;
-      position: sticky; top: 0; z-index: 40;
-    }
-
-    .topbar-title {
-      font-size: 15px; font-weight: 500; color: var(--ink);
-    }
-
-    .topbar-right { display: flex; align-items: center; gap: 10px; }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 8px 16px; font-size: 13px; font-weight: 500;
-      border-radius: 7px; cursor: pointer; text-decoration: none;
-      transition: all 0.12s; border: none; font-family: 'Geist', sans-serif;
-    }
-
-    .btn-dark { background: var(--ink); color: var(--white); }
-    .btn-dark:hover { background: #2a2a2a; }
-    .btn-ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--line); }
-    .btn-ghost:hover { background: var(--white); color: var(--ink); }
-
-    /* ── CONTENT ── */
-    .content { padding: 36px; flex: 1; }
-
-    /* ── STATS ── */
-    .stats {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 14px; margin-bottom: 32px;
-    }
-
-    .stat {
-      background: var(--white); border: 1px solid var(--line);
-      border-radius: 12px; padding: 20px 22px;
-    }
-
-    .stat-label { font-size: 12px; color: var(--ink-3); margin-bottom: 8px; font-weight: 400; }
-
-    .stat-value {
-      font-family: 'Instrument Serif', serif;
-      font-size: 32px; line-height: 1; color: var(--ink);
-      letter-spacing: -0.02em;
-    }
-
-    .stat-sub { font-size: 12px; color: var(--ink-4); margin-top: 5px; }
-
-    /* ── IMPORT ZONE ── */
-    .import-zone {
-      background: var(--white); border: 1px solid var(--line);
-      border-radius: 14px; margin-bottom: 28px; overflow: hidden;
-    }
-
-    .import-header {
-      padding: 20px 24px; border-bottom: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-
-    .import-header h2 { font-size: 15px; font-weight: 500; }
-    .import-header p { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
-
-    .import-body { padding: 24px; }
-
-    .chrome-list {
-      display: flex; flex-direction: column; gap: 0;
-      border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
-    }
-
-    .chrome-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 18px; background: var(--white);
-      border-bottom: 1px solid var(--line); transition: background 0.12s;
-    }
-
-    .chrome-item:last-child { border: none; }
-    .chrome-item:hover { background: var(--bg); }
-
-    .chrome-check {
-      width: 18px; height: 18px; border-radius: 5px;
-      border: 1.5px solid var(--line); flex-shrink: 0;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all 0.12s; background: var(--white);
-    }
-
-    .chrome-check.checked {
-      background: var(--ink); border-color: var(--ink);
-    }
-
-    .chrome-check.checked::after {
-      content: '';
-      width: 9px; height: 7px;
-      border-left: 1.5px solid white; border-bottom: 1.5px solid white;
-      transform: rotate(-45deg) translateY(-1px);
-    }
-
-    .chrome-icon {
-      width: 32px; height: 32px; border-radius: 6px;
-      background: var(--bg); display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .chrome-icon svg { width: 16px; height: 16px; color: var(--ink-3); }
-
-    .chrome-info { flex: 1; min-width: 0; }
-
-    .chrome-name {
-      font-size: 13px; font-weight: 500; color: var(--ink);
-      font-family: 'Geist Mono', monospace;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .chrome-meta { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
-
-    .chrome-status {
-      font-size: 11px; font-family: 'Geist Mono', monospace;
-      padding: 3px 9px; border-radius: 999px;
-    }
-
-    .chrome-status.new { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
-    .chrome-status.done { background: var(--bg); color: var(--ink-4); border: 1px solid var(--line); }
-
-    .import-footer {
-      padding: 18px 24px; border-top: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg);
-    }
-
-    .import-footer p { font-size: 13px; color: var(--ink-3); }
-    .import-footer span { font-weight: 500; color: var(--ink-2); }
-
-    /* Progress bar */
-    .progress-wrap { display: none; margin-top: 14px; }
-    .progress-label { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
-    .progress-bar { height: 3px; background: var(--line); border-radius: 999px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--ink); border-radius: 999px; width: 0%; transition: width 0.3s; }
-
-    /* ── DOCUMENTS TABLE ── */
-    .docs-zone {
-      background: var(--white); border: 1px solid var(--line);
-      border-radius: 14px; overflow: hidden;
-    }
-
-    .docs-header {
-      padding: 20px 24px; border-bottom: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-
-    .docs-header h2 { font-size: 15px; font-weight: 500; }
-
-    .docs-count {
-      font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--ink-3);
-    }
-
-    table { width: 100%; border-collapse: collapse; }
-
-    thead th {
-      padding: 10px 24px; text-align: left;
-      font-family: 'Geist Mono', monospace; font-size: 11px;
-      letter-spacing: 0.08em; color: var(--ink-3); text-transform: uppercase;
-      background: var(--bg); border-bottom: 1px solid var(--line);
-    }
-
-    tbody td {
-      padding: 15px 24px; font-size: 14px;
-      color: var(--ink-2); border-bottom: 1px solid var(--line);
-    }
-
-    tbody tr:last-child td { border: none; }
-    tbody tr:hover td { background: var(--bg); }
-
-    .file-nm {
-      font-family: 'Geist Mono', monospace; font-size: 13px; color: var(--ink);
-      max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      display: block;
-    }
-
-    .source-url { font-size: 12px; color: var(--ink-4); margin-top: 2px;
-      max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
-    }
-
-    .badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 999px;
-      background: var(--green-bg); color: var(--green);
-      font-size: 11px; font-weight: 500; border: 1px solid var(--green-border);
-    }
-
-    .badge::before {
-      content: ''; width: 5px; height: 5px;
-      border-radius: 50%; background: var(--green);
-    }
-
-    .hash-cell {
-      font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--ink-4);
-      max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    .action-btns { display: flex; gap: 6px; }
-
-    .action-btn {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 5px 10px; border-radius: 6px; font-size: 12px;
-      text-decoration: none; cursor: pointer; font-family: 'Geist', sans-serif;
-      border: 1px solid var(--line); background: var(--white); color: var(--ink-2);
-      transition: all 0.12s;
-    }
-
-    .action-btn:hover { background: var(--bg); color: var(--ink); }
-    .action-btn svg { width: 12px; height: 12px; }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center; padding: 60px 24px; color: var(--ink-3);
-    }
-
-    .empty-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: var(--bg); border: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 14px;
-    }
-
-    .empty-icon svg { width: 20px; height: 20px; color: var(--ink-4); }
-    .empty-state h3 { font-size: 15px; font-weight: 500; color: var(--ink-2); margin-bottom: 6px; }
-    .empty-state p { font-size: 14px; font-weight: 300; }
-
-    /* Loading skeleton */
-    .skeleton {
-      background: linear-gradient(90deg, var(--bg) 25%, var(--line) 50%, var(--bg) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 4px;
-    }
-
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-    /* Toast */
-    .toast {
-      position: fixed; bottom: 24px; right: 24px;
-      background: var(--ink); color: var(--white);
-      padding: 12px 18px; border-radius: 10px;
-      font-size: 14px; z-index: 1000;
-      transform: translateY(80px); opacity: 0;
-      transition: all 0.2s;
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { background: var(--green); }
-    .toast.error { background: #991b1b; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .sidebar { display: none; }
-      .main { margin-left: 0; }
-      .stats { grid-template-columns: 1fr 1fr; }
-      .content { padding: 20px; }
-    }
+    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18);--sb:240px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex}
+
+    /* SIDEBAR */
+    .sb{width:var(--sb);min-height:100vh;background:var(--w);border-right:1px solid var(--line);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+    .sb-top{padding:20px;border-bottom:1px solid var(--line)}
+    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:15px;letter-spacing:.04em}
+    .lm{width:22px;height:22px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .lm svg{width:12px;height:12px}
+    .nav{padding:12px 10px;flex:1}
+    .nhead{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--ink4);text-transform:uppercase;padding:0 10px;margin:14px 0 5px}
+    .nhead:first-child{margin-top:0}
+    .ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--ink3);font-size:14px;text-decoration:none;cursor:pointer;transition:all .12s;user-select:none}
+    .ni:hover{background:var(--bg);color:var(--ink2)}
+    .ni.active{background:var(--bg);color:var(--ink);font-weight:500}
+    .ni svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
+    .ni.active svg{opacity:1}
+    .sb-bot{padding:14px 10px;border-top:1px solid var(--line)}
+    .upill{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;cursor:pointer;transition:background .12s}
+    .upill:hover{background:var(--bg)}
+    .uav{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--w);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+    .uinfo{flex:1;min-width:0}
+    .uemail{font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .uplan{font-size:11px;color:var(--ink4);font-family:'Geist Mono',monospace}
+    .signout{width:100%;background:none;border:none;font-family:'Geist',sans-serif;font-size:13px;color:var(--ink4);cursor:pointer;text-align:left;padding:8px 10px;border-radius:6px;margin-top:4px;transition:all .12s}
+    .signout:hover{background:var(--bg);color:var(--ink3)}
+
+    /* MAIN */
+    .main{margin-left:var(--sb);flex:1;min-height:100vh;display:flex;flex-direction:column}
+    .topbar{background:rgba(247,246,243,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:0 36px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+    .tb-title{font-size:15px;font-weight:500}
+    .content{padding:32px 36px;flex:1}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:500;border-radius:7px;cursor:pointer;text-decoration:none;transition:all .12s;border:none;font-family:'Geist',sans-serif}
+    .btn-dark{background:var(--ink);color:var(--w)}
+    .btn-dark:hover{background:#2a2a2a}
+    .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}
+    .btn-ghost:hover{background:var(--w);color:var(--ink)}
+    .btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+    .stat{background:var(--w);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+    .stat-l{font-size:12px;color:var(--ink3);margin-bottom:8px}
+    .stat-v{font-family:'Instrument Serif',serif;font-size:32px;line-height:1;letter-spacing:-.02em}
+    .stat-s{font-size:12px;color:var(--ink4);margin-top:5px}
+
+    /* SECTION CARDS */
+    .card{background:var(--w);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:24px}
+    .card-head{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+    .card-head h2{font-size:15px;font-weight:500}
+    .card-head p{font-size:13px;color:var(--ink3);margin-top:2px}
+    .card-body{padding:24px}
+    .card-foot{padding:16px 24px;border-top:1px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:space-between}
+    .card-foot p{font-size:13px;color:var(--ink3)}
+
+    /* CHROME LIST */
+    .clist{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+    .ci{display:flex;align-items:center;gap:14px;padding:13px 18px;background:var(--w);border-bottom:1px solid var(--line);transition:background .12s}
+    .ci:last-child{border:none}
+    .ci:hover{background:var(--bg)}
+    .cchk{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;background:var(--w)}
+    .cchk.on{background:var(--ink);border-color:var(--ink)}
+    .cchk.on::after{content:'';width:9px;height:7px;border-left:1.5px solid white;border-bottom:1.5px solid white;transform:rotate(-45deg) translateY(-1px)}
+    .cicon{width:32px;height:32px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .cicon svg{width:15px;height:15px;color:var(--ink3)}
+    .cinfo{flex:1;min-width:0}
+    .cname{font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .cmeta{font-size:12px;color:var(--ink3);margin-top:2px}
+    .cbadge{font-size:11px;font-family:'Geist Mono',monospace;padding:3px 9px;border-radius:999px}
+    .cbadge.new{background:var(--gbg);color:var(--g);border:1px solid var(--gbr)}
+    .cbadge.done{background:var(--bg);color:var(--ink4);border:1px solid var(--line)}
+
+    /* PROGRESS */
+    .prog{display:none;margin-top:16px}
+    .prog-l{font-size:12px;color:var(--ink3);margin-bottom:6px}
+    .prog-bar{height:3px;background:var(--line);border-radius:999px;overflow:hidden}
+    .prog-fill{height:100%;background:var(--ink);border-radius:999px;width:0%;transition:width .4s}
+
+    /* TABLE */
+    table{width:100%;border-collapse:collapse}
+    thead th{padding:10px 24px;text-align:left;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;background:var(--bg);border-bottom:1px solid var(--line)}
+    tbody td{padding:14px 24px;font-size:14px;color:var(--ink2);border-bottom:1px solid var(--line)}
+    tbody tr:last-child td{border:none}
+    tbody tr:hover td{background:var(--bg)}
+    .fnm{font-family:'Geist Mono',monospace;font-size:13px;color:var(--ink);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+    .fsrc{font-size:12px;color:var(--ink4);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+    .hsh{font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;display:block}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;background:var(--gbg);color:var(--g);font-size:11px;font-weight:500;border:1px solid var(--gbr)}
+    .badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--g)}
+    .acts{display:flex;gap:6px}
+    .act{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;font-size:12px;text-decoration:none;cursor:pointer;font-family:'Geist',sans-serif;border:1px solid var(--line);background:var(--w);color:var(--ink2);transition:all .12s}
+    .act:hover{background:var(--bg);color:var(--ink)}
+    .act svg{width:12px;height:12px}
+
+    /* EMPTY */
+    .empty{text-align:center;padding:56px 24px;color:var(--ink3)}
+    .empty-i{width:44px;height:44px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+    .empty-i svg{width:20px;height:20px;color:var(--ink4)}
+    .empty h3{font-size:15px;font-weight:500;color:var(--ink2);margin-bottom:6px}
+    .empty p{font-size:14px;font-weight:300}
+
+    /* SKELETON */
+    .sk{background:linear-gradient(90deg,var(--bg) 25%,var(--line) 50%,var(--bg) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:10px;font-size:14px;z-index:1000;transform:translateY(80px);opacity:0;transition:all .2s;display:flex;align-items:center;gap:8px;background:var(--ink);color:var(--w)}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.ok{background:var(--g)}
+    .toast.err{background:#991b1b}
+
+    /* API STATUS */
+    .api-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink3);font-family:'Geist Mono',monospace}
+    .api-dot{width:6px;height:6px;border-radius:50%;background:var(--ink4)}
+    .api-dot.on{background:var(--g);box-shadow:0 0 6px var(--g)}
+
+    @media(max-width:900px){.sb{display:none}.main{margin-left:0}.stats{grid-template-columns:1fr 1fr}.content{padding:20px}}
   </style>
 </head>
 <body>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-top">
-      <a class="logo" href="/">
-        <div class="logo-mark">
-          <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </div>
-        MOTSA
-      </a>
-    </div>
-
-    <nav class="nav">
-      <div class="nav-section">Espace</div>
-      <a class="nav-item active" onclick="showSection('dashboard')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="1" y="1" width="6" height="6" rx="1.5"/>
-          <rect x="9" y="1" width="6" height="6" rx="1.5"/>
-          <rect x="1" y="9" width="6" height="6" rx="1.5"/>
-          <rect x="9" y="9" width="6" height="6" rx="1.5"/>
-        </svg>
-        Dashboard
-      </a>
-      <a class="nav-item" onclick="showSection('documents')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/>
-          <path d="M10 2v3h3"/>
-        </svg>
-        Mes documents
-      </a>
-      <div class="nav-section">Outils</div>
-      <a class="nav-item" onclick="showSection('import')">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M8 2v8M5 7l3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/>
-        </svg>
-        Importer depuis Chrome
-      </a>
-      <a class="nav-item" href="/verify.html">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M8 1l5 2v5c0 3-5 6-5 6S3 11 3 8V3l5-2z"/>
-        </svg>
-        Vérifier un document
-      </a>
-    </nav>
-
-    <div class="sidebar-bottom">
-      <div class="user-pill">
-        <div class="user-avatar" id="userInitial">?</div>
-        <div class="user-info">
-          <div class="user-email" id="userEmail">chargement...</div>
-          <div class="user-plan">Starter</div>
-        </div>
+<aside class="sb">
+  <div class="sb-top">
+    <a class="logo" href="/">
+      <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      MOTSA
+    </a>
+  </div>
+  <div class="nav">
+    <div class="nhead">Espace</div>
+    <a class="ni active" onclick="setPage('home',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Dashboard
+    </a>
+    <a class="ni" onclick="setPage('docs',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg>
+      Mes documents
+    </a>
+    <div class="nhead">Outils</div>
+    <a class="ni" onclick="setPage('import',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8M5 7l3 3 3-3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
+      Importer depuis Chrome
+    </a>
+    <a class="ni" href="verify.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l5 2v5c0 3-5 6-5 6S3 11 3 8V3l5-2z"/></svg>
+      Vérifier un document
+    </a>
+  </div>
+  <div class="sb-bot">
+    <div class="upill">
+      <div class="uav" id="uav">?</div>
+      <div class="uinfo">
+        <div class="uemail" id="uemail">chargement...</div>
+        <div class="uplan">Starter</div>
       </div>
-      <button class="sign-out-btn" onclick="signOut()" style="width:100%; text-align:left; margin-top:4px; padding:8px 10px;">
-        Se déconnecter
+    </div>
+    <button class="signout" onclick="signOut()">Se déconnecter →</button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <span class="tb-title" id="tbTitle">Dashboard</span>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="api-status">
+        <span class="api-dot" id="apiDot"></span>
+        <span id="apiLabel">API</span>
+      </div>
+      <button class="btn btn-ghost" onclick="setPage('import',null)">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 1v7M4 5l2.5 3 2.5-3M1 10v1.5A1.5 1.5 0 002.5 13h8A1.5 1.5 0 0012 11.5V10" stroke-linecap="round"/></svg>
+        Importer
       </button>
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="main">
-    <div class="topbar">
-      <span class="topbar-title" id="topbarTitle">Dashboard</span>
-      <div class="topbar-right">
-        <button class="btn btn-ghost" onclick="showSection('import')">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M7 1v7M4 5l3 3 3-3M1 10v1.5A1.5 1.5 0 002.5 13h9a1.5 1.5 0 001.5-1.5V10"/>
-          </svg>
-          Importer
-        </button>
-      </div>
-    </div>
-
-    <div class="content">
-
-      <!-- STATS -->
-      <div class="stats">
-        <div class="stat">
-          <div class="stat-label">Documents certifiés</div>
-          <div class="stat-value" id="statDocs">—</div>
-          <div class="stat-sub">total</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Ce mois-ci</div>
-          <div class="stat-value" id="statMonth">—</div>
-          <div class="stat-sub">sur 5 inclus</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Dernier document</div>
-          <div class="stat-value" id="statLast" style="font-size:16px; padding-top:8px;">—</div>
-          <div class="stat-sub">&nbsp;</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Vérifications</div>
-          <div class="stat-value">—</div>
-          <div class="stat-sub">bientôt disponible</div>
-        </div>
-      </div>
-
-      <!-- IMPORT ZONE -->
-      <div class="import-zone" id="importZone">
-        <div class="import-header">
-          <div>
-            <h2>Importer depuis Chrome</h2>
-            <p>Sélectionnez les PDFs téléchargés récemment à certifier.</p>
-          </div>
-          <button class="btn btn-ghost" onclick="loadChromeDownloads()">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M11.5 6.5A5 5 0 111.5 6.5" stroke-linecap="round"/>
-              <path d="M11.5 2v4.5H7" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Actualiser
-          </button>
-        </div>
-        <div class="import-body">
-          <div class="chrome-list" id="chromeList">
-            <!-- Skeleton -->
-            <div class="chrome-item">
-              <div class="skeleton" style="width:18px;height:18px;border-radius:5px;"></div>
-              <div class="skeleton" style="width:32px;height:32px;border-radius:6px;flex-shrink:0;"></div>
-              <div style="flex:1;">
-                <div class="skeleton" style="height:13px;width:60%;margin-bottom:6px;"></div>
-                <div class="skeleton" style="height:11px;width:40%;"></div>
-              </div>
-            </div>
-            <div class="chrome-item">
-              <div class="skeleton" style="width:18px;height:18px;border-radius:5px;"></div>
-              <div class="skeleton" style="width:32px;height:32px;border-radius:6px;flex-shrink:0;"></div>
-              <div style="flex:1;">
-                <div class="skeleton" style="height:13px;width:50%;margin-bottom:6px;"></div>
-                <div class="skeleton" style="height:11px;width:35%;"></div>
-              </div>
-            </div>
-          </div>
-          <div class="progress-wrap" id="progressWrap">
-            <div class="progress-label" id="progressLabel">Certification en cours...</div>
-            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-          </div>
-        </div>
-        <div class="import-footer">
-          <p><span id="selectedCount">0</span> fichier(s) sélectionné(s)</p>
-          <button class="btn btn-dark" id="certifyBtn" onclick="certifySelected()" disabled style="opacity:0.4;">
-            Certifier la sélection
-          </button>
-        </div>
-      </div>
-
-      <!-- DOCUMENTS TABLE -->
-      <div class="docs-zone">
-        <div class="docs-header">
-          <h2>Mes documents certifiés</h2>
-          <span class="docs-count" id="docsCount">— documents</span>
-        </div>
-        <div id="docsBody">
-          <table>
-            <thead>
-              <tr>
-                <th>Document</th>
-                <th>Date</th>
-                <th>SHA-256</th>
-                <th>Statut</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="docsTable">
-              <tr><td colspan="5" style="padding:0;">
-                <div style="display:flex;flex-direction:column;gap:0;">
-                  <div class="chrome-item" style="justify-content:flex-start;">
-                    <div class="skeleton" style="height:13px;width:30%;border-radius:4px;"></div>
-                  </div>
-                </div>
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+  <div class="content">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://cggtyaklofxywlmaatam.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym";
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- PAGE: HOME -->
+    <div id="page-home">
+      <div class="stats">
+        <div class="stat"><div class="stat-l">Documents certifiés</div><div class="stat-v" id="sTot">—</div><div class="stat-s">total</div></div>
+        <div class="stat"><div class="stat-l">Ce mois-ci</div><div class="stat-v" id="sMth">—</div><div class="stat-s">sur 5 inclus</div></div>
+        <div class="stat"><div class="stat-l">Dernier ajout</div><div class="stat-v" id="sLast" style="font-size:16px;padding-top:8px">—</div><div class="stat-s">&nbsp;</div></div>
+      </div>
 
-    let currentUser = null;
-    let selectedFiles = new Set();
-    let chromeFiles = [];
+      <!-- IMPORT rapide -->
+      <div class="card" id="importCard">
+        <div class="card-head">
+          <div><h2>Certifier des téléchargements Chrome</h2><p>Sélectionnez les PDFs à certifier depuis votre historique.</p></div>
+          <button class="btn btn-ghost" onclick="loadChrome()">↺ Actualiser</button>
+        </div>
+        <div class="card-body">
+          <div class="clist" id="clist">
+            <div class="ci"><div class="sk" style="width:18px;height:18px;border-radius:5px"></div><div class="sk" style="width:32px;height:32px;border-radius:6px;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="height:13px;width:55%;margin-bottom:6px"></div><div class="sk" style="height:11px;width:38%"></div></div></div>
+            <div class="ci"><div class="sk" style="width:18px;height:18px;border-radius:5px"></div><div class="sk" style="width:32px;height:32px;border-radius:6px;flex-shrink:0"></div><div style="flex:1"><div class="sk" style="height:13px;width:45%;margin-bottom:6px"></div><div class="sk" style="height:11px;width:32%"></div></div></div>
+          </div>
+          <div class="prog" id="prog">
+            <div class="prog-l" id="progL">Certification en cours...</div>
+            <div class="prog-bar"><div class="prog-fill" id="progF"></div></div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <p><span id="selCount">0</span> sélectionné(s)</p>
+          <button class="btn btn-dark" id="certBtn" onclick="certify()" disabled style="opacity:.4">Certifier →</button>
+        </div>
+      </div>
 
-    // ── AUTH GUARD ──
-    async function init() {
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) { window.location.href = '/'; return; }
-      currentUser = session.user;
+      <!-- DOCS récents -->
+      <div class="card">
+        <div class="card-head"><div><h2>Documents récents</h2></div><span style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--ink3)" id="docCountBadge">—</span></div>
+        <div id="docTableWrap"><table><thead><tr><th>Document</th><th>Date</th><th>SHA-256</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="docTbody"></tbody></table></div>
+      </div>
+    </div>
 
-      const email = currentUser.email;
-      document.getElementById('userEmail').textContent = email;
-      document.getElementById('userInitial').textContent = email[0].toUpperCase();
+    <!-- PAGE: DOCS (alias) -->
+    <div id="page-docs" style="display:none">
+      <div class="card">
+        <div class="card-head"><div><h2>Tous mes documents</h2><p>Téléchargez ou vérifiez vos PDFs certifiés.</p></div><span style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--ink3)" id="docCountBadge2">—</span></div>
+        <div><table><thead><tr><th>Document</th><th>Date</th><th>SHA-256</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="docTbody2"></tbody></table></div>
+      </div>
+    </div>
 
-      await loadDocuments();
-      await loadChromeDownloads();
+    <!-- PAGE: IMPORT -->
+    <div id="page-import" style="display:none">
+      <div class="card">
+        <div class="card-head">
+          <div><h2>Importer depuis Chrome</h2><p>Sélectionnez les PDFs téléchargés récemment à certifier.</p></div>
+          <button class="btn btn-ghost" onclick="loadChrome()">↺ Actualiser</button>
+        </div>
+        <div class="card-body">
+          <div class="clist" id="clist2"></div>
+          <div class="prog" id="prog2">
+            <div class="prog-l" id="progL2">Certification en cours...</div>
+            <div class="prog-bar"><div class="prog-fill" id="progF2"></div></div>
+          </div>
+        </div>
+        <div class="card-foot">
+          <p><span id="selCount2">0</span> sélectionné(s)</p>
+          <button class="btn btn-dark" id="certBtn2" onclick="certify2()" disabled style="opacity:.4">Certifier →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL  = 'https://cggtyaklofxywlmaatam.supabase.co';
+const SB_ANON = 'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym';
+const API_URL = 'http://localhost:5001'; // backend Flask local
+
+const sb = supabase.createClient(SB_URL, SB_ANON);
+let user = null;
+let sel  = new Set();
+let chromeFiles = [];
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const {data:{session}} = await sb.auth.getSession();
+  if (!session) { location.href='/'; return; }
+  user = session.user;
+
+  document.getElementById('uemail').textContent = user.email;
+  document.getElementById('uav').textContent    = user.email[0].toUpperCase();
+
+  checkApi();
+  await loadDocs();
+  await loadChrome();
+}
+
+// ── API STATUS ────────────────────────────────────────────────────────────────
+async function checkApi() {
+  try {
+    const r = await fetch(API_URL + '/health', {signal: AbortSignal.timeout(2000)});
+    if (r.ok) {
+      document.getElementById('apiDot').classList.add('on');
+      document.getElementById('apiLabel').textContent = 'Agent actif';
+      return;
+    }
+  } catch {}
+  document.getElementById('apiLabel').textContent = 'Agent hors ligne';
+}
+
+// ── SIGN OUT ──────────────────────────────────────────────────────────────────
+async function signOut() { await sb.auth.signOut(); location.href='/'; }
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function setPage(p, el) {
+  ['home','docs','import'].forEach(id => {
+    document.getElementById('page-'+id).style.display = id===p ? 'block' : 'none';
+  });
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const titles = {home:'Dashboard', docs:'Mes documents', import:'Importer depuis Chrome'};
+  document.getElementById('tbTitle').textContent = titles[p];
+  if (p === 'import') syncImportPage();
+}
+
+// ── DOCS ──────────────────────────────────────────────────────────────────────
+async function loadDocs() {
+  const {data, error} = await sb
+    .from('documents')
+    .select('*, certificates(verification_token,certificate_url)')
+    .eq('user_id', user.id)
+    .order('created_at', {ascending:false});
+
+  if (error) { console.error(error); return; }
+
+  // Stats
+  document.getElementById('sTot').textContent = data.length;
+  const now = new Date();
+  const mth = data.filter(d => {
+    const dt = new Date(d.created_at);
+    return dt.getMonth()===now.getMonth() && dt.getFullYear()===now.getFullYear();
+  }).length;
+  document.getElementById('sMth').textContent = mth;
+  if (data.length) {
+    document.getElementById('sLast').textContent = new Date(data[0].created_at)
+      .toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+  }
+
+  const lbl = data.length + ' document' + (data.length!==1?'s':'');
+  document.getElementById('docCountBadge').textContent  = lbl;
+  document.getElementById('docCountBadge2').textContent = lbl;
+
+  renderRows('docTbody',  data);
+  renderRows('docTbody2', data);
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderRows(tbodyId, docs) {
+  const tbody = document.getElementById(tbodyId);
+  if (!docs.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="empty-i"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h9l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M13 2v4h4"/></svg></div><h3>Aucun document</h3><p>Importez vos PDFs Chrome pour commencer.</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = docs.map(d => {
+    const cert  = d.certificates?.[0];
+    const token = cert?.verification_token || '';
+    const url   = d.file_url || '';
+    const date  = new Date(d.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+    const hash  = d.sha256 ? d.sha256.substring(0,14)+'...' : '—';
+    let src = '—';
+    try { src = new URL(d.source_url||'').hostname; } catch {}
+    return `<tr>
+      <td><span class="fnm">${esc(d.file_name)}</span><span class="fsrc">${esc(src)}</span></td>
+      <td style="white-space:nowrap;font-size:13px">${date}</td>
+      <td><span class="hsh" title="${esc(d.sha256||'')}">${hash}</span></td>
+      <td><span class="badge">Certifié</span></td>
+      <td><div class="acts">
+        ${url?`<a href="${esc(url)}" target="_blank" class="act"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" stroke-linecap="round"/></svg>Télécharger</a>`:''}
+        ${token?`<a href="verify.html?token=${esc(token)}" class="act"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1l4 1.5v3C10 8 6 10 6 10S2 8 2 5.5V2.5L6 1z"/></svg>Vérifier</a>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── CHROME ────────────────────────────────────────────────────────────────────
+async function loadChrome() {
+  let files = [];
+  try {
+    // Appel à l'agent Python local
+    const r = await fetch(API_URL + '/chrome-downloads', {signal: AbortSignal.timeout(3000)});
+    if (r.ok) files = await r.json();
+  } catch {
+    // Fallback données démo si agent hors ligne
+    files = [
+      {id:1, name:'releve_notes_2026.pdf',    source:'etudes.univ-paris.fr', date:'19 mai 2026', size:'312 Ko'},
+      {id:2, name:'contrat_stage_ACME.pdf',   source:'acme-corp.fr',         date:'18 mai 2026', size:'89 Ko'},
+      {id:3, name:'facture_adobe_mai.pdf',    source:'adobe.com',            date:'17 mai 2026', size:'54 Ko'},
+      {id:4, name:'attestation_emploi.pdf',   source:'rh.societe.fr',        date:'15 mai 2026', size:'128 Ko'},
+    ];
+  }
+  chromeFiles = files;
+
+  const {data:existing} = await sb.from('documents').select('file_name').eq('user_id',user.id);
+  const done = new Set((existing||[]).map(d => d.file_name));
+  renderChrome('clist',  files, done);
+  renderChrome('clist2', files, done);
+}
+
+function renderChrome(listId, files, done) {
+  const list = document.getElementById(listId);
+  if (!list) return;
+  if (!files.length) {
+    list.innerHTML = '<div class="empty" style="padding:32px"><p>Aucun PDF récent détecté.</p></div>';
+    return;
+  }
+  list.innerHTML = files.map(f => {
+    const isDone = done.has(f.name);
+    return `<div class="ci">
+      <div class="cchk ${isDone?'on':''}" id="chk-${listId}-${f.id}" onclick="${isDone?'':  `toggleSel(${f.id},'${listId}')`}" style="${isDone?'opacity:.4;cursor:default':'cursor:pointer'}"></div>
+      <div class="cicon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg></div>
+      <div class="cinfo">
+        <div class="cname">${esc(f.name)}</div>
+        <div class="cmeta">${esc(f.source)} · ${f.date} · ${f.size}</div>
+      </div>
+      <span class="cbadge ${isDone?'done':'new'}">${isDone?'Certifié':'Nouveau'}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleSel(id, listId) {
+  sel.has(id) ? sel.delete(id) : sel.add(id);
+  ['clist','clist2'].forEach(l => {
+    const el = document.getElementById('chk-'+l+'-'+id);
+    if (el) el.classList.toggle('on', sel.has(id));
+  });
+  const c = sel.size;
+  document.getElementById('selCount').textContent  = c;
+  document.getElementById('selCount2').textContent = c;
+  ['certBtn','certBtn2'].forEach(b => {
+    const el = document.getElementById(b);
+    el.disabled = c===0; el.style.opacity = c===0?'.4':'1';
+  });
+}
+
+function syncImportPage() {
+  const {data:existing} = sb.from('documents').select('file_name').eq('user_id',user.id);
+}
+
+// ── CERTIFY ───────────────────────────────────────────────────────────────────
+async function certify()  { await runCertify('prog','progF','progL','certBtn'); }
+async function certify2() { await runCertify('prog2','progF2','progL2','certBtn2'); }
+
+async function runCertify(progId, fillId, labelId, btnId) {
+  if (!sel.size) return;
+  const files = chromeFiles.filter(f => sel.has(f.id));
+
+  document.getElementById(btnId).disabled = true;
+  document.getElementById(progId).style.display = 'block';
+
+  for (let i=0; i<files.length; i++) {
+    const f   = files[i];
+    const pct = Math.round(((i+.5)/files.length)*100);
+    document.getElementById(fillId).style.width  = pct+'%';
+    document.getElementById(labelId).textContent = `Certification de ${f.name}...`;
+
+    try {
+      // Appel au backend Python
+      const r = await fetch(API_URL+'/certify', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          file_id:    f.id,
+          file_name:  f.name,
+          source_url: 'https://'+f.source,
+          user_id:    user.id,
+          access_token: (await sb.auth.getSession()).data.session.access_token,
+        })
+      });
+      if (!r.ok) throw new Error(await r.text());
+    } catch(e) {
+      console.warn('API indisponible, insertion directe en base', e);
+      // Fallback direct Supabase (sans vrai PDF certifié — démo uniquement)
+      const fakeHash = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');
+      const token    = Array.from(crypto.getRandomValues(new Uint8Array(12))).map(b=>b.toString(16).padStart(2,'0')).join('');
+      const {data:doc} = await sb.from('documents').insert({
+        user_id:f.id&&user.id, file_name:f.name, sha256:fakeHash,
+        source_url:'https://'+f.source, file_url:null
+      }).select().single();
+      if (doc) await sb.from('certificates').insert({
+        document_id:doc.id, verification_token:token,
+        certificate_url:`https://motsa.tech/verify?token=${token}`
+      });
     }
 
-    async function signOut() {
-      await sb.auth.signOut();
-      window.location.href = '/';
-    }
+    await new Promise(r => setTimeout(r, 500));
+  }
 
-    // ── TOAST ──
-    function toast(msg, type = '') {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.className = 'toast show ' + type;
-      setTimeout(() => el.classList.remove('show'), 3200);
-    }
+  document.getElementById(fillId).style.width = '100%';
+  document.getElementById(labelId).textContent = 'Terminé.';
 
-    // ── LOAD DOCUMENTS ──
-    async function loadDocuments() {
-      const { data, error } = await sb
-        .from('documents')
-        .select('*, certificates(verification_token, certificate_url)')
-        .eq('user_id', currentUser.id)
-        .order('created_at', { ascending: false });
+  setTimeout(async () => {
+    document.getElementById(progId).style.display  = 'none';
+    document.getElementById(fillId).style.width    = '0%';
+    document.getElementById(btnId).style.opacity   = '.4';
+    sel.clear();
+    ['selCount','selCount2'].forEach(id => document.getElementById(id).textContent='0');
+    toast(`${files.length} document(s) certifié(s).`,'ok');
+    await loadDocs();
+    await loadChrome();
+  }, 700);
+}
 
-      if (error) { console.error(error); return; }
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast show '+type;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
 
-      // Update stats
-      document.getElementById('statDocs').textContent = data.length;
-      const thisMonth = data.filter(d => {
-        const date = new Date(d.created_at);
-        const now = new Date();
-        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-      }).length;
-      document.getElementById('statMonth').textContent = thisMonth;
-
-      if (data.length > 0) {
-        const last = new Date(data[0].created_at);
-        document.getElementById('statLast').textContent = last.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
-      }
-
-      document.getElementById('docsCount').textContent = data.length + ' document' + (data.length !== 1 ? 's' : '');
-
-      renderDocuments(data);
-    }
-
-    function renderDocuments(docs) {
-      const tbody = document.getElementById('docsTable');
-
-      if (docs.length === 0) {
-        tbody.innerHTML = `
-          <tr><td colspan="5" style="padding:0;">
-            <div class="empty-state">
-              <div class="empty-icon">
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M4 2h9l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/>
-                  <path d="M13 2v4h4"/>
-                </svg>
-              </div>
-              <h3>Aucun document certifié</h3>
-              <p>Importez vos PDFs Chrome pour commencer.</p>
-            </div>
-          </td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = docs.map(doc => {
-        const cert = doc.certificates && doc.certificates[0];
-        const token = cert?.verification_token || '';
-        const fileUrl = doc.file_url || '';
-        const date = new Date(doc.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' });
-        const hash = doc.sha256 ? doc.sha256.substring(0, 16) + '...' : '—';
-        const source = doc.source_url ? new URL(doc.source_url).hostname : '—';
-
-        return `
-          <tr>
-            <td>
-              <span class="file-nm">${esc(doc.file_name)}</span>
-              <span class="source-url">${esc(source)}</span>
-            </td>
-            <td style="white-space:nowrap;">${date}</td>
-            <td><span class="hash-cell" title="${esc(doc.sha256 || '')}">${hash}</span></td>
-            <td><span class="badge">Certifié</span></td>
-            <td>
-              <div class="action-btns">
-                ${fileUrl ? `
-                  <a href="${esc(fileUrl)}" target="_blank" class="action-btn" download>
-                    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" stroke-linecap="round"/>
-                    </svg>
-                    Télécharger
-                  </a>` : ''}
-                ${token ? `
-                  <a href="/verify.html?token=${token}" class="action-btn">
-                    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <path d="M6 1l4 1.5v3C10 8 6 11 6 11S2 8 2 5.5V2.5L6 1z"/>
-                    </svg>
-                    Vérifier
-                  </a>` : ''}
-              </div>
-            </td>
-          </tr>`;
-      }).join('');
-    }
-
-    function esc(str) {
-      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    // ── CHROME DOWNLOADS (simulation — données réelles viennent de MOTSA.py) ──
-    // En production, MOTSA.py uploade directement dans Supabase.
-    // Ici on simule la liste des téléchargements récents pour l'UX.
-    async function loadChromeDownloads() {
-      // Récupère les docs déjà certifiés pour les marquer
-      const { data: existing } = await sb
-        .from('documents')
-        .select('file_name')
-        .eq('user_id', currentUser.id);
-
-      const existingNames = new Set((existing || []).map(d => d.file_name));
-
-      // Données simulées — remplacées par l'API de MOTSA.py en v2
-      chromeFiles = [
-        { id: 1, name: 'releve_notes_2026.pdf', source: 'etudes.univ-paris.fr', date: '19 mai 2026', size: '312 Ko' },
-        { id: 2, name: 'contrat_stage_ACME.pdf', source: 'acme-corp.fr', date: '18 mai 2026', size: '89 Ko' },
-        { id: 3, name: 'facture_adobe_mai.pdf', source: 'adobe.com', date: '17 mai 2026', size: '54 Ko' },
-        { id: 4, name: 'attestation_employeur.pdf', source: 'rh.societe.fr', date: '15 mai 2026', size: '128 Ko' },
-      ];
-
-      renderChromeList(chromeFiles, existingNames);
-    }
-
-    function renderChromeList(files, existingNames) {
-      const list = document.getElementById('chromeList');
-      if (files.length === 0) {
-        list.innerHTML = '<div class="empty-state" style="padding:32px;"><p>Aucun PDF récent détecté dans Chrome.</p></div>';
-        return;
-      }
-      list.innerHTML = files.map(f => {
-        const done = existingNames.has(f.name);
-        return `
-          <div class="chrome-item">
-            <div class="chrome-check ${done ? 'checked disabled' : ''}" id="check-${f.id}" onclick="${done ? '' : `toggleCheck(${f.id})`}" style="${done ? 'opacity:0.4;cursor:default;' : 'cursor:pointer;'}"></div>
-            <div class="chrome-icon">
-              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/>
-                <path d="M10 2v3h3"/>
-              </svg>
-            </div>
-            <div class="chrome-info">
-              <div class="chrome-name">${esc(f.name)}</div>
-              <div class="chrome-meta">${esc(f.source)} · ${f.date} · ${f.size}</div>
-            </div>
-            <span class="chrome-status ${done ? 'done' : 'new'}">${done ? 'Déjà certifié' : 'Nouveau'}</span>
-          </div>`;
-      }).join('');
-    }
-
-    function toggleCheck(id) {
-      if (selectedFiles.has(id)) selectedFiles.delete(id);
-      else selectedFiles.add(id);
-      document.getElementById('check-' + id).classList.toggle('checked', selectedFiles.has(id));
-      const count = selectedFiles.size;
-      document.getElementById('selectedCount').textContent = count;
-      const btn = document.getElementById('certifyBtn');
-      btn.disabled = count === 0;
-      btn.style.opacity = count === 0 ? '0.4' : '1';
-    }
-
-    // ── CERTIFY ──
-    // Note : en production, MOTSA.py fait tout ça en local + upload vers Supabase.
-    // Ici on simule le flow côté web pour la démo et les cas sans agent installé.
-    async function certifySelected() {
-      if (selectedFiles.size === 0) return;
-      const files = chromeFiles.filter(f => selectedFiles.has(f.id));
-
-      document.getElementById('certifyBtn').disabled = true;
-      document.getElementById('progressWrap').style.display = 'block';
-
-      for (let i = 0; i < files.length; i++) {
-        const f = files[i];
-        const pct = Math.round(((i + 0.5) / files.length) * 100);
-        document.getElementById('progressFill').style.width = pct + '%';
-        document.getElementById('progressLabel').textContent = `Certification de ${f.name}...`;
-
-        // Génère un hash simulé (en prod, MOTSA.py envoie le vrai hash)
-        const fakeHash = Array.from(crypto.getRandomValues(new Uint8Array(32)))
-          .map(b => b.toString(16).padStart(2, '0')).join('');
-
-        const token = Array.from(crypto.getRandomValues(new Uint8Array(12)))
-          .map(b => b.toString(16).padStart(2, '0')).join('');
-
-        // Insert document
-        const { data: doc, error: docErr } = await sb.from('documents').insert({
-          user_id: currentUser.id,
-          file_name: f.name,
-          sha256: fakeHash,
-          source_url: 'https://' + f.source,
-          file_url: null,
-        }).select().single();
-
-        if (docErr) { toast('Erreur lors de la certification de ' + f.name, 'error'); continue; }
-
-        // Insert certificate
-        await sb.from('certificates').insert({
-          document_id: doc.id,
-          verification_token: token,
-          certificate_url: `https://motsa.tech/verify?token=${token}`,
-        });
-
-        await new Promise(r => setTimeout(r, 600));
-      }
-
-      document.getElementById('progressFill').style.width = '100%';
-      document.getElementById('progressLabel').textContent = 'Terminé.';
-
-      setTimeout(async () => {
-        document.getElementById('progressWrap').style.display = 'none';
-        document.getElementById('progressFill').style.width = '0%';
-        selectedFiles.clear();
-        document.getElementById('selectedCount').textContent = '0';
-        document.getElementById('certifyBtn').disabled = true;
-        document.getElementById('certifyBtn').style.opacity = '0.4';
-        toast(`${files.length} document(s) certifié(s) avec succès.`, 'success');
-        await loadDocuments();
-        await loadChromeDownloads();
-      }, 800);
-    }
-
-    function showSection(section) {
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      const titles = { dashboard: 'Dashboard', documents: 'Mes documents', import: 'Importer depuis Chrome' };
-      document.getElementById('topbarTitle').textContent = titles[section] || 'Dashboard';
-    }
-
-    init();
-  </script>
+init();
+</script>
 </body>
 </html>

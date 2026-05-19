@@ -1,829 +1,267 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MOTSA — Document Integrity Platform</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MOTSA — Document Integrity</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ink: #0f0f0f;
-      --ink-2: #4a4a4a;
-      --ink-3: #888;
-      --ink-4: #bbb;
+      --ink:  #0f0f0f;
+      --ink2: #4a4a4a;
+      --ink3: #888;
+      --ink4: #bbb;
       --line: #e6e6e4;
-      --bg: #f7f6f3;
-      --white: #fff;
-      --green: #1a7a4a;
-      --green-bg: #eef8f2;
-      --green-border: rgba(26,122,74,0.18);
+      --bg:   #f7f6f3;
+      --w:    #fff;
+      --g:    #1a7a4a;
+      --gbg:  #eef8f2;
+      --gbr:  rgba(26,122,74,.18);
     }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--ink);
-      font-family: 'Geist', sans-serif;
-      font-size: 15px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-    }
-
-    /* ── HEADER ── */
-    header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(247,246,243,0.88);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--line);
-      padding: 0 6%;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 58px;
-    }
-
-    .logo {
-      font-family: 'Geist', sans-serif;
-      font-weight: 500; font-size: 16px;
-      letter-spacing: 0.06em; color: var(--ink);
-      text-decoration: none; display: flex; align-items: center; gap: 8px;
-    }
-
-    .logo-mark {
-      width: 22px; height: 22px; border-radius: 6px;
-      background: var(--ink);
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    .logo-mark svg { width: 12px; height: 12px; }
-
-    .header-right { display: flex; align-items: center; gap: 8px; }
-
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 9px 20px; font-size: 14px; font-weight: 500;
-      border-radius: 8px; cursor: pointer; text-decoration: none;
-      transition: all 0.15s; border: none; font-family: 'Geist', sans-serif;
-      white-space: nowrap;
-    }
-
-    .btn-ghost {
-      background: transparent; color: var(--ink-2);
-      border: 1px solid var(--line);
-    }
-    .btn-ghost:hover { background: var(--white); color: var(--ink); }
-
-    .btn-dark { background: var(--ink); color: var(--white); }
-    .btn-dark:hover { background: #2a2a2a; }
-
-    .btn-full { width: 100%; }
-
-    .btn-outline {
-      background: transparent; color: var(--ink);
-      border: 1px solid var(--line);
-    }
-    .btn-outline:hover { background: var(--bg); }
-
-    /* ── HERO ── */
-    .hero {
-      min-height: 100vh;
-      display: flex; align-items: center;
-      padding: 100px 6% 80px;
-      position: relative; overflow: hidden;
-    }
-
-    .hero-bg {
-      position: absolute; inset: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 50% at 70% 40%, rgba(26,122,74,0.05) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 20% 60%, rgba(15,15,15,0.03) 0%, transparent 60%);
-    }
-
-    /* Subtle dot grid */
-    .hero-bg::after {
-      content: '';
-      position: absolute; inset: 0;
-      background-image: radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px);
-      background-size: 28px 28px;
-      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-    }
-
-    .hero-inner {
-      position: relative; z-index: 1;
-      display: grid; grid-template-columns: 1fr 420px;
-      gap: 80px; align-items: center;
-      max-width: 1100px; margin: 0 auto; width: 100%;
-    }
-
-    .hero-kicker {
-      display: inline-flex; align-items: center; gap: 7px;
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px; letter-spacing: 0.12em;
-      color: var(--green); text-transform: uppercase;
-      margin-bottom: 22px;
-    }
-
-    .hero-kicker-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green);
-      animation: blink 2.4s ease-in-out infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
-    }
-
-    .hero h1 {
-      font-family: 'Instrument Serif', serif;
-      font-weight: 400; font-size: 58px;
-      line-height: 1.05; letter-spacing: -0.015em;
-      margin-bottom: 22px; color: var(--ink);
-    }
-
-    .hero h1 em { font-style: italic; color: var(--ink-3); }
-
-    .hero-desc {
-      font-size: 17px; line-height: 1.75;
-      color: var(--ink-2); font-weight: 300;
-      margin-bottom: 40px; max-width: 460px;
-    }
-
-    .hero-cta { display: flex; gap: 10px; flex-wrap: wrap; }
-
-    /* Social proof */
-    .social-proof {
-      display: flex; align-items: center; gap: 14px;
-      margin-top: 48px;
-    }
-
-    .sp-avatars { display: flex; }
-
-    .sp-avatar {
-      width: 30px; height: 30px; border-radius: 50%;
-      border: 2px solid var(--bg);
-      background: var(--line);
-      margin-left: -8px; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 500; color: var(--ink-2);
-    }
-
-    .sp-avatar:first-child { margin-left: 0; }
-
-    .sp-text { font-size: 13px; color: var(--ink-3); font-weight: 300; }
-    .sp-text strong { color: var(--ink-2); font-weight: 500; }
-
-    /* ── AUTH CARD ── */
-    .auth-card {
-      background: var(--white);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 36px 32px;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
-      position: relative; z-index: 1;
-    }
-
-    .auth-tabs {
-      display: grid; grid-template-columns: 1fr 1fr;
-      background: var(--bg); border-radius: 10px;
-      padding: 4px; margin-bottom: 28px;
-      border: 1px solid var(--line);
-    }
-
-    .auth-tab {
-      padding: 9px; text-align: center;
-      font-size: 14px; font-weight: 500;
-      border-radius: 7px; cursor: pointer;
-      transition: all 0.15s; color: var(--ink-3);
-      user-select: none;
-    }
-
-    .auth-tab.active {
-      background: var(--white);
-      color: var(--ink);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
-
-    .auth-form { display: none; }
-    .auth-form.active { display: block; }
-
-    .auth-title {
-      font-family: 'Instrument Serif', serif;
-      font-weight: 400; font-size: 22px;
-      margin-bottom: 6px; color: var(--ink);
-    }
-
-    .auth-sub {
-      font-size: 14px; color: var(--ink-3);
-      font-weight: 300; margin-bottom: 24px;
-    }
-
-    .field { margin-bottom: 14px; }
-
-    .field label {
-      display: block;
-      font-size: 12px; font-weight: 500;
-      color: var(--ink-2); margin-bottom: 6px;
-      letter-spacing: 0.01em;
-    }
-
-    .field input {
-      width: 100%; padding: 11px 14px;
-      background: var(--bg); border: 1px solid var(--line);
-      border-radius: 8px; color: var(--ink);
-      font-size: 14px; font-family: 'Geist', sans-serif;
-      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-    }
-
-    .field input:focus {
-      border-color: #a0a09e;
-      box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
-      background: var(--white);
-    }
-
-    .field input::placeholder { color: var(--ink-4); }
-
-    .auth-divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 20px 0; color: var(--ink-4); font-size: 12px;
-    }
-
-    .auth-divider::before, .auth-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--line);
-    }
-
-    .auth-message {
-      display: none; margin-top: 14px;
-      padding: 11px 14px; border-radius: 8px;
-      font-size: 13px; line-height: 1.5;
-    }
-
-    .auth-message.error {
-      background: #fff3f3; border: 1px solid #fecaca;
-      color: #991b1b;
-    }
-
-    .auth-message.success {
-      background: var(--green-bg); border: 1px solid var(--green-border);
-      color: var(--green);
-    }
-
-    .auth-footer {
-      margin-top: 18px; text-align: center;
-      font-size: 13px; color: var(--ink-3);
-    }
-
-    .auth-footer a { color: var(--ink-2); text-decoration: underline; cursor: pointer; }
-
-    /* ── FEATURES STRIP ── */
-    .features {
-      padding: 80px 6%;
-      background: var(--white);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .features-inner {
-      max-width: 1100px; margin: 0 auto;
-    }
-
-    .features-top {
-      display: flex; align-items: flex-end;
-      justify-content: space-between; margin-bottom: 52px;
-    }
-
-    .section-kicker {
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px; letter-spacing: 0.12em;
-      color: var(--ink-3); text-transform: uppercase; margin-bottom: 10px;
-    }
-
-    .section-title {
-      font-family: 'Instrument Serif', serif;
-      font-weight: 400; font-size: 36px;
-      line-height: 1.12; letter-spacing: -0.01em;
-    }
-
-    .features-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px; background: var(--line);
-      border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
-    }
-
-    .feat {
-      background: var(--white); padding: 32px 28px;
-      transition: background 0.15s;
-    }
-
-    .feat:hover { background: var(--bg); }
-
-    .feat-num {
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px; color: var(--ink-4);
-      margin-bottom: 18px; letter-spacing: 0.06em;
-    }
-
-    .feat h3 { font-size: 16px; font-weight: 500; margin-bottom: 8px; }
-
-    .feat p { font-size: 14px; color: var(--ink-2); line-height: 1.65; font-weight: 300; }
-
-    /* ── HOW IT WORKS ── */
-    .how {
-      padding: 80px 6%;
-      max-width: 1100px; margin: 0 auto;
-    }
-
-    .how-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 60px; align-items: center; margin-top: 52px;
-    }
-
-    .how-steps { display: flex; flex-direction: column; gap: 0; }
-
-    .how-step {
-      display: flex; gap: 20px; padding: 24px 0;
-      border-bottom: 1px solid var(--line);
-      transition: all 0.15s;
-    }
-
-    .how-step:last-child { border: none; }
-
-    .how-step-num {
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px; color: var(--ink-4);
-      letter-spacing: 0.06em; padding-top: 3px;
-      min-width: 28px;
-    }
-
-    .how-step h4 { font-size: 15px; font-weight: 500; margin-bottom: 5px; }
-    .how-step p { font-size: 14px; color: var(--ink-2); font-weight: 300; line-height: 1.6; }
-
-    /* Terminal mockup */
-    .terminal {
-      background: #0f0f0f; border-radius: 14px;
-      overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-    }
-
-    .terminal-bar {
-      background: #1a1a1a; padding: 14px 18px;
-      display: flex; align-items: center; gap: 8px;
-      border-bottom: 1px solid #2a2a2a;
-    }
-
-    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .t-r { background: #ff5f57; }
-    .t-y { background: #febc2e; }
-    .t-g { background: #28c840; }
-
-    .terminal-title {
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px; color: #555; margin-left: 6px;
-    }
-
-    .terminal-body { padding: 22px 20px; }
-
-    .t-line {
-      font-family: 'Geist Mono', monospace;
-      font-size: 12px; line-height: 2;
-    }
-
-    .t-dim { color: #444; }
-    .t-green { color: #4ade80; }
-    .t-white { color: #ccc; }
-    .t-blue { color: #60a5fa; }
-    .t-yellow { color: #fbbf24; }
-
-    /* ── PRICING ── */
-    .pricing {
-      padding: 80px 6%;
-      background: var(--white);
-      border-top: 1px solid var(--line);
-    }
-
-    .pricing-inner { max-width: 860px; margin: 0 auto; }
-
-    .pricing-head { text-align: center; margin-bottom: 52px; }
-    .pricing-head .section-title { margin-top: 10px; }
-
-    .pricing-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 1px; background: var(--line);
-      border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
-    }
-
-    .plan { background: var(--white); padding: 32px 28px; }
-    .plan.featured { background: var(--ink); color: var(--white); }
-
-    .plan-tag {
-      display: inline-block;
-      font-family: 'Geist Mono', monospace;
-      font-size: 10px; letter-spacing: 0.1em;
-      color: var(--green); background: var(--green-bg);
-      border: 1px solid var(--green-border);
-      padding: 3px 10px; border-radius: 999px;
-      margin-bottom: 14px; text-transform: uppercase;
-    }
-
-    .plan-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
-    .plan-desc { font-size: 13px; color: var(--ink-3); font-weight: 300; margin-bottom: 24px; }
-    .plan.featured .plan-desc { color: rgba(255,255,255,0.4); }
-
-    .plan-price {
-      font-family: 'Instrument Serif', serif;
-      font-size: 46px; line-height: 1;
-      letter-spacing: -0.02em; margin-bottom: 5px;
-    }
-
-    .plan-price sup { font-size: 22px; vertical-align: super; }
-    .plan-period { font-size: 13px; color: var(--ink-3); margin-bottom: 8px; }
-    .plan.featured .plan-period { color: rgba(255,255,255,0.4); }
-
-    .plan-limit { font-size: 13px; color: var(--ink-2); margin-bottom: 28px; font-weight: 300; }
-    .plan.featured .plan-limit { color: rgba(255,255,255,0.6); }
-
-    .plan .btn { width: 100%; }
-    .btn-invert { background: var(--white); color: var(--ink); }
-    .btn-invert:hover { background: #eee; }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 28px 6%;
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--white);
-    }
-
-    footer p { font-size: 13px; color: var(--ink-3); }
-
-    .footer-links { display: flex; gap: 20px; }
-    .footer-links a { font-size: 13px; color: var(--ink-3); text-decoration: none; }
-    .footer-links a:hover { color: var(--ink-2); }
-
-    /* ── LOADING STATE ── */
-    .btn-loading { opacity: 0.6; pointer-events: none; }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero-left > * {
-      animation: fadeUp 0.5s ease both;
-    }
-
-    .hero-left > *:nth-child(1) { animation-delay: 0.05s; }
-    .hero-left > *:nth-child(2) { animation-delay: 0.12s; }
-    .hero-left > *:nth-child(3) { animation-delay: 0.18s; }
-    .hero-left > *:nth-child(4) { animation-delay: 0.24s; }
-    .hero-left > *:nth-child(5) { animation-delay: 0.30s; }
-
-    .auth-card {
-      animation: fadeUp 0.5s ease 0.15s both;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
-      .hero h1 { font-size: 42px; }
-      .features-grid { grid-template-columns: 1fr; }
-      .how-grid { grid-template-columns: 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; }
-      .features-top { flex-direction: column; align-items: flex-start; gap: 16px; }
-      header { padding: 0 5%; }
-      .hero { padding: 90px 5% 60px; }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;background:rgba(247,246,243,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%}
+    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:16px;letter-spacing:.05em}
+    .lm{width:24px;height:24px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center}
+    .lm svg{width:13px;height:13px}
+    .nav-r{display:flex;gap:8px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 20px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .15s;border:none;font-family:'Geist',sans-serif}
+    .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}
+    .btn-ghost:hover{background:var(--w);color:var(--ink)}
+    .btn-dark{background:var(--ink);color:var(--w)}
+    .btn-dark:hover{background:#2a2a2a}
+    .btn-full{width:100%}
+    .btn-outline{background:transparent;color:var(--ink);border:1px solid var(--line)}
+    .btn-outline:hover{background:var(--bg)}
+
+    /* HERO */
+    .hero{min-height:100vh;display:grid;grid-template-columns:1fr 420px;gap:80px;align-items:center;padding:100px 6% 80px;position:relative;overflow:hidden;max-width:1200px;margin:0 auto}
+    .hero-bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(26,122,74,.05),transparent 70%);z-index:-1}
+    .hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.07) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
+    .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--g);text-transform:uppercase;margin-bottom:22px}
+    .kd{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.4s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:56px;line-height:1.05;letter-spacing:-.015em;margin-bottom:22px}
+    h1 em{font-style:italic;color:var(--ink3)}
+    .desc{font-size:17px;line-height:1.75;color:var(--ink2);font-weight:300;margin-bottom:40px;max-width:460px}
+    .hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+    .proof{display:flex;align-items:center;gap:14px;margin-top:48px}
+    .avs{display:flex}
+    .av{width:30px;height:30px;border-radius:50%;border:2px solid var(--bg);background:var(--line);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--ink2)}
+    .av:first-child{margin-left:0}
+    .pt{font-size:13px;color:var(--ink3);font-weight:300}
+    .pt strong{color:var(--ink2);font-weight:500}
+
+    /* AUTH CARD */
+    .acard{background:var(--w);border:1px solid var(--line);border-radius:18px;padding:36px 32px;box-shadow:0 4px 40px rgba(0,0,0,.06);animation:fadeUp .5s ease .15s both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .atabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:28px;border:1px solid var(--line)}
+    .atab{padding:9px;text-align:center;font-size:14px;font-weight:500;border-radius:7px;cursor:pointer;transition:all .15s;color:var(--ink3);user-select:none}
+    .atab.active{background:var(--w);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .aform{display:none}
+    .aform.active{display:block}
+    .atitle{font-family:'Instrument Serif',serif;font-weight:400;font-size:22px;margin-bottom:6px}
+    .asub{font-size:14px;color:var(--ink3);font-weight:300;margin-bottom:24px}
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:6px}
+    .field input{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:14px;font-family:'Geist',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
+    .field input:focus{border-color:#a0a09e;box-shadow:0 0 0 3px rgba(0,0,0,.04);background:var(--w)}
+    .field input::placeholder{color:var(--ink4)}
+    .amsg{display:none;margin-top:14px;padding:11px 14px;border-radius:8px;font-size:13px;line-height:1.5}
+    .amsg.error{background:#fff3f3;border:1px solid #fecaca;color:#991b1b}
+    .amsg.success{background:var(--gbg);border:1px solid var(--gbr);color:var(--g)}
+    .afoot{margin-top:16px;text-align:center;font-size:13px;color:var(--ink3)}
+    .afoot a{color:var(--ink2);text-decoration:underline;cursor:pointer}
+    .btn-load{opacity:.6;pointer-events:none}
+
+    /* FEATURES */
+    .features{padding:80px 6%;background:var(--w);border-top:1px solid var(--line)}
+    .features-inner{max-width:1100px;margin:0 auto}
+    .ftop{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:52px}
+    .sk{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin-bottom:10px}
+    .st{font-family:'Instrument Serif',serif;font-weight:400;font-size:36px;line-height:1.12;letter-spacing:-.01em}
+    .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .feat{background:var(--w);padding:32px 28px;transition:background .15s}
+    .feat:hover{background:var(--bg)}
+    .fn{font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink4);margin-bottom:18px;letter-spacing:.06em}
+    .feat h3{font-size:16px;font-weight:500;margin-bottom:8px}
+    .feat p{font-size:14px;color:var(--ink2);line-height:1.65;font-weight:300}
+
+    /* FOOTER */
+    footer{border-top:1px solid var(--line);padding:24px 6%;background:var(--w);display:flex;align-items:center;justify-content:space-between}
+    footer p{font-size:13px;color:var(--ink4)}
+    .flinks{display:flex;gap:20px}
+    .flinks a{font-size:13px;color:var(--ink3);text-decoration:none}
+    .flinks a:hover{color:var(--ink2)}
+
+    @media(max-width:900px){
+      .hero{grid-template-columns:1fr;padding:90px 5% 60px;gap:48px}
+      h1{font-size:40px}
+      .fgrid{grid-template-columns:1fr}
+      .ftop{flex-direction:column;align-items:flex-start;gap:16px}
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <a class="logo" href="/">
-      <div class="logo-mark">
-        <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
+<div class="hero-bg"></div>
+
+<nav>
+  <a class="logo" href="/">
+    <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    MOTSA
+  </a>
+  <div class="nav-r">
+    <a href="#features" class="btn btn-ghost" style="padding:7px 14px;font-size:13px">Fonctionnement</a>
+    <a href="#auth" class="btn btn-dark" style="padding:7px 16px;font-size:13px">Se connecter</a>
+  </div>
+</nav>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 6%">
+  <div class="hero" style="max-width:none;padding:100px 0 80px">
+
+    <div>
+      <div class="kicker"><span class="kd"></span>Document integrity · v1.0</div>
+      <h1>Vos documents,<br><em>prouvés à la source.</em></h1>
+      <p class="desc">MOTSA capture chaque PDF téléchargé depuis Chrome, calcule son empreinte cryptographique et délivre un certificat d'authenticité infalsifiable — automatiquement.</p>
+      <div class="hero-cta">
+        <a href="#auth" class="btn btn-dark">Créer un compte gratuit</a>
+        <a href="#features" class="btn btn-outline">Comment ça marche</a>
       </div>
-      MOTSA
-    </a>
-    <div class="header-right">
-      <a href="#features" class="btn btn-ghost" style="font-size:13px; padding:7px 14px;">Fonctionnement</a>
-      <a href="#pricing" class="btn btn-ghost" style="font-size:13px; padding:7px 14px;">Tarifs</a>
-      <a href="#auth" class="btn btn-dark" style="font-size:13px; padding:7px 16px;">Se connecter</a>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero" id="home">
-    <div class="hero-bg"></div>
-    <div class="hero-inner">
-      <div class="hero-left">
-        <div class="hero-kicker">
-          <span class="hero-kicker-dot"></span>
-          Document integrity · v1.0
+      <div class="proof">
+        <div class="avs">
+          <div class="av">AR</div><div class="av">ML</div><div class="av">JD</div><div class="av">+</div>
         </div>
-        <h1>Vos documents,<br><em>prouvés à la source.</em></h1>
-        <p class="hero-desc">
-          MOTSA capture chaque PDF téléchargé depuis Chrome, calcule son empreinte cryptographique et délivre un certificat d'authenticité infalsifiable — automatiquement.
-        </p>
-        <div class="hero-cta">
-          <a href="#auth" class="btn btn-dark">Créer un compte gratuit</a>
-          <a href="#how" class="btn btn-outline">Voir comment ça marche</a>
-        </div>
-        <div class="social-proof">
-          <div class="sp-avatars">
-            <div class="sp-avatar">AR</div>
-            <div class="sp-avatar">ML</div>
-            <div class="sp-avatar">JD</div>
-            <div class="sp-avatar">+</div>
-          </div>
-          <p class="sp-text"><strong>Des équipes RH, écoles et freelances</strong> certifient leurs documents avec MOTSA</p>
-        </div>
-      </div>
-
-      <!-- AUTH CARD -->
-      <div class="auth-card" id="auth">
-        <div class="auth-tabs">
-          <div class="auth-tab active" onclick="switchTab('login')">Connexion</div>
-          <div class="auth-tab" onclick="switchTab('signup')">Inscription</div>
-        </div>
-
-        <!-- LOGIN -->
-        <div class="auth-form active" id="form-login">
-          <h2 class="auth-title">Bon retour.</h2>
-          <p class="auth-sub">Accédez à votre espace MOTSA.</p>
-          <div class="field">
-            <label>Adresse e-mail</label>
-            <input type="email" id="loginEmail" placeholder="vous@exemple.com" autocomplete="email" />
-          </div>
-          <div class="field">
-            <label>Mot de passe</label>
-            <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
-          </div>
-          <button class="btn btn-dark btn-full" id="loginBtn" onclick="loginUser()">Se connecter</button>
-          <div class="auth-message" id="loginMessage"></div>
-          <p class="auth-footer">Pas encore de compte ? <a onclick="switchTab('signup')">Créer un compte</a></p>
-        </div>
-
-        <!-- SIGNUP -->
-        <div class="auth-form" id="form-signup">
-          <h2 class="auth-title">Commencez gratuitement.</h2>
-          <p class="auth-sub">Aucune carte bancaire requise.</p>
-          <div class="field">
-            <label>Adresse e-mail</label>
-            <input type="email" id="signupEmail" placeholder="vous@exemple.com" autocomplete="email" />
-          </div>
-          <div class="field">
-            <label>Mot de passe</label>
-            <input type="password" id="signupPassword" placeholder="8 caractères minimum" autocomplete="new-password" />
-          </div>
-          <button class="btn btn-dark btn-full" id="signupBtn" onclick="signupUser()">Créer mon compte</button>
-          <div class="auth-message" id="signupMessage"></div>
-          <p class="auth-footer" style="margin-top:16px; font-size:12px; color:var(--ink-4);">
-            En créant un compte, vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre <a href="#">Politique de confidentialité</a>.
-          </p>
-          <p class="auth-footer">Déjà un compte ? <a onclick="switchTab('login')">Se connecter</a></p>
-        </div>
+        <p class="pt"><strong>Équipes RH, écoles et freelances</strong> certifient leurs documents avec MOTSA</p>
       </div>
     </div>
-  </section>
 
-  <!-- FEATURES -->
-  <section class="features" id="features">
-    <div class="features-inner">
-      <div class="features-top">
-        <div>
-          <div class="section-kicker">Pourquoi MOTSA</div>
-          <h2 class="section-title">L'intégrité documentaire,<br>sans friction.</h2>
-        </div>
-        <a href="#auth" class="btn btn-dark">Démarrer gratuitement</a>
+    <!-- AUTH CARD -->
+    <div class="acard" id="auth">
+      <div class="atabs">
+        <div class="atab active" onclick="switchTab('login')">Connexion</div>
+        <div class="atab" onclick="switchTab('signup')">Inscription</div>
       </div>
-      <div class="features-grid">
-        <div class="feat">
-          <div class="feat-num">01</div>
-          <h3>Capture automatique</h3>
-          <p>MOTSA surveille vos téléchargements Chrome en arrière-plan. Chaque PDF est capturé dès qu'il arrive dans votre dossier.</p>
-        </div>
-        <div class="feat">
-          <div class="feat-num">02</div>
-          <h3>Empreinte SHA-256</h3>
-          <p>Un hash cryptographique est calculé sur le fichier original. Toute modification ultérieure, même d'un seul octet, est détectable.</p>
-        </div>
-        <div class="feat">
-          <div class="feat-num">03</div>
-          <h3>Certificat & QR code</h3>
-          <p>Un certificat de provenance est injecté dans le PDF, avec un QR code pointant vers une page de vérification publique et permanente.</p>
-        </div>
-        <div class="feat">
-          <div class="feat-num">04</div>
-          <h3>Stockage cloud sécurisé</h3>
-          <p>Vos documents certifiés sont synchronisés dans votre espace MOTSA, accessibles et téléchargeables depuis n'importe où.</p>
-        </div>
-        <div class="feat">
-          <div class="feat-num">05</div>
-          <h3>Vérification publique</h3>
-          <p>N'importe qui peut scanner le QR code et confirmer l'authenticité du document — sans compte, sans installation.</p>
-        </div>
-        <div class="feat">
-          <div class="feat-num">06</div>
-          <h3>Traçabilité complète</h3>
-          <p>Source URL, date de téléchargement, référant Chrome — chaque métadonnée est conservée et rattachée au certificat.</p>
-        </div>
+
+      <div class="aform active" id="form-login">
+        <h2 class="atitle">Bon retour.</h2>
+        <p class="asub">Accédez à votre espace MOTSA.</p>
+        <div class="field"><label>Adresse e-mail</label><input type="email" id="lEmail" placeholder="vous@exemple.com"/></div>
+        <div class="field"><label>Mot de passe</label><input type="password" id="lPass" placeholder="••••••••"/></div>
+        <button class="btn btn-dark btn-full" id="lBtn" onclick="login()">Se connecter</button>
+        <div class="amsg" id="lMsg"></div>
+        <p class="afoot">Pas de compte ? <a onclick="switchTab('signup')">S'inscrire</a></p>
+      </div>
+
+      <div class="aform" id="form-signup">
+        <h2 class="atitle">Commencez gratuitement.</h2>
+        <p class="asub">Aucune carte bancaire requise.</p>
+        <div class="field"><label>Adresse e-mail</label><input type="email" id="sEmail" placeholder="vous@exemple.com"/></div>
+        <div class="field"><label>Mot de passe</label><input type="password" id="sPass" placeholder="8 caractères minimum"/></div>
+        <button class="btn btn-dark btn-full" id="sBtn" onclick="signup()">Créer mon compte</button>
+        <div class="amsg" id="sMsg"></div>
+        <p class="afoot" style="margin-top:12px;font-size:12px;color:var(--ink4)">En créant un compte vous acceptez nos <a href="#">CGU</a>.</p>
+        <p class="afoot">Déjà inscrit ? <a onclick="switchTab('login')">Se connecter</a></p>
       </div>
     </div>
-  </section>
 
-  <!-- HOW IT WORKS -->
-  <section id="how" style="padding: 80px 6%;">
-    <div class="how" style="padding: 0;">
-      <div class="section-kicker">Processus</div>
-      <h2 class="section-title">Trois étapes, zéro effort.</h2>
-      <div class="how-grid">
-        <div class="how-steps">
-          <div class="how-step">
-            <div class="how-step-num">01</div>
-            <div>
-              <h4>Installez l'agent MOTSA</h4>
-              <p>Un petit script Python tourne en arrière-plan sur votre Mac. Il surveille votre dossier de téléchargements Chrome en temps réel.</p>
-            </div>
-          </div>
-          <div class="how-step">
-            <div class="how-step-num">02</div>
-            <div>
-              <h4>Téléchargez un PDF comme d'habitude</h4>
-              <p>Rien ne change dans votre workflow. MOTSA détecte automatiquement le nouveau fichier, calcule son SHA-256 et génère le certificat.</p>
-            </div>
-          </div>
-          <div class="how-step">
-            <div class="how-step-num">03</div>
-            <div>
-              <h4>Retrouvez tout dans votre espace</h4>
-              <p>Le PDF certifié et son hash sont synchronisés dans votre compte motsa.tech. Partageable, vérifiable, permanent.</p>
-            </div>
-          </div>
-        </div>
+  </div>
+</div>
 
-        <div class="terminal">
-          <div class="terminal-bar">
-            <span class="t-dot t-r"></span>
-            <span class="t-dot t-y"></span>
-            <span class="t-dot t-g"></span>
-            <span class="terminal-title">motsa_agent.py</span>
-          </div>
-          <div class="terminal-body">
-            <div class="t-line t-dim">$ python motsa_agent.py</div>
-            <div class="t-line t-dim">Surveillance démarrée...</div>
-            <div class="t-line" style="height:10px;"></div>
-            <div class="t-line t-dim">▸ Nouveau PDF détecté</div>
-            <div class="t-line t-white">&nbsp;&nbsp;releve_notes.pdf</div>
-            <div class="t-line t-dim">&nbsp;&nbsp;source: universite.fr</div>
-            <div class="t-line" style="height:10px;"></div>
-            <div class="t-line t-dim">▸ Hash SHA-256</div>
-            <div class="t-line t-blue">&nbsp;&nbsp;9f7a4c2e8b1d0c9d...</div>
-            <div class="t-line" style="height:10px;"></div>
-            <div class="t-line t-dim">▸ Certificat généré</div>
-            <div class="t-line t-dim">▸ Upload Supabase</div>
-            <div class="t-line" style="height:10px;"></div>
-            <div class="t-line t-green">✓ Document certifié</div>
-            <div class="t-line t-yellow">&nbsp;&nbsp;motsa.tech/verify?token=9f7a</div>
-          </div>
-        </div>
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="ftop">
+      <div>
+        <div class="sk">Pourquoi MOTSA</div>
+        <h2 class="st">L'intégrité documentaire,<br>sans friction.</h2>
       </div>
+      <a href="#auth" class="btn btn-dark">Démarrer gratuitement</a>
     </div>
-  </section>
-
-  <!-- PRICING -->
-  <section class="pricing" id="pricing">
-    <div class="pricing-inner">
-      <div class="pricing-head">
-        <div class="section-kicker">Tarifs</div>
-        <h2 class="section-title">Simple et transparent.</h2>
-      </div>
-      <div class="pricing-grid">
-        <div class="plan">
-          <div class="plan-name">Starter</div>
-          <div class="plan-desc">Pour découvrir MOTSA.</div>
-          <div class="plan-price">0<sup>€</sup></div>
-          <div class="plan-period">pour toujours</div>
-          <div class="plan-limit">5 documents certifiés / mois</div>
-          <a href="#auth" class="btn btn-outline">Commencer gratuitement</a>
-        </div>
-        <div class="plan featured">
-          <div class="plan-tag">Populaire</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-desc">Pour les professionnels et équipes.</div>
-          <div class="plan-price">19<sup>€</sup></div>
-          <div class="plan-period">par mois</div>
-          <div class="plan-limit">100 documents certifiés / mois</div>
-          <a href="#auth" class="btn btn-invert">Choisir Pro</a>
-        </div>
-        <div class="plan">
-          <div class="plan-name">Institution</div>
-          <div class="plan-desc">Pour écoles, RH et organismes.</div>
-          <div class="plan-price" style="font-size:28px; padding-top:9px; letter-spacing:-0.01em;">Sur devis</div>
-          <div class="plan-period">&nbsp;</div>
-          <div class="plan-limit">API · Marque blanche · Volume illimité</div>
-          <a href="mailto:hello@motsa.tech" class="btn btn-outline">Nous contacter</a>
-        </div>
-      </div>
+    <div class="fgrid">
+      <div class="feat"><div class="fn">01</div><h3>Capture automatique</h3><p>MOTSA surveille vos téléchargements Chrome. Chaque PDF est détecté et traité dès son arrivée.</p></div>
+      <div class="feat"><div class="fn">02</div><h3>Empreinte SHA-256</h3><p>Le hash est calculé sur le PDF final avec certificat. Toute modification ultérieure est détectable.</p></div>
+      <div class="feat"><div class="fn">03</div><h3>Certificat & QR code</h3><p>Une page certificat est injectée dans le PDF. Le QR code atteste l'origine : source, date, référant.</p></div>
+      <div class="feat"><div class="fn">04</div><h3>Stockage cloud</h3><p>Le PDF certifié et son hash sont synchronisés dans votre compte motsa.tech. Accessibles partout.</p></div>
+      <div class="feat"><div class="fn">05</div><h3>Vérification publique</h3><p>N'importe qui peut scanner le QR et confirmer l'origine du document — sans compte requis.</p></div>
+      <div class="feat"><div class="fn">06</div><h3>Traçabilité complète</h3><p>Source URL, date, référant Chrome — chaque métadonnée est conservée et liée au certificat.</p></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer>
-    <a class="logo" href="/" style="font-size:14px;">
-      <div class="logo-mark" style="width:18px;height:18px;border-radius:5px;">
-        <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
-      MOTSA
-    </a>
-    <p>© 2026 MOTSA — motsa.tech</p>
-    <div class="footer-links">
-      <a href="#">Confidentialité</a>
-      <a href="#">CGU</a>
-      <a href="mailto:hello@motsa.tech">Contact</a>
-    </div>
-  </footer>
+<footer>
+  <a class="logo" href="/" style="font-size:14px">
+    <div class="lm" style="width:18px;height:18px;border-radius:5px"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    MOTSA
+  </a>
+  <p>© 2026 MOTSA — motsa.tech</p>
+  <div class="flinks"><a href="#">Confidentialité</a><a href="#">CGU</a><a href="mailto:hello@motsa.tech">Contact</a></div>
+</footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://cggtyaklofxywlmaatam.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym";
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const sb = supabase.createClient(
+    'https://cggtyaklofxywlmaatam.supabase.co',
+    'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym'
+  );
 
-    // Redirige si déjà connecté
-    sb.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.href = "/dashboard.html";
-    });
+  // Redirect si déjà connecté
+  sb.auth.getSession().then(({data}) => {
+    if (data.session) location.href = '/dashboard.html';
+  });
 
-    // Écoute les changements d'auth
-    sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        window.location.href = "/dashboard.html";
-      }
-    });
+  sb.auth.onAuthStateChange((e, s) => {
+    if (e === 'SIGNED_IN' && s) location.href = '/dashboard.html';
+  });
 
-    function switchTab(tab) {
-      document.querySelectorAll('.auth-tab').forEach((t, i) => {
-        t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'signup' && i === 1));
-      });
-      document.getElementById('form-login').classList.toggle('active', tab === 'login');
-      document.getElementById('form-signup').classList.toggle('active', tab === 'signup');
-      hideMessages();
-    }
+  function switchTab(t) {
+    document.querySelectorAll('.atab').forEach((el,i) => el.classList.toggle('active', (t==='login'&&i===0)||(t==='signup'&&i===1)));
+    document.getElementById('form-login').classList.toggle('active', t==='login');
+    document.getElementById('form-signup').classList.toggle('active', t==='signup');
+    ['lMsg','sMsg'].forEach(id => { const el=document.getElementById(id); el.style.display='none'; });
+  }
 
-    function showMsg(id, text, type) {
-      const el = document.getElementById(id);
-      el.textContent = text;
-      el.className = 'auth-message ' + type;
-      el.style.display = 'block';
-    }
+  function msg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text; el.className = 'amsg '+type; el.style.display = 'block';
+  }
 
-    function hideMessages() {
-      ['loginMessage','signupMessage'].forEach(id => {
-        const el = document.getElementById(id);
-        el.style.display = 'none';
-      });
-    }
+  function setLoad(id, loading, labels) {
+    const el = document.getElementById(id);
+    el.classList.toggle('btn-load', loading);
+    el.textContent = loading ? labels[0] : labels[1];
+  }
 
-    function setLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
-      btn.classList.toggle('btn-loading', loading);
-      btn.textContent = loading
-        ? (btnId === 'loginBtn' ? 'Connexion...' : 'Création...')
-        : (btnId === 'loginBtn' ? 'Se connecter' : 'Créer mon compte');
-    }
+  async function login() {
+    const email = document.getElementById('lEmail').value.trim();
+    const pass  = document.getElementById('lPass').value;
+    if (!email||!pass) { msg('lMsg','Veuillez remplir tous les champs.','error'); return; }
+    setLoad('lBtn', true, ['Connexion...','Se connecter']);
+    const {error} = await sb.auth.signInWithPassword({email, password:pass});
+    setLoad('lBtn', false, ['Connexion...','Se connecter']);
+    if (error) msg('lMsg','Identifiants incorrects.','error');
+  }
 
-    async function loginUser() {
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
-      if (!email || !password) { showMsg('loginMessage', 'Veuillez remplir tous les champs.', 'error'); return; }
-      setLoading('loginBtn', true);
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      setLoading('loginBtn', false);
-      if (error) showMsg('loginMessage', 'Identifiants incorrects. Vérifiez votre email et mot de passe.', 'error');
-    }
+  async function signup() {
+    const email = document.getElementById('sEmail').value.trim();
+    const pass  = document.getElementById('sPass').value;
+    if (!email||!pass) { msg('sMsg','Veuillez remplir tous les champs.','error'); return; }
+    if (pass.length < 8) { msg('sMsg','8 caractères minimum.','error'); return; }
+    setLoad('sBtn', true, ['Création...','Créer mon compte']);
+    const {data, error} = await sb.auth.signUp({email, password:pass});
+    setLoad('sBtn', false, ['Création...','Créer mon compte']);
+    if (error) { msg('sMsg','Erreur : '+error.message,'error'); return; }
+    if (data?.user) await sb.from('users').upsert({id:data.user.id, email:data.user.email});
+    msg('sMsg','Compte créé ! Vérifiez votre boîte mail.','success');
+  }
 
-    async function signupUser() {
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-      if (!email || !password) { showMsg('signupMessage', 'Veuillez remplir tous les champs.', 'error'); return; }
-      if (password.length < 8) { showMsg('signupMessage', 'Le mot de passe doit contenir au moins 8 caractères.', 'error'); return; }
-      setLoading('signupBtn', true);
-      const { data, error } = await sb.auth.signUp({ email, password });
-      setLoading('signupBtn', false);
-      if (error) { showMsg('signupMessage', 'Erreur : ' + error.message, 'error'); return; }
-      if (data?.user) {
-        await sb.from('users').upsert({ id: data.user.id, email: data.user.email });
-      }
-      showMsg('signupMessage', 'Compte créé ! Vérifiez votre boîte mail pour confirmer votre adresse.', 'success');
-    }
-
-    // Enter key support
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Enter') return;
-      if (document.getElementById('form-login').classList.contains('active')) loginUser();
-      else signupUser();
-    });
-  </script>
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    document.getElementById('form-login').classList.contains('active') ? login() : signup();
+  });
+</script>
 </body>
 </html>

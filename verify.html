@@ -1,273 +1,198 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vérification — MOTSA</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --ink: #0f0f0f; --ink-2: #4a4a4a; --ink-3: #888; --ink-4: #bbb;
-      --line: #e6e6e4; --bg: #f7f6f3; --white: #fff;
-      --green: #1a7a4a; --green-bg: #eef8f2; --green-border: rgba(26,122,74,0.18);
-      --red: #991b1b; --red-bg: #fff3f3; --red-border: #fecaca;
-    }
+    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18)}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+    nav{background:var(--w);border-bottom:1px solid var(--line);padding:0 6%;height:58px;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:15px;letter-spacing:.04em}
+    .lm{width:22px;height:22px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center}
+    .lm svg{width:12px;height:12px}
+    main{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 6%}
+    .card{background:var(--w);border:1px solid var(--line);border-radius:18px;padding:48px 44px;width:100%;max-width:580px;box-shadow:0 4px 40px rgba(0,0,0,.06)}
 
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: var(--bg); color: var(--ink);
-      font-family: 'Geist', sans-serif; font-size: 15px; line-height: 1.6;
-      -webkit-font-smoothing: antialiased; min-height: 100vh;
-      display: flex; flex-direction: column;
-    }
+    /* STATES */
+    .state{display:none}
+    .state.on{display:block}
 
-    header {
-      background: var(--white); border-bottom: 1px solid var(--line);
-      padding: 0 6%; height: 58px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
+    /* LOADING */
+    .spinner{width:36px;height:36px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--ink);animation:spin .7s linear infinite;margin:0 auto 20px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .s-load{text-align:center;padding:20px 0}
+    .s-load p{color:var(--ink3);font-size:14px}
 
-    .logo {
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none; color: var(--ink);
-      font-weight: 500; font-size: 15px; letter-spacing: 0.04em;
-    }
+    /* VERIFIED / ERROR */
+    .vicon{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:26px}
+    .vicon.ok{background:var(--gbg);border:1px solid var(--gbr);color:var(--g)}
+    .vicon.err{background:#fff3f3;border:1px solid #fecaca;color:#991b1b}
+    .s-ok,.s-err{text-align:center}
+    .s-ok h1,.s-err h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:28px;margin-bottom:8px}
+    .s-ok>p,.s-err>p{color:var(--ink2);font-size:15px;font-weight:300;margin-bottom:32px}
 
-    .logo-mark {
-      width: 22px; height: 22px; border-radius: 6px; background: var(--ink);
-      display: flex; align-items: center; justify-content: center;
-    }
+    .rows{background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-align:left}
+    .row{display:flex;justify-content:space-between;align-items:flex-start;padding:13px 18px;border-bottom:1px solid var(--line);gap:16px}
+    .row:last-child{border:none}
+    .rk{font-size:13px;color:var(--ink3);white-space:nowrap}
+    .rv{font-size:13px;color:var(--ink);font-weight:500;text-align:right;word-break:break-word}
 
-    .logo-mark svg { width: 12px; height: 12px; }
+    .hash-box{margin-top:18px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:14px 16px;text-align:left}
+    .hl{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--ink3);margin-bottom:6px}
+    .hv{font-family:'Geist Mono',monospace;font-size:12px;color:var(--ink2);word-break:break-all;line-height:1.7}
 
-    main {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      padding: 48px 6%;
-    }
+    /* UPLOAD CHECK */
+    .check-zone{margin-top:28px;border:1.5px dashed var(--line);border-radius:10px;padding:28px;text-align:center;cursor:pointer;transition:all .15s}
+    .check-zone:hover{border-color:#bbb;background:var(--bg)}
+    .check-zone p{font-size:14px;color:var(--ink2)}
+    .check-zone p strong{color:var(--ink);font-weight:500}
+    .check-zone p.hint{font-size:12px;color:var(--ink3);margin-top:5px}
+    input[type=file]{display:none}
+    .check-result{display:none;margin-top:16px;padding:14px 18px;border-radius:9px;font-size:14px;text-align:left}
+    .check-result.match{background:var(--gbg);border:1px solid var(--gbr);color:var(--g)}
+    .check-result.nomatch{background:#fff3f3;border:1px solid #fecaca;color:#991b1b}
 
-    .verify-card {
-      background: var(--white); border: 1px solid var(--line);
-      border-radius: 18px; padding: 48px 44px;
-      width: 100%; max-width: 560px;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.06);
-    }
+    .vfoot{margin-top:28px;text-align:center;font-size:13px;color:var(--ink4)}
+    .vfoot a{color:var(--ink3);text-decoration:none}
+    .vfoot a:hover{color:var(--ink2)}
 
-    /* Loading */
-    .state { display: none; }
-    .state.active { display: block; }
-
-    .spinner {
-      width: 40px; height: 40px; border-radius: 50%;
-      border: 2px solid var(--line); border-top-color: var(--ink);
-      animation: spin 0.7s linear infinite; margin: 0 auto 20px;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .state-loading { text-align: center; padding: 20px 0; }
-    .state-loading p { color: var(--ink-3); font-size: 14px; }
-
-    /* Verified */
-    .verify-icon {
-      width: 60px; height: 60px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 24px; font-size: 26px;
-    }
-
-    .verify-icon.ok { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
-    .verify-icon.fail { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
-    .verify-icon.warn { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; }
-
-    .state-verified { text-align: center; }
-    .state-verified h1 {
-      font-family: 'Instrument Serif', serif; font-weight: 400;
-      font-size: 28px; margin-bottom: 8px;
-    }
-
-    .state-verified > p { color: var(--ink-2); font-size: 15px; font-weight: 300; margin-bottom: 32px; }
-
-    .detail-rows {
-      background: var(--bg); border: 1px solid var(--line);
-      border-radius: 10px; overflow: hidden; text-align: left;
-    }
-
-    .d-row {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      padding: 13px 18px; border-bottom: 1px solid var(--line); gap: 16px;
-    }
-
-    .d-row:last-child { border: none; }
-    .d-key { font-size: 13px; color: var(--ink-3); white-space: nowrap; }
-    .d-val { font-size: 13px; color: var(--ink); font-weight: 500; text-align: right; word-break: break-word; }
-
-    .hash-display {
-      margin-top: 18px; background: var(--bg);
-      border: 1px solid var(--line); border-radius: 9px; padding: 14px 16px;
-      text-align: left;
-    }
-
-    .hash-label {
-      font-family: 'Geist Mono', monospace; font-size: 10px;
-      letter-spacing: 0.1em; color: var(--ink-3); margin-bottom: 6px;
-    }
-
-    .hash-value {
-      font-family: 'Geist Mono', monospace; font-size: 12px;
-      color: var(--ink-2); word-break: break-all; line-height: 1.7;
-    }
-
-    .verify-footer {
-      margin-top: 28px; text-align: center;
-      font-size: 13px; color: var(--ink-4);
-    }
-
-    .verify-footer a { color: var(--ink-3); text-decoration: none; }
-    .verify-footer a:hover { color: var(--ink-2); }
-
-    /* Error state */
-    .state-error { text-align: center; }
-    .state-error h1 {
-      font-family: 'Instrument Serif', serif; font-weight: 400;
-      font-size: 24px; margin-bottom: 8px;
-    }
-    .state-error p { color: var(--ink-2); font-size: 15px; font-weight: 300; }
-
-    footer {
-      border-top: 1px solid var(--line); padding: 20px 6%;
-      background: var(--white); text-align: center;
-    }
-
-    footer p { font-size: 13px; color: var(--ink-4); }
-    footer a { color: var(--ink-3); text-decoration: none; }
+    footer{border-top:1px solid var(--line);padding:20px 6%;background:var(--w);text-align:center}
+    footer p{font-size:13px;color:var(--ink4)}
+    footer a{color:var(--ink3);text-decoration:none}
   </style>
 </head>
 <body>
 
-  <header>
-    <a class="logo" href="/">
-      <div class="logo-mark">
-        <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-      </div>
-      MOTSA
-    </a>
-    <span style="font-size:13px; color:var(--ink-3);">Vérification de document</span>
-  </header>
+<nav>
+  <a class="logo" href="/">
+    <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    MOTSA
+  </a>
+  <span style="font-size:13px;color:var(--ink3)">Vérification de document</span>
+</nav>
 
-  <main>
-    <div class="verify-card">
+<main>
+  <div class="card">
 
-      <!-- Loading -->
-      <div class="state active" id="stateLoading">
-        <div class="state-loading">
-          <div class="spinner"></div>
-          <p>Vérification du certificat...</p>
-        </div>
-      </div>
-
-      <!-- Verified OK -->
-      <div class="state" id="stateOk">
-        <div class="state-verified">
-          <div class="verify-icon ok">✓</div>
-          <h1>Document authentique</h1>
-          <p>Ce document a été capturé et scellé par MOTSA.<br>Son intégrité est garantie depuis la date de certification.</p>
-          <div class="detail-rows" id="detailRows"></div>
-          <div class="hash-display">
-            <div class="hash-label">SHA-256</div>
-            <div class="hash-value" id="hashDisplay">—</div>
-          </div>
-          <div class="verify-footer">
-            Certifié via <a href="https://motsa.tech">motsa.tech</a> · 
-            <a href="/" >Certifier un document</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Error -->
-      <div class="state" id="stateError">
-        <div class="state-error">
-          <div class="verify-icon fail" style="margin:0 auto 24px;">✕</div>
-          <h1>Certificat introuvable</h1>
-          <p id="errorMsg">Ce lien de vérification n'existe pas ou a expiré.</p>
-          <div class="verify-footer" style="margin-top:28px;">
-            <a href="/">Retour à motsa.tech</a>
-          </div>
-        </div>
-      </div>
-
+    <div class="state on" id="sLoad">
+      <div class="s-load"><div class="spinner"></div><p>Vérification du certificat...</p></div>
     </div>
-  </main>
 
-  <footer>
-    <p>© 2026 <a href="/">MOTSA</a> — Document provenance & integrity platform</p>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = "https://cggtyaklofxywlmaatam.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym";
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    function show(id) {
-      ['stateLoading','stateOk','stateError'].forEach(s => {
-        document.getElementById(s).classList.toggle('active', s === id);
-      });
-    }
-
-    function esc(str) {
-      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    async function verify() {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('token');
-
-      if (!token) {
-        document.getElementById('errorMsg').textContent = "Aucun token de vérification fourni dans l'URL.";
-        show('stateError'); return;
-      }
-
-      // Requête publique — RLS certificates: select for all
-      const { data, error } = await sb
-        .from('certificates')
-        .select('*, documents(file_name, sha256, source_url, created_at)')
-        .eq('verification_token', token)
-        .single();
-
-      if (error || !data) {
-        show('stateError'); return;
-      }
-
-      const doc = data.documents;
-      const certDate = new Date(data.created_at);
-      const docDate = doc?.created_at ? new Date(doc.created_at) : null;
-
-      const source = (() => {
-        try { return new URL(doc?.source_url || '').hostname; } catch { return doc?.source_url || '—'; }
-      })();
-
-      document.getElementById('detailRows').innerHTML = `
-        <div class="d-row">
-          <span class="d-key">Document</span>
-          <span class="d-val">${esc(doc?.file_name || '—')}</span>
+    <div class="state" id="sOk">
+      <div class="s-ok">
+        <div class="vicon ok">✓</div>
+        <h1>Document authentique</h1>
+        <p>Ce document a été capturé et scellé par MOTSA.<br>Son origine est certifiée depuis la date ci-dessous.</p>
+        <div class="rows" id="drows"></div>
+        <div class="hash-box">
+          <div class="hl">SHA-256 (PDF certifié complet)</div>
+          <div class="hv" id="dHash">—</div>
         </div>
-        <div class="d-row">
-          <span class="d-key">Source</span>
-          <span class="d-val">${esc(source)}</span>
-        </div>
-        <div class="d-row">
-          <span class="d-key">Date de certification</span>
-          <span class="d-val">${certDate.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })}</span>
-        </div>
-        <div class="d-row">
-          <span class="d-key">Plateforme</span>
-          <span class="d-val">MOTSA · motsa.tech</span>
-        </div>`;
 
-      document.getElementById('hashDisplay').textContent = doc?.sha256 || '—';
-      show('stateOk');
-    }
+        <!-- Vérification du fichier -->
+        <div style="margin-top:28px;text-align:left">
+          <p style="font-size:14px;font-weight:500;margin-bottom:8px">Vérifier l'intégrité du fichier</p>
+          <p style="font-size:13px;color:var(--ink3);margin-bottom:14px;font-weight:300">Déposez le PDF certifié pour confirmer que son hash correspond à l'enregistrement MOTSA.</p>
+          <label for="fileCheck">
+            <div class="check-zone" id="dropZone">
+              <p><strong>Déposer le PDF certifié ici</strong></p>
+              <p class="hint">ou cliquer pour sélectionner</p>
+            </div>
+          </label>
+          <input type="file" id="fileCheck" accept="application/pdf" onchange="checkFile(this)"/>
+          <div class="check-result" id="checkResult"></div>
+        </div>
 
-    verify();
-  </script>
+        <div class="vfoot"><a href="/">Retour à motsa.tech</a> · <a href="/">Certifier un document</a></div>
+      </div>
+    </div>
+
+    <div class="state" id="sErr">
+      <div class="s-err">
+        <div class="vicon err">✕</div>
+        <h1>Certificat introuvable</h1>
+        <p id="errMsg">Ce lien de vérification n'existe pas ou a expiré.</p>
+        <div class="vfoot"><a href="/">Retour à motsa.tech</a></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer><p>© 2026 <a href="/">MOTSA</a> — Document provenance & integrity platform</p></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb = supabase.createClient(
+  'https://cggtyaklofxywlmaatam.supabase.co',
+  'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym'
+);
+
+let storedHash = null;
+
+function show(id) {
+  ['sLoad','sOk','sErr'].forEach(s => document.getElementById(s).classList.toggle('on', s===id));
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+async function verify() {
+  const token = new URLSearchParams(location.search).get('token');
+  if (!token) { document.getElementById('errMsg').textContent="Aucun token fourni dans l'URL."; show('sErr'); return; }
+
+  const {data, error} = await sb
+    .from('certificates')
+    .select('*, documents(file_name, sha256, source_url, created_at)')
+    .eq('verification_token', token)
+    .single();
+
+  if (error||!data) { show('sErr'); return; }
+
+  const doc  = data.documents;
+  storedHash = doc?.sha256 || null;
+
+  let src = '—';
+  try { src = new URL(doc?.source_url||'').hostname; } catch {}
+
+  const certDate = new Date(data.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+
+  document.getElementById('drows').innerHTML = `
+    <div class="row"><span class="rk">Document</span><span class="rv">${esc(doc?.file_name||'—')}</span></div>
+    <div class="row"><span class="rk">Source d'origine</span><span class="rv">${esc(src)}</span></div>
+    <div class="row"><span class="rk">Date de certification</span><span class="rv">${certDate}</span></div>
+    <div class="row"><span class="rk">Certifié par</span><span class="rv">MOTSA · motsa.tech</span></div>`;
+
+  document.getElementById('dHash').textContent = doc?.sha256 || '—';
+  show('sOk');
+}
+
+// ── VÉRIFICATION HASH FICHIER ──────────────────────────────────────────────
+async function checkFile(input) {
+  if (!input.files.length) return;
+  const file = input.files[0];
+  document.getElementById('dropZone').querySelector('p').innerHTML = `<strong>${file.name}</strong>`;
+
+  const buf   = await file.arrayBuffer();
+  const hash  = await crypto.subtle.digest('SHA-256', buf);
+  const hex   = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+
+  const res = document.getElementById('checkResult');
+  res.style.display = 'block';
+
+  if (hex === storedHash) {
+    res.className = 'check-result match';
+    res.innerHTML = `<strong>✓ Hash identique</strong><br>Le fichier n'a pas été modifié depuis sa certification MOTSA.<br><span style="font-family:'Geist Mono',monospace;font-size:11px;opacity:.7">${hex}</span>`;
+  } else {
+    res.className = 'check-result nomatch';
+    res.innerHTML = `<strong>✕ Hash différent</strong><br>Ce fichier ne correspond pas au document certifié par MOTSA.<br>
+      <span style="font-family:'Geist Mono',monospace;font-size:11px;opacity:.7">Attendu&nbsp;: ${storedHash}<br>Obtenu&nbsp;&nbsp;: ${hex}</span>`;
+  }
+}
+
+verify();
+</script>
 </body>
 </html>
