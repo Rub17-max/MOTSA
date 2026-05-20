@@ -66,6 +66,28 @@ def sha256_path(path: Path) -> str:
     return h.hexdigest()
 
 
+
+def format_birth_date(value: str) -> str:
+    """Convertit YYYY-MM-DD en JJ/MM/AAAA quand possible."""
+    if not value:
+        return "—"
+    try:
+        return datetime.strptime(str(value)[:10], "%Y-%m-%d").strftime("%d/%m/%Y")
+    except Exception:
+        return str(value)
+
+
+def get_profile_for_user(user_id: str) -> dict:
+    """Récupère le profil Supabase si le dashboard ne l'a pas transmis."""
+    if not user_id:
+        return {}
+    try:
+        res = sb.table("profiles").select("first_name,last_name,birth_date,full_name").eq("id", user_id).single().execute()
+        return res.data or {}
+    except Exception:
+        return {}
+
+
 # ── CHROME DOWNLOADS ──────────────────────────────────────────────────────────
 
 @app.route("/health")
@@ -134,6 +156,18 @@ def certify():
     source_url = body.get("source_url", "")
     user_id    = body.get("user_id", "")
 
+    profile = body.get("profile") or {}
+    if not profile and user_id:
+        profile = get_profile_for_user(user_id)
+
+    first_name = str(profile.get("first_name", "") or "").strip()
+    last_name  = str(profile.get("last_name", "") or "").strip()
+    full_name  = str(profile.get("full_name", "") or "").strip()
+    birth_date = str(profile.get("birth_date", "") or "").strip()
+
+    if not full_name:
+        full_name = f"{first_name} {last_name}".strip()
+
     if not file_path.exists():
         # Fichier supprimé entre la liste et la certification
         return jsonify({"error": f"Fichier introuvable : {file_path}"}), 400
@@ -155,6 +189,8 @@ def certify():
         "date":       datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "token":      token,
         "verify_url": verify_url,
+        "full_name": full_name,
+        "birth_date": birth_date,
     })
 
     # 4. Injection : original + page certificat → PDF certifié
@@ -233,6 +269,8 @@ def _make_cert_page(out_path: Path, info: dict):
     y = h - 170
     fields = [
         ("File name",        info["name"]),
+        ("Certified user",   info.get("full_name") or "—"),
+        ("Date of birth",    format_birth_date(info.get("birth_date", ""))),
         ("Source URL",       info["source_url"] or "—"),
         ("Capture time",     info["date"]),
         ("Verification URL", info["verify_url"]),

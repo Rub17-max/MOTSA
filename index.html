@@ -159,8 +159,11 @@
       <div class="aform" id="form-signup">
         <h2 class="atitle">Commencez gratuitement.</h2>
         <p class="asub">Aucune carte bancaire requise.</p>
-        <div class="field"><label>Adresse e-mail</label><input type="email" id="sEmail" placeholder="vous@exemple.com"/></div>
-        <div class="field"><label>Mot de passe</label><input type="password" id="sPass" placeholder="8 caractères minimum"/></div>
+        <div class="field"><label>Prénom</label><input type="text" id="sFirstName" placeholder="Ruben" autocomplete="given-name"/></div>
+        <div class="field"><label>Nom</label><input type="text" id="sLastName" placeholder="Brami" autocomplete="family-name"/></div>
+        <div class="field"><label>Date de naissance</label><input type="text" id="sBirthDate" placeholder="JJ/MM/AAAA" inputmode="numeric" autocomplete="bday"/></div>
+        <div class="field"><label>Adresse e-mail</label><input type="email" id="sEmail" placeholder="vous@exemple.com" autocomplete="email"/></div>
+        <div class="field"><label>Mot de passe</label><input type="password" id="sPass" placeholder="8 caractères minimum" autocomplete="new-password"/></div>
         <button class="btn btn-dark btn-full" id="sBtn" onclick="signup()">Créer mon compte</button>
         <div class="amsg" id="sMsg"></div>
         <p class="afoot" style="margin-top:12px;font-size:12px;color:var(--ink4)">En créant un compte vous acceptez nos <a href="#">CGU</a>.</p>
@@ -245,16 +248,83 @@
     if (error) msg('lMsg','Identifiants incorrects.','error');
   }
 
+  function parseBirthDate(raw) {
+    const m = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!m) return null;
+
+    const dd = Number(m[1]);
+    const mm = Number(m[2]);
+    const yyyy = Number(m[3]);
+    const d = new Date(yyyy, mm - 1, dd);
+
+    if (
+      d.getFullYear() !== yyyy ||
+      d.getMonth() !== mm - 1 ||
+      d.getDate() !== dd
+    ) return null;
+
+    return `${yyyy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  }
+
   async function signup() {
-    const email = document.getElementById('sEmail').value.trim();
-    const pass  = document.getElementById('sPass').value;
-    if (!email||!pass) { msg('sMsg','Veuillez remplir tous les champs.','error'); return; }
-    if (pass.length < 8) { msg('sMsg','8 caractères minimum.','error'); return; }
+    const firstName = document.getElementById('sFirstName').value.trim();
+    const lastName  = document.getElementById('sLastName').value.trim();
+    const birthRaw  = document.getElementById('sBirthDate').value.trim();
+    const email     = document.getElementById('sEmail').value.trim();
+    const pass      = document.getElementById('sPass').value;
+
+    if (!firstName || !lastName || !birthRaw || !email || !pass) {
+      msg('sMsg','Veuillez remplir tous les champs.','error');
+      return;
+    }
+
+    const birthDate = parseBirthDate(birthRaw);
+    if (!birthDate) {
+      msg('sMsg','Date de naissance invalide. Format attendu : JJ/MM/AAAA.','error');
+      return;
+    }
+
+    if (pass.length < 8) {
+      msg('sMsg','8 caractères minimum.','error');
+      return;
+    }
+
     setLoad('sBtn', true, ['Création...','Créer mon compte']);
-    const {data, error} = await sb.auth.signUp({email, password:pass});
+
+    const {data, error} = await sb.auth.signUp({
+      email,
+      password: pass,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          birth_date: birthDate
+        }
+      }
+    });
+
+    if (error) {
+      setLoad('sBtn', false, ['Création...','Créer mon compte']);
+      msg('sMsg','Erreur : ' + error.message,'error');
+      return;
+    }
+
+    if (data?.user) {
+      const {error: profileError} = await sb.from('profiles').upsert({
+        id: data.user.id,
+        first_name: firstName,
+        last_name: lastName,
+        birth_date: birthDate
+      }, { onConflict: 'id' });
+
+      if (profileError) {
+        setLoad('sBtn', false, ['Création...','Créer mon compte']);
+        msg('sMsg','Compte créé, mais erreur profil : ' + profileError.message,'error');
+        return;
+      }
+    }
+
     setLoad('sBtn', false, ['Création...','Créer mon compte']);
-    if (error) { msg('sMsg','Erreur : '+error.message,'error'); return; }
-    if (data?.user) await sb.from('users').upsert({id:data.user.id, email:data.user.email});
     msg('sMsg','Compte créé ! Vérifiez votre boîte mail.','success');
   }
 

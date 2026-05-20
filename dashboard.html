@@ -267,6 +267,7 @@ const sb = supabase.createClient(SB_URL, SB_ANON);
 let user = null;
 let sel  = new Set();
 let chromeFiles = [];
+let userProfile = null;
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function init() {
@@ -277,9 +278,35 @@ async function init() {
   document.getElementById('uemail').textContent = user.email;
   document.getElementById('uav').textContent    = user.email[0].toUpperCase();
 
+  await loadProfile();
+
   checkApi();
   await loadDocs();
   await loadChrome();
+}
+
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+async function loadProfile() {
+  const {data, error} = await sb
+    .from('profiles')
+    .select('first_name,last_name,birth_date,full_name')
+    .eq('id', user.id)
+    .single();
+
+  if (error) {
+    console.warn('Profil utilisateur introuvable ou inaccessible', error);
+    userProfile = null;
+    return;
+  }
+
+  userProfile = data;
+
+  const displayName = [data.first_name, data.last_name].filter(Boolean).join(' ').trim();
+  if (displayName) {
+    document.getElementById('uemail').textContent = displayName;
+    document.getElementById('uav').textContent = (data.first_name?.[0] || user.email[0]).toUpperCase();
+  }
 }
 
 // ── API STATUS ────────────────────────────────────────────────────────────────
@@ -468,6 +495,9 @@ async function runCertify(progId, fillId, labelId, btnId) {
     document.getElementById(labelId).textContent = `Certification de ${f.name}...`;
 
     try {
+      if (!userProfile) await loadProfile();
+      const {data:{session}} = await sb.auth.getSession();
+
       const r = await fetch(API_URL+'/certify', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
