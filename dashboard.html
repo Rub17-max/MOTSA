@@ -11,7 +11,7 @@
     body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex}
 
     /* SIDEBAR */
-    .sb{width:var(--sb);min-height:100vh;background:var(--w);border-right:1px solid var(--line);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+    .sb{width:var(--sb);min-height:100vh;background:var(--w);border-right:1px solid var(--line);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:width .2s ease,box-shadow .2s ease}.sb.collapsed{width:58px;overflow:hidden}.sb.collapsed .nav,.sb.collapsed .sb-bot,.sb.collapsed .logo-text{display:none}.sb.collapsed .sb-top{justify-content:center;padding:18px 0}.main{transition:margin-left .2s ease}
     .sb-top{padding:20px;border-bottom:1px solid var(--line)}
     .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:15px;letter-spacing:.04em}
     .lm{width:22px;height:22px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -125,17 +125,17 @@
     .api-dot{width:6px;height:6px;border-radius:50%;background:var(--ink4)}
     .api-dot.on{background:var(--g);box-shadow:0 0 6px var(--g)}
 
-    @media(max-width:900px){.sb{display:none}.main{margin-left:0}.stats{grid-template-columns:1fr 1fr}.content{padding:20px}}
+    @media(max-width:900px){.sb{display:none!important}.main{margin-left:0!important}.stats{grid-template-columns:1fr 1fr}.content{padding:20px}}
   </style>
 </head>
 <body>
 
 <aside class="sb">
-  <div class="sb-top">
-    <a class="logo" href="/">
-      <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-      MOTSA
-    </a>
+  <div class="sb-top" style="display:flex;align-items:center;gap:8px">
+    <div class="lm" id="sidebarToggle" onclick="toggleSidebar()" style="cursor:pointer;flex-shrink:0" title="Masquer le menu">
+      <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <a class="logo logo-text" href="/" style="gap:0">MOTSA</a>
   </div>
   <div class="nav">
     <div class="nhead">Espace</div>
@@ -534,6 +534,15 @@ async function runCertify(progId, fillId, labelId, btnId) {
     await loadChrome();
   }, 700);
 }
+// ── SIDEBAR TOGGLE ───────────────────────────────────────────────────────────
+function toggleSidebar() {
+  const sb = document.querySelector('.sb');
+  const main = document.querySelector('.main');
+  const collapsed = sb.classList.toggle('collapsed');
+  main.style.marginLeft = collapsed ? '58px' : 'var(--sb)';
+  document.getElementById('sidebarToggle').title = collapsed ? 'Afficher le menu' : 'Masquer le menu';
+}
+
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function toast(msg, type='') {
   const el = document.getElementById('toast');
