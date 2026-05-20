@@ -106,11 +106,10 @@ function renderResult(data) {
   if (ok) {
     result.innerHTML = `
       <div class="result ok">
-        <div class="rhead"><div class="ricon">✓</div><div><div class="rtitle">Document authentique</div><div class="rmsg">${esc(data.message || 'Le hash correspond à un document certifié MOTSA.')}</div></div></div>
+        <div class="rhead"><div class="ricon">✓</div><div><div class="rtitle">Document authentique</div><div class="rmsg">${esc(data.message || `Ce document n’a pas été modifié depuis son téléchargement depuis ${sourceHost(doc.source_url)}.`)}</div></div></div>
         <div class="rows">
           <div class="row"><span class="rk">Document</span><span class="rv">${esc(doc.file_name || '—')}</span></div>
           <div class="row"><span class="rk">Titulaire</span><span class="rv">${esc(profile.full_name || '—')}</span></div>
-          <div class="row"><span class="rk">Date de naissance</span><span class="rv">${esc(profile.birth_date || '—')}</span></div>
           <div class="row"><span class="rk">Source d’origine</span><span class="rv">${esc(sourceHost(doc.source_url))}</span></div>
           <div class="row"><span class="rk">Date de certification</span><span class="rv">${esc(fmtDate(cert.created_at || doc.created_at))}</span></div>
           <div class="row"><span class="rk">Statut</span><span class="rv">Certifié par MOTSA</span></div>
@@ -123,7 +122,7 @@ function renderResult(data) {
 
   result.innerHTML = `
     <div class="result err">
-      <div class="rhead"><div class="ricon">✕</div><div><div class="rtitle">Document probablement modifié</div><div class="rmsg">${esc(data.message || "Le hash du fichier ne correspond à aucun document certifié MOTSA.")}</div></div></div>
+      <div class="rhead"><div class="ricon">✕</div><div><div class="rtitle">Document probablement modifié</div><div class="rmsg">${esc(data.message || "Le hash du fichier ne correspond pas au certificat MOTSA. Le document a peut-être été modifié après sa certification.")}</div></div></div>
       <div class="hash"><strong>Hash du fichier uploadé</strong><br>${esc(data.uploaded_hash || '—')}${data.expected_hash ? `<br><br><strong>Hash attendu</strong><br>${esc(data.expected_hash)}` : ''}</div>
     </div>`;
 }

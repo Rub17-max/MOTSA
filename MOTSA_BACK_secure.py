@@ -78,6 +78,17 @@ def format_birth_date(value: str) -> str:
         return str(value)
 
 
+def source_host(value: str) -> str:
+    """Extrait le domaine d'une URL pour le certificat et les messages publics."""
+    if not value:
+        return "la source d’origine"
+    try:
+        from urllib.parse import urlparse
+        return urlparse(value).hostname or value
+    except Exception:
+        return str(value)
+
+
 def get_profile_for_user(user_id: str) -> dict:
     """Récupère le profil Supabase si le dashboard ne l'a pas transmis."""
     if not user_id:
@@ -292,10 +303,11 @@ def verify_upload():
             profile = get_profile_for_user(doc.get("user_id"))
             expected_hash = doc.get("sha256") or ""
             match = uploaded_hash == expected_hash
+            host = source_host(doc.get("source_url"))
             return jsonify({
                 "ok": match,
                 "status": "match" if match else "mismatch",
-                "message": "Document authentique : le hash correspond." if match else "Document probablement modifié : le hash ne correspond pas au certificat.",
+                "message": f"Document authentique : il n’a pas été modifié depuis son téléchargement depuis {host}." if match else "Document probablement modifié : le hash ne correspond pas au certificat MOTSA.",
                 "uploaded_hash": uploaded_hash,
                 "expected_hash": expected_hash,
                 "document": {
@@ -313,7 +325,6 @@ def verify_upload():
                     "full_name": profile.get("full_name") or f"{profile.get('first_name','')} {profile.get('last_name','')}".strip(),
                     "first_name": profile.get("first_name"),
                     "last_name": profile.get("last_name"),
-                    "birth_date": format_birth_date(profile.get("birth_date", "")),
                 }
             })
 
@@ -337,7 +348,7 @@ def verify_upload():
         return jsonify({
             "ok": True,
             "status": "match",
-            "message": "Document authentique : le hash correspond à un document certifié MOTSA.",
+            "message": f"Document authentique : il n’a pas été modifié depuis son téléchargement depuis {source_host(doc.get('source_url'))}.",
             "uploaded_hash": uploaded_hash,
             "expected_hash": doc.get("sha256"),
             "document": {
@@ -355,7 +366,6 @@ def verify_upload():
                 "full_name": profile.get("full_name") or f"{profile.get('first_name','')} {profile.get('last_name','')}".strip(),
                 "first_name": profile.get("first_name"),
                 "last_name": profile.get("last_name"),
-                "birth_date": format_birth_date(profile.get("birth_date", "")),
             }
         })
 
@@ -385,8 +395,9 @@ def _make_cert_page(out_path: Path, info: dict):
     # Intro
     c.setFillColorRGB(.06, .06, .06)
     c.setFont("Helvetica", 11)
+    host = source_host(info.get("source_url"))
     c.drawString(40, h - 105, "This certificate was generated at the moment of document capture.")
-    c.drawString(40, h - 122, "It proves the origin and seals the integrity of the certified PDF.")
+    c.drawString(40, h - 122, f"Integrity statement: this PDF has not been modified since its download from {host}.")
 
     # Séparateur
     c.setStrokeColorRGB(.88, .88, .87)
@@ -396,12 +407,12 @@ def _make_cert_page(out_path: Path, info: dict):
     y = h - 170
     fields = [
         ("File name",        info["name"]),
-        ("Certified user",   info.get("full_name") or "—"),
-        ("Date of birth",    format_birth_date(info.get("birth_date", ""))),
+        ("Certified holder", info.get("full_name") or "—"),
         ("Source URL",       info["source_url"] or "—"),
         ("Capture time",     info["date"]),
         ("Verification URL", info["verify_url"]),
         ("Token",            info["token"]),
+        ("Integrity", f"Not modified since download from {host}."),
         ("Note", "SHA-256 computed on the complete certified PDF (original + this page)."),
     ]
 
