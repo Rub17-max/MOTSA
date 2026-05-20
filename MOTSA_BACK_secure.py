@@ -168,6 +168,18 @@ def certify():
     source_url = body.get("source_url", "")
     user_id    = body.get("user_id", "")
 
+    # ── Auth : valider le token Supabase ──────────────────────────────────────
+    access_token = body.get("access_token", "")
+    if not access_token:
+        return jsonify({"error": "Token d'authentification manquant."}), 401
+    try:
+        user_res = sb.auth.get_user(access_token)
+        if not user_res.user or user_res.user.id != user_id:
+            return jsonify({"error": "Non autorisé : token invalide ou user_id incohérent."}), 401
+    except Exception as e:
+        return jsonify({"error": f"Échec de vérification du token : {e}"}), 401
+    # ─────────────────────────────────────────────────────────────────────────
+
     profile = body.get("profile") or {}
     if not profile and user_id:
         profile = get_profile_for_user(user_id)
@@ -324,7 +336,7 @@ def verify_upload():
                 "profile": {
                      "full_name": (
                          profile.get("full_name")
-                         or f"{profile.get('first_name','')}{profile.get('last_name','')}".strip() 
+                         or f"{profile.get('first_name','')} {profile.get('last_name','')}".strip() 
                          or "Titulaire inconnu"),
             } })
 
