@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — MOTSA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18)}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+    nav{position:sticky;top:0;z-index:100;height:58px;background:rgba(247,246,243,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%}
+    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:15px;letter-spacing:.04em}
+    .lm{width:22px;height:22px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .lm svg{width:12px;height:12px}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;font-size:13px;font-weight:500;border-radius:7px;cursor:pointer;text-decoration:none;transition:all .12s;border:1px solid var(--line);background:var(--w);color:var(--ink2);font-family:'Geist',sans-serif}
+    .btn:hover{background:var(--bg);color:var(--ink)}
+    main{flex:1;padding:64px 6% 80px;max-width:1100px;margin:0 auto;width:100%}
+    .layout{display:grid;grid-template-columns:1fr 420px;gap:64px;align-items:start}
+    .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--g);text-transform:uppercase;margin-bottom:18px}
+    .kd{width:6px;height:6px;border-radius:50%;background:var(--g)}
+    h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:42px;line-height:1.08;margin-bottom:14px}
+    .lead{color:var(--ink2);font-weight:300;font-size:16px;line-height:1.7;margin-bottom:40px;max-width:480px}
+    .info-blocks{display:flex;flex-direction:column;gap:20px}
+    .info-block{display:flex;gap:14px;align-items:flex-start}
+    .info-icon{width:36px;height:36px;border-radius:9px;background:var(--w);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .info-icon svg{width:16px;height:16px;color:var(--ink3)}
+    .info-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+    .info-val{font-size:13px;color:var(--ink3);font-weight:300}
+    .info-val a{color:var(--ink2);text-decoration:none}
+    .info-val a:hover{color:var(--ink)}
+    .card{background:var(--w);border:1px solid var(--line);border-radius:18px;padding:36px 32px;box-shadow:0 4px 40px rgba(0,0,0,.05)}
+    .field{margin-bottom:20px}
+    label{display:block;font-size:13px;font-weight:500;color:var(--ink2);margin-bottom:7px}
+    input,select,textarea{width:100%;padding:10px 13px;font-size:14px;font-family:'Geist',sans-serif;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;outline:none;transition:border-color .12s,box-shadow .12s;appearance:none}
+    input:focus,select:focus,textarea:focus{border-color:#aaa;box-shadow:0 0 0 3px rgba(0,0,0,.06);background:var(--w)}
+    textarea{resize:vertical;min-height:130px;line-height:1.6}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;cursor:pointer}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .submit{width:100%;padding:12px;font-size:14px;font-weight:500;font-family:'Geist',sans-serif;background:var(--ink);color:var(--w);border:none;border-radius:9px;cursor:pointer;transition:background .12s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .submit:hover{background:#2a2a2a}
+    .submit svg{width:14px;height:14px}
+    .note{font-size:12px;color:var(--ink4);text-align:center;margin-top:14px;line-height:1.5}
+    .note a{color:var(--ink3);text-decoration:none}
+    .note a:hover{color:var(--ink2)}
+    .success{display:none;text-align:center;padding:24px 0}
+    .success-icon{width:52px;height:52px;border-radius:50%;background:var(--gbg);border:1px solid var(--gbr);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px}
+    .success h3{font-size:17px;font-weight:500;margin-bottom:6px}
+    .success p{font-size:14px;color:var(--ink3);font-weight:300}
+    footer{border-top:1px solid var(--line);padding:22px 6%;background:var(--w);display:flex;align-items:center;justify-content:space-between}
+    footer p{font-size:13px;color:var(--ink4)}
+    .flinks{display:flex;gap:16px}
+    .flinks a{font-size:13px;color:var(--ink3);text-decoration:none}
+    .flinks a:hover{color:var(--ink2)}
+    @media(max-width:860px){.layout{grid-template-columns:1fr}.row2{grid-template-columns:1fr}h1{font-size:34px}}
+  </style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="/">
+    <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    MOTSA
+  </a>
+  <a class="btn" href="/">Retour</a>
+</nav>
+
+<main>
+  <div class="layout">
+    <!-- LEFT -->
+    <div>
+      <div class="kicker"><span class="kd"></span>Support & questions</div>
+      <h1>Contactez l'équipe MOTSA</h1>
+      <p class="lead">Une question sur la certification, un problème technique, ou une demande commerciale ? Nous répondons sous 24 h ouvrées.</p>
+
+      <div class="info-blocks">
+        <div class="info-block">
+          <div class="info-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l6 5 6-5M2 4h12v9a1 1 0 01-1 1H3a1 1 0 01-1-1V4z"/></svg>
+          </div>
+          <div>
+            <div class="info-title">Email</div>
+            <div class="info-val"><a href="mailto:hello@motsa.tech">hello@motsa.tech</a></div>
+          </div>
+        </div>
+        <div class="info-block">
+          <div class="info-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2 1.5"/></svg>
+          </div>
+          <div>
+            <div class="info-title">Délai de réponse</div>
+            <div class="info-val">Sous 24 h ouvrées (lun – ven)</div>
+          </div>
+        </div>
+        <div class="info-block">
+          <div class="info-icon">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l5 2v5c0 3-5 6-5 6S3 11 3 8V3l5-2z"/></svg>
+          </div>
+          <div>
+            <div class="info-title">Signalement de sécurité</div>
+            <div class="info-val"><a href="mailto:security@motsa.tech">security@motsa.tech</a><br>Traitement prioritaire sous 4 h</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT : FORM -->
+    <div class="card">
+      <div id="formWrap">
+        <div class="field row2">
+          <div>
+            <label for="fname">Prénom</label>
+            <input type="text" id="fname" placeholder="Jean" autocomplete="given-name"/>
+          </div>
+          <div>
+            <label for="lname">Nom</label>
+            <input type="text" id="lname" placeholder="Dupont" autocomplete="family-name"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Adresse email <span style="color:#c00">*</span></label>
+          <input type="email" id="email" placeholder="jean@exemple.fr" autocomplete="email" required/>
+        </div>
+        <div class="field">
+          <label for="subject">Sujet <span style="color:#c00">*</span></label>
+          <select id="subject" required>
+            <option value="" disabled selected>Choisir un sujet…</option>
+            <option value="support">Problème technique / bug</option>
+            <option value="certif">Question sur la certification</option>
+            <option value="account">Mon compte</option>
+            <option value="billing">Facturation / abonnement</option>
+            <option value="commercial">Demande commerciale / partenariat</option>
+            <option value="legal">Question juridique / RGPD</option>
+            <option value="security">Signalement de sécurité</option>
+            <option value="other">Autre</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="message">Message <span style="color:#c00">*</span></label>
+          <textarea id="message" placeholder="Décrivez votre demande en détail…" required></textarea>
+        </div>
+        <button class="submit" onclick="sendContact()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h10M9 5l3 3-3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Envoyer le message
+        </button>
+        <p class="note">En envoyant ce message vous acceptez notre <a href="privacy.html">politique de confidentialité</a>.</p>
+      </div>
+
+      <div class="success" id="successMsg">
+        <div class="success-icon">✓</div>
+        <h3>Message envoyé</h3>
+        <p>Nous avons bien reçu votre message et vous répondrons sous 24 h ouvrées.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a class="logo" href="/" style="font-size:14px">
+    <div class="lm" style="width:18px;height:18px;border-radius:5px"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    MOTSA
+  </a>
+  <p>© 2026 MOTSA — motsa.tech</p>
+  <div class="flinks">
+    <a href="privacy.html">Confidentialité</a>
+    <a href="cgu.html">CGU</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</footer>
+
+<script>
+function sendContact() {
+  const email   = document.getElementById('email').value.trim();
+  const subject = document.getElementById('subject').value;
+  const message = document.getElementById('message').value.trim();
+
+  if (!email || !subject || !message) {
+    alert('Merci de remplir les champs obligatoires (email, sujet, message).');
+    return;
+  }
+
+  const fname = document.getElementById('fname').value.trim();
+  const lname = document.getElementById('lname').value.trim();
+  const name  = [fname, lname].filter(Boolean).join(' ');
+
+  const subjectLabels = {
+    support:'[Support] Problème technique',commercial:'[Commercial] Demande partenariat',
+    certif:'[Certification] Question',account:'[Compte] Mon compte',
+    billing:'[Facturation] Abonnement',legal:'[Juridique] Question RGPD',
+    security:'[Sécurité] Signalement',other:'[Contact] Autre demande'
+  };
+
+  const mailSubject = encodeURIComponent(subjectLabels[subject] || '[Contact] MOTSA');
+  const mailBody    = encodeURIComponent(
+    (name ? `Nom : ${name}\n` : '') +
+    `Email : ${email}\n\n${message}`
+  );
+  const dest = subject === 'security' ? 'security@motsa.tech' : 'hello@motsa.tech';
+
+  window.location.href = `mailto:${dest}?subject=${mailSubject}&body=${mailBody}`;
+
+  // Afficher confirmation après un court délai (le mailto s'est ouvert)
+  setTimeout(() => {
+    document.getElementById('formWrap').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+  }, 800);
+}
+</script>
+</body>
+</html>
