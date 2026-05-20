@@ -19,11 +19,15 @@ import hashlib
 import secrets
 import json
 import io
+import logging
 
 from pathlib import Path
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 import qrcode
 from pypdf import PdfReader, PdfWriter
@@ -34,6 +38,11 @@ from reportlab.lib.utils import ImageReader
 from supabase import create_client
 from dotenv import load_dotenv
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -46,10 +55,36 @@ MOTSA_FOLDER.mkdir(exist_ok=True)
 
 VERIFY_BASE    = "https://motsa.tech/verify"
 
+# Dossiers depuis lesquels la certification est autorisée
+ALLOWED_DIRS = [
+    Path.home() / "Downloads",
+    Path.home() / "Desktop",
+    MOTSA_FOLDER,
+]
+
+# Origines autorisées pour le dashboard
+DASHBOARD_ORIGINS = [
+    "https://motsa.tech",
+    "https://dashboard.motsa.tech",
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
+
 # ── APP ───────────────────────────────────────────────────────────────────────
 
 app = Flask(__name__)
-CORS(app)  # autorise les appels depuis le dashboard Vercel
+app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 Mo max par upload
+
+# CORS fermé par défaut — chaque route déclare ses origines via @cross_origin
+CORS(app, origins=[])
+
+# Rate limiting (stockage en mémoire, suffisant pour usage local)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri="memory://",
+)
 
 sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -83,7 +118,6 @@ def source_host(value: str) -> str:
     if not value:
         return "la source d’origine"
     try:
-        from urllib.parse import urlparse
         return urlparse(value).hostname or value
     except Exception:
         return str(value)
@@ -100,14 +134,25 @@ def get_profile_for_user(user_id: str) -> dict:
         return {}
 
 
+def is_allowed_path(p: Path) -> bool:
+    """Vérifie que le chemin est bien sous un dossier autorisé (anti path-traversal)."""
+    try:
+        resolved = p.resolve()
+        return any(resolved.is_relative_to(d.resolve()) for d in ALLOWED_DIRS)
+    except Exception:
+        return False
+
+
 # ── CHROME DOWNLOADS ──────────────────────────────────────────────────────────
 
 @app.route("/health")
+@cross_origin(origins=DASHBOARD_ORIGINS)
 def health():
     return jsonify({"status": "ok", "agent": "MOTSA API v1"})
 
 
 @app.route("/chrome-downloads")
+@cross_origin(origins=DASHBOARD_ORIGINS)
 def chrome_downloads():
     if not CHROME_HISTORY.exists():
         return jsonify([])
@@ -124,8 +169,12 @@ def chrome_downloads():
         """)
         rows = cursor.fetchall()
         conn.close()
+    except sqlite3.OperationalError:
+        app.logger.warning("Chrome History verrouillé — Chrome est peut-être ouvert.")
+        return jsonify({"error": "Impossible de lire l'historique Chrome. Fermez Chrome et réessayez."}), 503
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error("chrome_downloads error: %s", e, exc_info=True)
+        return jsonify({"error": "Erreur interne lors de la lecture de l'historique."}), 500
 
     result = []
     for dl_id, target, tab_url, referrer, start_time in rows:
@@ -161,12 +210,18 @@ def chrome_downloads():
 # ── CERTIFY ───────────────────────────────────────────────────────────────────
 
 @app.route("/certify", methods=["POST"])
+@cross_origin(origins=DASHBOARD_ORIGINS)
 def certify():
     body       = request.get_json()
     file_path  = Path(body.get("path", ""))
     file_name  = body.get("file_name", "")
     source_url = body.get("source_url", "")
     user_id    = body.get("user_id", "")
+
+    # ── Validation du chemin (anti path-traversal) ────────────────────────────
+    if not is_allowed_path(file_path):
+        app.logger.warning("Tentative d'accès à un chemin non autorisé : %s", file_path)
+        return jsonify({"error": "Chemin non autorisé."}), 403
 
     # ── Auth : valider le token Supabase ──────────────────────────────────────
     access_token = body.get("access_token", "")
@@ -268,6 +323,8 @@ def certify():
 # ── PUBLIC VERIFY UPLOAD ──────────────────────────────────────────────────────
 
 @app.route("/verify-upload", methods=["POST"])
+@cross_origin(origins="*")  # public intentionnel — vérification ouverte
+@limiter.limit("30 per minute")
 def verify_upload():
     """
     Vérification publique : l'utilisateur dépose un PDF certifié.
@@ -281,6 +338,9 @@ def verify_upload():
 
     if not uploaded:
         return jsonify({"ok": False, "status": "missing_file", "message": "Aucun fichier reçu."}), 400
+
+    if uploaded.mimetype != "application/pdf":
+        return jsonify({"ok": False, "status": "invalid_type", "message": "Seuls les fichiers PDF sont acceptés."}), 400
 
     # Calcul hash directement en mémoire, sans stocker le document uploadé
     h = hashlib.sha256()
@@ -382,11 +442,12 @@ def verify_upload():
         })
 
     except Exception as e:
+        app.logger.error("verify_upload error: %s", e, exc_info=True)
         return jsonify({
             "ok": False,
             "status": "server_error",
             "uploaded_hash": uploaded_hash,
-            "message": str(e)
+            "message": "Une erreur interne est survenue. Réessayez."
         }), 500
 
 # ── PAGE CERTIFICAT ───────────────────────────────────────────────────────────
