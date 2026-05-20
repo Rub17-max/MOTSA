@@ -6,6 +6,7 @@ Rôles :
   GET  /health              → status check depuis le dashboard
   GET  /chrome-downloads    → liste les PDF récents depuis l'historique Chrome
   POST /certify             → génère le PDF certifié, calcule le hash, uploade sur Supabase
+  POST /verify-upload       → compare le hash du PDF uploadé avec Supabase
 
 Démarrer :
   python3.12 api.py
@@ -239,6 +240,132 @@ def certify():
         "file_url":   file_url,
     })
 
+
+
+# ── PUBLIC VERIFY UPLOAD ──────────────────────────────────────────────────────
+
+@app.route("/verify-upload", methods=["POST"])
+def verify_upload():
+    """
+    Vérification publique : l'utilisateur dépose un PDF certifié.
+    Le backend calcule le SHA-256 du fichier uploadé et le compare à Supabase.
+
+    - Si un token est fourni dans l'URL QR, on compare d'abord avec le document lié à ce certificat.
+    - Sans token, on cherche simplement si ce hash existe dans la base documents.
+    """
+    uploaded = request.files.get("file")
+    token = (request.form.get("token") or "").strip()
+
+    if not uploaded:
+        return jsonify({"ok": False, "status": "missing_file", "message": "Aucun fichier reçu."}), 400
+
+    # Calcul hash directement en mémoire, sans stocker le document uploadé
+    h = hashlib.sha256()
+    uploaded.stream.seek(0)
+    for chunk in iter(lambda: uploaded.stream.read(8192), b""):
+        h.update(chunk)
+    uploaded_hash = h.hexdigest()
+
+    try:
+        # Cas QR : on vérifie le certificat précis lié au token
+        if token:
+            cert_res = sb.table("certificates").select("document_id,verification_token,certificate_url,created_at").eq("verification_token", token).single().execute()
+            cert = cert_res.data
+            if not cert:
+                return jsonify({
+                    "ok": False,
+                    "status": "unknown_certificate",
+                    "uploaded_hash": uploaded_hash,
+                    "message": "Certificat introuvable."
+                }), 404
+
+            doc_res = sb.table("documents").select("id,user_id,file_name,file_url,sha256,source_url,created_at").eq("id", cert["document_id"]).single().execute()
+            doc = doc_res.data
+            if not doc:
+                return jsonify({
+                    "ok": False,
+                    "status": "unknown_document",
+                    "uploaded_hash": uploaded_hash,
+                    "message": "Document lié au certificat introuvable."
+                }), 404
+
+            profile = get_profile_for_user(doc.get("user_id"))
+            expected_hash = doc.get("sha256") or ""
+            match = uploaded_hash == expected_hash
+            return jsonify({
+                "ok": match,
+                "status": "match" if match else "mismatch",
+                "message": "Document authentique : le hash correspond." if match else "Document probablement modifié : le hash ne correspond pas au certificat.",
+                "uploaded_hash": uploaded_hash,
+                "expected_hash": expected_hash,
+                "document": {
+                    "file_name": doc.get("file_name"),
+                    "file_url": doc.get("file_url"),
+                    "source_url": doc.get("source_url"),
+                    "created_at": doc.get("created_at"),
+                },
+                "certificate": {
+                    "verification_token": cert.get("verification_token"),
+                    "certificate_url": cert.get("certificate_url"),
+                    "created_at": cert.get("created_at"),
+                },
+                "profile": {
+                    "full_name": profile.get("full_name") or f"{profile.get('first_name','')} {profile.get('last_name','')}".strip(),
+                    "first_name": profile.get("first_name"),
+                    "last_name": profile.get("last_name"),
+                    "birth_date": format_birth_date(profile.get("birth_date", "")),
+                }
+            })
+
+        # Cas sans token : on cherche le hash dans toute la base
+        doc_res = sb.table("documents").select("id,user_id,file_name,file_url,sha256,source_url,created_at").eq("sha256", uploaded_hash).limit(1).execute()
+        docs = doc_res.data or []
+        if not docs:
+            return jsonify({
+                "ok": False,
+                "status": "not_found",
+                "uploaded_hash": uploaded_hash,
+                "message": "Document probablement modifié ou jamais certifié par MOTSA. Aucun hash correspondant dans la base."
+            }), 200
+
+        doc = docs[0]
+        cert_res = sb.table("certificates").select("verification_token,certificate_url,created_at").eq("document_id", doc["id"]).limit(1).execute()
+        certs = cert_res.data or []
+        cert = certs[0] if certs else {}
+        profile = get_profile_for_user(doc.get("user_id"))
+
+        return jsonify({
+            "ok": True,
+            "status": "match",
+            "message": "Document authentique : le hash correspond à un document certifié MOTSA.",
+            "uploaded_hash": uploaded_hash,
+            "expected_hash": doc.get("sha256"),
+            "document": {
+                "file_name": doc.get("file_name"),
+                "file_url": doc.get("file_url"),
+                "source_url": doc.get("source_url"),
+                "created_at": doc.get("created_at"),
+            },
+            "certificate": {
+                "verification_token": cert.get("verification_token"),
+                "certificate_url": cert.get("certificate_url"),
+                "created_at": cert.get("created_at"),
+            },
+            "profile": {
+                "full_name": profile.get("full_name") or f"{profile.get('first_name','')} {profile.get('last_name','')}".strip(),
+                "first_name": profile.get("first_name"),
+                "last_name": profile.get("last_name"),
+                "birth_date": format_birth_date(profile.get("birth_date", "")),
+            }
+        })
+
+    except Exception as e:
+        return jsonify({
+            "ok": False,
+            "status": "server_error",
+            "uploaded_hash": uploaded_hash,
+            "message": str(e)
+        }), 500
 
 # ── PAGE CERTIFICAT ───────────────────────────────────────────────────────────
 
