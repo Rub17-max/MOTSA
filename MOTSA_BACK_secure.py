@@ -322,11 +322,11 @@ def verify_upload():
                     "created_at": cert.get("created_at"),
                 },
                 "profile": {
-                    "full_name": profile.get("full_name") or f"{profile.get('first_name','')} {profile.get('last_name','')}".strip(),
-                    "first_name": profile.get("first_name"),
-                    "last_name": profile.get("last_name"),
-                }
-            })
+                     "full_name": (
+                         profile.get("full_name")
+                         or f"{profile.get('first_name','')}{profile.get('last_name','')}".strip() 
+                         or "Titulaire inconnu"),
+            } })
 
         # Cas sans token : on cherche le hash dans toute la base
         doc_res = sb.table("documents").select("id,user_id,file_name,file_url,sha256,source_url,created_at").eq("sha256", uploaded_hash).limit(1).execute()
