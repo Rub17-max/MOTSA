@@ -17,19 +17,45 @@
     main{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 6%}
     .card{background:var(--w);border:1px solid var(--line);border-radius:18px;padding:42px 40px;width:100%;max-width:680px;box-shadow:0 4px 40px rgba(0,0,0,.06)}
     .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--g);text-transform:uppercase;margin-bottom:18px}.kd{width:6px;height:6px;border-radius:50%;background:var(--g)}
-    h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:34px;line-height:1.1;margin-bottom:10px} .lead{color:var(--ink2);font-weight:300;margin-bottom:28px;max-width:560px}
+    h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:34px;line-height:1.1;margin-bottom:10px}
+    .lead{color:var(--ink2);font-weight:300;margin-bottom:28px;max-width:560px}
     .token-pill{display:none;margin-bottom:22px;font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink3);background:var(--bg);border:1px solid var(--line);padding:8px 11px;border-radius:999px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .upload{border:1.5px dashed var(--line);border-radius:14px;padding:34px 26px;text-align:center;cursor:pointer;transition:all .15s;background:#fff}
-    .upload:hover{border-color:#bbb;background:var(--bg)} .upload strong{display:block;color:var(--ink);font-weight:500;margin-bottom:4px}.upload span{font-size:13px;color:var(--ink3)} input[type=file]{display:none}
-    .state{display:none;margin-top:24px}.state.on{display:block}.loading{padding:20px;text-align:center;color:var(--ink3)}.spinner{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--ink);animation:spin .75s linear infinite;margin:0 auto 12px}@keyframes spin{to{transform:rotate(360deg)}}
-    .result{border-radius:14px;padding:24px;border:1px solid var(--line)}.result.ok{background:var(--gbg);border-color:var(--gbr)}.result.err{background:var(--rbg);border-color:var(--rbr)}
-    .rhead{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}.ricon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}.ok .ricon{background:var(--g);color:#fff}.err .ricon{background:var(--r);color:#fff}
-    .rtitle{font-size:18px;font-weight:500;color:var(--ink);margin-bottom:2px}.rmsg{font-size:14px;color:var(--ink2);font-weight:300}
-    .rows{background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:10px;overflow:hidden}.row{display:flex;justify-content:space-between;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line)}.row:last-child{border:none}.rk{color:var(--ink3);font-size:13px;white-space:nowrap}.rv{font-weight:500;font-size:13px;text-align:right;word-break:break-word;color:var(--ink)}
-    .hash{margin-top:16px;font-family:'Geist Mono',monospace;font-size:11px;word-break:break-all;color:var(--ink3);background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
-    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.actions a{font-size:13px;color:var(--ink);text-decoration:none;background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:8px}
-    footer{border-top:1px solid var(--line);padding:20px 6%;background:var(--w);text-align:center}footer p{font-size:13px;color:var(--ink4)}footer a{color:var(--ink3);text-decoration:none}
-    @media(max-width:720px){.card{padding:30px 22px}.row{flex-direction:column;gap:2px}.rv{text-align:left}h1{font-size:30px}}
+    .upload:hover,.upload.drag{border-color:#bbb;background:var(--bg)}
+    .upload strong{display:block;color:var(--ink);font-weight:500;margin-bottom:4px}
+    .upload span{font-size:13px;color:var(--ink3)}
+    input[type=file]{display:none}
+    .state{display:none;margin-top:24px}.state.on{display:block}
+    .loading{padding:20px;text-align:center;color:var(--ink3)}
+    .spinner{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--ink);animation:spin .75s linear infinite;margin:0 auto 12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .result{border-radius:14px;padding:24px;border:1px solid var(--line)}
+    .result.ok{background:var(--gbg);border-color:var(--gbr)}
+    .result.err{background:var(--rbg);border-color:var(--rbr)}
+    .result.warn{background:#fffbeb;border-color:#fde68a}
+    .rhead{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+    .ricon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .ok .ricon{background:var(--g);color:#fff}
+    .err .ricon{background:var(--r);color:#fff}
+    .warn .ricon{background:#d97706;color:#fff}
+    .rtitle{font-size:18px;font-weight:500;color:var(--ink);margin-bottom:2px}
+    .rmsg{font-size:14px;color:var(--ink2);font-weight:300;line-height:1.6}
+    .rows{background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:16px}
+    .row{display:flex;justify-content:space-between;gap:16px;padding:12px 16px;border-bottom:1px solid var(--line)}
+    .row:last-child{border:none}
+    .rk{color:var(--ink3);font-size:13px;white-space:nowrap}
+    .rv{font-weight:500;font-size:13px;text-align:right;word-break:break-word;color:var(--ink)}
+    .hash-box{margin-top:14px;font-family:'Geist Mono',monospace;font-size:11px;word-break:break-all;color:var(--ink3);background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:10px;padding:12px 14px;line-height:1.8}
+    .hash-box strong{color:var(--ink2)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+    .actions a{font-size:13px;color:var(--ink);text-decoration:none;background:#fff;border:1px solid var(--line);padding:8px 12px;border-radius:8px;transition:background .12s}
+    .actions a:hover{background:var(--bg)}
+    .note-public{margin-top:20px;font-size:12px;color:var(--ink4);display:flex;align-items:center;gap:6px}
+    .note-public svg{width:13px;height:13px;flex-shrink:0;color:var(--ink4)}
+    footer{border-top:1px solid var(--line);padding:20px 6%;background:var(--w);text-align:center}
+    footer p{font-size:13px;color:var(--ink4)}
+    footer a{color:var(--ink3);text-decoration:none}
+    @media(max-width:720px){.card{padding:28px 20px}.row{flex-direction:column;gap:2px}.rv{text-align:left}h1{font-size:28px}}
   </style>
 </head>
 <body>
@@ -40,12 +66,15 @@
   </a>
   <a class="btn" href="/">Retour</a>
 </nav>
+
 <main>
   <div class="card">
     <div class="kicker"><span class="kd"></span>Vérification publique</div>
-    <h1>Vérifier l’authenticité d’un document</h1>
-    <p class="lead">Déposez le PDF certifié MOTSA. Le serveur calcule son empreinte SHA-256 et la compare au certificat enregistré.</p>
+    <h1>Vérifier l'authenticité d'un document</h1>
+    <p class="lead">Déposez le PDF certifié MOTSA. Son empreinte SHA-256 est calculée dans votre navigateur et comparée au registre MOTSA — aucun fichier n'est envoyé à un serveur.</p>
+
     <div class="token-pill" id="tokenPill"></div>
+
     <label for="fileCheck">
       <div class="upload" id="dropZone">
         <strong>Déposer le PDF certifié ici</strong>
@@ -53,13 +82,23 @@
       </div>
     </label>
     <input type="file" id="fileCheck" accept="application/pdf" onchange="verifyFile(this.files[0])"/>
-    <div class="state" id="loading"><div class="loading"><div class="spinner"></div>Vérification du hash...</div></div>
+
+    <div class="state" id="loading">
+      <div class="loading"><div class="spinner"></div>Calcul de l'empreinte SHA-256...</div>
+    </div>
     <div class="state" id="result"></div>
   </div>
 </main>
+
 <footer><p>© 2026 <a href="/">MOTSA</a> — Document provenance & integrity platform</p></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const API_URL = 'http://localhost:5001'; // Alpha locale. En production : remplacer par l'URL du serveur MOTSA Cloud.
+const sb = supabase.createClient(
+  'https://cggtyaklofxywlmaatam.supabase.co',
+  'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym'
+);
+
 const token = new URLSearchParams(location.search).get('token') || '';
 
 if (token) {
@@ -68,10 +107,22 @@ if (token) {
   pill.textContent = 'Certificat détecté · token ' + token;
 }
 
+// ── UTILS ────────────────────────────────────────────────────────────────────
+
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtDate(v){ if(!v) return '—'; try { return new Date(v).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); } catch { return v; } }
-function sourceHost(v){ try { return new URL(v||'').hostname || '—'; } catch { return '—'; } }
+function sourceHost(v){ try { return new URL(v||'').hostname || v || '—'; } catch { return v || '—'; } }
 function showLoading(on){ document.getElementById('loading').classList.toggle('on', !!on); }
+
+// ── SHA-256 calculé dans le navigateur (WebCrypto — pas d'envoi réseau) ──────
+
+async function sha256File(file) {
+  const buf = await file.arrayBuffer();
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── VÉRIFICATION PRINCIPALE ───────────────────────────────────────────────────
 
 async function verifyFile(file) {
   if (!file) return;
@@ -80,58 +131,192 @@ async function verifyFile(file) {
   document.getElementById('result').innerHTML = '';
   showLoading(true);
 
-  const fd = new FormData();
-  fd.append('file', file);
-  if (token) fd.append('token', token);
-
   try {
-    const r = await fetch(API_URL + '/verify-upload', { method:'POST', body: fd });
-    const data = await r.json();
-    renderResult(data);
-  } catch (e) {
-    renderResult({ok:false,status:'network_error',message:"Impossible de joindre le serveur de vérification MOTSA.", uploaded_hash:'—'});
+    // 1. Calcul hash local (100% client-side)
+    const uploadedHash = await sha256File(file);
+
+    // 2. Cas QR : token connu → cherche le certificat précis
+    if (token) {
+      const { data: cert, error: certErr } = await sb
+        .from('certificates')
+        .select('document_id, verification_token, certificate_url, created_at')
+        .eq('verification_token', token)
+        .single();
+
+      if (certErr || !cert) {
+        renderError('Certificat introuvable.', 'Ce token de vérification n\'existe pas dans le registre MOTSA.', uploadedHash);
+        return;
+      }
+
+      const { data: doc, error: docErr } = await sb
+        .from('documents')
+        .select('id, user_id, file_name, file_url, sha256, source_url, created_at')
+        .eq('id', cert.document_id)
+        .single();
+
+      if (docErr || !doc) {
+        renderError('Document introuvable.', 'Le document lié à ce certificat est introuvable dans le registre.', uploadedHash);
+        return;
+      }
+
+      // Profil du titulaire (optionnel — on gère l'absence)
+      let fullName = '—';
+      const { data: profile } = await sb
+        .from('profiles')
+        .select('first_name, last_name, full_name')
+        .eq('id', doc.user_id)
+        .single();
+      if (profile) {
+        fullName = profile.full_name || [profile.first_name, profile.last_name].filter(Boolean).join(' ') || '—';
+      }
+
+      const match = uploadedHash === (doc.sha256 || '');
+      renderResult(match, uploadedHash, doc, cert, fullName);
+      return;
+    }
+
+    // 3. Cas sans token : recherche par hash dans toute la base
+    const { data: docs } = await sb
+      .from('documents')
+      .select('id, user_id, file_name, file_url, sha256, source_url, created_at')
+      .eq('sha256', uploadedHash)
+      .limit(1);
+
+    if (!docs || !docs.length) {
+      renderNotFound(uploadedHash);
+      return;
+    }
+
+    const doc = docs[0];
+
+    const { data: certs } = await sb
+      .from('certificates')
+      .select('verification_token, certificate_url, created_at')
+      .eq('document_id', doc.id)
+      .limit(1);
+
+    const cert = (certs && certs[0]) || {};
+
+    let fullName = '—';
+    const { data: profile } = await sb
+      .from('profiles')
+      .select('first_name, last_name, full_name')
+      .eq('id', doc.user_id)
+      .single();
+    if (profile) {
+      fullName = profile.full_name || [profile.first_name, profile.last_name].filter(Boolean).join(' ') || '—';
+    }
+
+    renderResult(true, uploadedHash, doc, cert, fullName);
+
+  } catch(e) {
+    console.error(e);
+    renderError('Erreur inattendue.', 'Une erreur est survenue lors de la vérification. Réessayez.', '—');
   } finally {
     showLoading(false);
   }
 }
 
-function renderResult(data) {
-  const ok = data.ok === true;
-  const doc = data.document || {};
-  const profile = data.profile || {};
-  const cert = data.certificate || {};
+// ── RENDERERS ─────────────────────────────────────────────────────────────────
+
+function renderResult(match, uploadedHash, doc, cert, fullName) {
   const result = document.getElementById('result');
   result.className = 'state on';
 
-  if (ok) {
+  if (match) {
     result.innerHTML = `
       <div class="result ok">
-        <div class="rhead"><div class="ricon">✓</div><div><div class="rtitle">Document authentique</div><div class="rmsg">${esc(data.message || `Ce document n’a pas été modifié depuis son téléchargement depuis ${sourceHost(doc.source_url)}.`)}</div></div></div>
+        <div class="rhead">
+          <div class="ricon">✓</div>
+          <div>
+            <div class="rtitle">Document authentique</div>
+            <div class="rmsg">Ce document n'a pas été modifié depuis sa certification MOTSA.<br>Son empreinte correspond exactement au registre.</div>
+          </div>
+        </div>
         <div class="rows">
           <div class="row"><span class="rk">Document</span><span class="rv">${esc(doc.file_name || '—')}</span></div>
-          <div class="row"><span class="rk">Titulaire</span><span class="rv">${esc(profile.full_name || '—')}</span></div>
-          <div class="row"><span class="rk">Source d’origine</span><span class="rv">${esc(sourceHost(doc.source_url))}</span></div>
+          <div class="row"><span class="rk">Titulaire</span><span class="rv">${esc(fullName)}</span></div>
+          <div class="row"><span class="rk">Source d'origine</span><span class="rv">${esc(sourceHost(doc.source_url))}</span></div>
           <div class="row"><span class="rk">Date de certification</span><span class="rv">${esc(fmtDate(cert.created_at || doc.created_at))}</span></div>
-          <div class="row"><span class="rk">Statut</span><span class="rv">Certifié par MOTSA</span></div>
+          <div class="row"><span class="rk">Statut</span><span class="rv">✓ Certifié par MOTSA</span></div>
         </div>
-        <div class="hash"><strong>SHA-256 vérifié</strong><br>${esc(data.uploaded_hash || '')}</div>
-        <div class="actions">${doc.file_url ? `<a href="${esc(doc.file_url)}" target="_blank">Télécharger le PDF certifié</a>` : ''}</div>
+        <div class="hash-box"><strong>SHA-256 vérifié</strong><br>${esc(uploadedHash)}</div>
+        <div class="actions">
+          ${doc.file_url ? `<a href="${esc(doc.file_url)}" target="_blank">↗ Télécharger le PDF certifié</a>` : ''}
+          ${cert.verification_token ? `<a href="/verify.html?token=${esc(cert.verification_token)}">Lien de vérification</a>` : ''}
+        </div>
+        <p class="note-public">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5" stroke-linecap="round"/></svg>
+          Vérification 100% locale — aucun fichier n'a été transmis à MOTSA.
+        </p>
       </div>`;
     return;
   }
 
+  // Hash présent en base mais ne correspond pas (cas token avec mismatch)
   result.innerHTML = `
     <div class="result err">
-      <div class="rhead"><div class="ricon">✕</div><div><div class="rtitle">Document probablement modifié</div><div class="rmsg">${esc(data.message || "Le hash du fichier ne correspond pas au certificat MOTSA. Le document a peut-être été modifié après sa certification.")}</div></div></div>
-      <div class="hash"><strong>Hash du fichier uploadé</strong><br>${esc(data.uploaded_hash || '—')}${data.expected_hash ? `<br><br><strong>Hash attendu</strong><br>${esc(data.expected_hash)}` : ''}</div>
+      <div class="rhead">
+        <div class="ricon">✕</div>
+        <div>
+          <div class="rtitle">Document modifié</div>
+          <div class="rmsg">L'empreinte de ce fichier ne correspond pas au certificat MOTSA. Le document a probablement été modifié après sa certification.</div>
+        </div>
+      </div>
+      <div class="hash-box">
+        <strong>Hash du fichier déposé</strong><br>${esc(uploadedHash)}<br><br>
+        <strong>Hash attendu (registre MOTSA)</strong><br>${esc(doc.sha256 || '—')}
+      </div>
     </div>`;
 }
 
-// Drag & drop
+function renderNotFound(uploadedHash) {
+  const result = document.getElementById('result');
+  result.className = 'state on';
+  result.innerHTML = `
+    <div class="result warn">
+      <div class="rhead">
+        <div class="ricon">?</div>
+        <div>
+          <div class="rtitle">Document non certifié</div>
+          <div class="rmsg">Aucun certificat MOTSA ne correspond à ce fichier. Il n'a peut-être pas été certifié, ou a été modifié depuis sa certification.</div>
+        </div>
+      </div>
+      <div class="hash-box"><strong>Hash calculé</strong><br>${esc(uploadedHash)}</div>
+    </div>`;
+}
+
+function renderError(title, msg, uploadedHash) {
+  showLoading(false);
+  const result = document.getElementById('result');
+  result.className = 'state on';
+  result.innerHTML = `
+    <div class="result err">
+      <div class="rhead">
+        <div class="ricon">✕</div>
+        <div>
+          <div class="rtitle">${esc(title)}</div>
+          <div class="rmsg">${esc(msg)}</div>
+        </div>
+      </div>
+      ${uploadedHash && uploadedHash !== '—' ? `<div class="hash-box"><strong>Hash calculé</strong><br>${esc(uploadedHash)}</div>` : ''}
+    </div>`;
+}
+
+// ── DRAG & DROP (desktop + mobile) ────────────────────────────────────────────
+
 const dz = document.getElementById('dropZone');
-['dragenter','dragover'].forEach(evt => dz.addEventListener(evt, e => { e.preventDefault(); dz.style.background = 'var(--bg)'; }));
-['dragleave','drop'].forEach(evt => dz.addEventListener(evt, e => { e.preventDefault(); dz.style.background = '#fff'; }));
+
+['dragenter','dragover'].forEach(evt => dz.addEventListener(evt, e => {
+  e.preventDefault(); dz.classList.add('drag');
+}));
+['dragleave','drop'].forEach(evt => dz.addEventListener(evt, e => {
+  e.preventDefault(); dz.classList.remove('drag');
+}));
 dz.addEventListener('drop', e => verifyFile(e.dataTransfer.files[0]));
+
+// Touch (mobile)
+dz.addEventListener('touchstart', () => {}, { passive: true });
 </script>
 </body>
 </html>
