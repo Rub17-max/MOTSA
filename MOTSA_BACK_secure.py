@@ -20,6 +20,8 @@ import secrets
 import json
 import io
 import logging
+import unicodedata
+import re
 
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -121,6 +123,15 @@ def source_host(value: str) -> str:
         return urlparse(value).hostname or value
     except Exception:
         return str(value)
+
+
+def sanitize_filename(name: str) -> str:
+    """Supprime accents, espaces et caractères spéciaux pour Supabase Storage."""
+    name = unicodedata.normalize('NFD', name)
+    name = ''.join(c for c in name if unicodedata.category(c) != 'Mn')
+    name = re.sub(r'[^\w\-.]', '_', name)
+    name = re.sub(r'_+', '_', name)
+    return name
 
 
 def get_profile_for_user(user_id: str) -> dict:
@@ -257,7 +268,7 @@ def certify():
 
     # 2. Timestamp + chemin de sortie
     ts          = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_name = f"{file_path.stem}_MOTSA_{ts}.pdf"
+    output_name = sanitize_filename(f"{file_path.stem}_MOTSA_{ts}.pdf")
     output_path = MOTSA_FOLDER / output_name
 
     # 3. Génère la page certificat (sans hash — il sera calculé après injection)
