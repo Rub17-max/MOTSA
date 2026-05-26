@@ -261,8 +261,8 @@
 <script>
 const SB_URL  = 'https://cggtyaklofxywlmaatam.supabase.co';
 const SB_ANON = 'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym';
-const CLOUD_URL = 'https://web-production-75ad99.up.railway.app';
-const LOCAL_URL = 'http://localhost:5001';
+const CLOUD_URL = window.__MOTSA_CLOUD_URL__ || 'https://web-production-75ad99.up.railway.app';
+const LOCAL_URL = window.__MOTSA_LOCAL_URL__ || 'http://127.0.0.1:5001';
 const API_URL = CLOUD_URL;
 
 const sb = supabase.createClient(SB_URL, SB_ANON);
@@ -314,7 +314,7 @@ async function loadProfile() {
 // ── API STATUS ────────────────────────────────────────────────────────────────
 async function checkApi(retries=5) {
   try {
-    const r = await fetch(CLOUD_URL + '/health', {signal: AbortSignal.timeout(5000)});
+    const r = await fetch(CLOUD_URL + '/health', {signal: AbortSignal.timeout(2000)});
     if (r.ok) {
       document.getElementById('apiDot').classList.add('on');
       document.getElementById('apiLabel').textContent = 'Serveur actif';
@@ -412,7 +412,7 @@ async function loadChrome() {
     files = await r.json();
     agentOnline = true;
   } catch (e) {
-    console.warn('Agent local MOTSA indisponible', e);
+    console.warn('Agent MOTSA indisponible', e);
     files = [];
     agentOnline = false;
   }
@@ -505,7 +505,7 @@ async function runCertify(progId, fillId, labelId, btnId) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({path: f.path})
       });
-      if (!hashResp.ok) throw new Error('Agent local requis pour lire le fichier.');
+      if (!hashResp.ok) throw new Error('Agent local requis pour calculer le hash.');
       const {sha256} = await hashResp.json();
 
       document.getElementById(labelId).textContent = `Certification de ${f.name}...`;
@@ -525,7 +525,7 @@ async function runCertify(progId, fillId, labelId, btnId) {
       const blob = await r.blob();
       const dlUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = dlUrl; a.download = f.name.replace(/\.pdf$/i,'') + '_MOTSA.pdf';
+      a.href = dlUrl; a.download = f.name.replace(/.pdf$/i,'') + '_MOTSA.pdf';
       document.body.appendChild(a); a.click();
       document.body.removeChild(a); URL.revokeObjectURL(dlUrl);
       success++;
