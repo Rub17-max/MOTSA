@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Télécharger MOTSA Desktop — MOTSA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18)}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;background:rgba(247,246,243,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%}
+    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:16px;letter-spacing:.05em}
+    .lm{width:24px;height:24px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center}.lm svg{width:13px;height:13px}
+    .nav-r{display:flex;gap:8px;align-items:center}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 20px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .15s;border:none;font-family:'Geist',sans-serif}
+    .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}.btn-ghost:hover{background:var(--w);color:var(--ink)}
+    .btn-dark{background:var(--ink);color:var(--w)}.btn-dark:hover{background:#2a2a2a}
+    .btn-outline{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-outline:hover{background:var(--w)}
+    .hero-bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 70% 35%,rgba(26,122,74,.06),transparent 70%);z-index:-1}
+    .hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.07) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
+    main{max-width:1120px;margin:0 auto;padding:118px 6% 70px}
+    .hero{display:grid;grid-template-columns:1fr 430px;gap:70px;align-items:center}
+    .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--g);text-transform:uppercase;margin-bottom:22px}
+    .kd{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.4s ease-in-out infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:54px;line-height:1.05;letter-spacing:-.015em;margin-bottom:22px}
+    h1 em{font-style:italic;color:var(--ink3)}
+    .desc{font-size:17px;line-height:1.75;color:var(--ink2);font-weight:300;margin-bottom:34px;max-width:560px}
+    .hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+    .download-card{background:var(--w);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 4px 40px rgba(0,0,0,.06)}
+    .app-icon{width:58px;height:58px;border-radius:16px;background:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:22px;box-shadow:0 12px 30px rgba(0,0,0,.12)}
+    .app-icon svg{width:30px;height:30px}
+    .card-title{font-size:18px;font-weight:500;margin-bottom:6px}
+    .card-sub{font-size:14px;color:var(--ink3);font-weight:300;margin-bottom:22px}
+    .download-main{width:100%;padding:12px 18px;font-size:14px;margin-bottom:12px}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+    .pill{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+    .pill span{display:block;font-family:'Geist Mono',monospace;font-size:10px;color:var(--ink4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+    .pill strong{font-size:13px;font-weight:500;color:var(--ink2)}
+    .note{font-size:12px;color:var(--ink4);line-height:1.6;margin-top:16px}
+    .steps{margin-top:70px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+    .step{background:var(--w);padding:30px 26px}
+    .num{font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink4);margin-bottom:16px}
+    .step h3{font-size:16px;font-weight:500;margin-bottom:8px}.step p{font-size:14px;color:var(--ink2);font-weight:300;line-height:1.65}
+    .warning{margin-top:26px;background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:18px 20px;color:#7c4a03;font-size:14px;line-height:1.65}
+    footer{border-top:1px solid var(--line);padding:24px 6%;background:var(--w);display:flex;align-items:center;justify-content:space-between;margin-top:60px}
+    footer p{font-size:13px;color:var(--ink4)}.flinks{display:flex;gap:20px}.flinks a{font-size:13px;color:var(--ink3);text-decoration:none}.flinks a:hover{color:var(--ink2)}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;gap:34px}h1{font-size:40px}.steps{grid-template-columns:1fr}.nav-r a:first-child{display:none}footer{flex-direction:column;gap:12px}.meta{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="hero-bg"></div>
+<nav>
+  <a class="logo" href="/">
+    <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    MOTSA
+  </a>
+  <div class="nav-r">
+    <a href="index.html#features" class="btn btn-ghost" style="padding:7px 14px;font-size:13px">Fonctionnement</a>
+    <a href="verify.html" class="btn btn-ghost" style="padding:7px 14px;font-size:13px">Vérifier un document</a>
+    <a href="/download/MOTSA.dmg" class="btn btn-dark" style="padding:7px 16px;font-size:13px">Télécharger</a>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div>
+      <div class="kicker"><span class="kd"></span>MOTSA Desktop · macOS</div>
+      <h1>Télécharger<br><em>l’application MOTSA.</em></h1>
+      <p class="desc">Installez l’agent desktop MOTSA pour détecter vos PDFs téléchargés depuis Chrome, calculer leur empreinte SHA-256 localement et générer vos certificats de provenance depuis votre espace MOTSA.</p>
+      <div class="hero-cta">
+        <a href="/download/MOTSA.dmg" class="btn btn-dark">Télécharger pour Mac</a>
+        <a href="dashboard.html" class="btn btn-outline">Ouvrir mon dashboard</a>
+      </div>
+      <div class="warning">
+        Si macOS indique que le développeur ne peut pas être vérifié, ouvrez <strong>Réglages Système → Confidentialité et sécurité</strong>, puis cliquez sur <strong>Ouvrir quand même</strong>.
+      </div>
+    </div>
+
+    <aside class="download-card">
+      <div class="app-icon">
+        <svg viewBox="0 0 32 32" fill="none"><rect x="5" y="7" width="22" height="14" rx="3" stroke="white" stroke-width="2"/><path d="M11 26h10M16 21v5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div class="card-title">MOTSA Desktop</div>
+      <div class="card-sub">Agent local pour macOS. Le PDF reste sur votre ordinateur : seul le hash est envoyé au serveur MOTSA.</div>
+      <a href="/download/MOTSA.dmg" class="btn btn-dark download-main">Télécharger MOTSA.dmg</a>
+      <a href="dashboard.html" class="btn btn-ghost download-main">Accéder au dashboard</a>
+      <div class="meta">
+        <div class="pill"><span>Version</span><strong>1.0.0</strong></div>
+        <div class="pill"><span>Système</span><strong>macOS</strong></div>
+        <div class="pill"><span>Fichier</span><strong>.dmg</strong></div>
+        <div class="pill"><span>Mode</span><strong>Agent local</strong></div>
+      </div>
+      <p class="note">Remplacez le fichier hébergé à <strong>/download/MOTSA.dmg</strong> par votre dernier build après chaque mise à jour.</p>
+    </aside>
+  </section>
+
+  <section class="steps">
+    <div class="step"><div class="num">01</div><h3>Téléchargez l’application</h3><p>Installez MOTSA Desktop depuis le fichier DMG, puis ouvrez l’application.</p></div>
+    <div class="step"><div class="num">02</div><h3>Autorisez l’accès local</h3><p>MOTSA lit votre historique Chrome et vos PDFs localement pour calculer les empreintes.</p></div>
+    <div class="step"><div class="num">03</div><h3>Certifiez vos PDFs</h3><p>Depuis le dashboard, sélectionnez les documents détectés et générez vos certificats.</p></div>
+  </section>
+</main>
+
+<footer>
+  <a class="logo" href="/" style="font-size:14px">
+    <div class="lm" style="width:18px;height:18px;border-radius:5px"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    MOTSA
+  </a>
+  <p>© 2026 MOTSA — motsa.tech</p>
+  <div class="flinks"><a href="Privacy.html">Confidentialité</a><a href="CGU.html">CGU</a><a href="Contact.html">Contact</a></div>
+</footer>
+</body>
+</html>
