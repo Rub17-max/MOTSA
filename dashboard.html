@@ -261,7 +261,9 @@
 <script>
 const SB_URL  = 'https://cggtyaklofxywlmaatam.supabase.co';
 const SB_ANON = 'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym';
-const API_URL = 'http://localhost:5001'; // backend Flask local
+const CLOUD_URL = 'https://web-production-75ad99.up.railway.app';
+const LOCAL_URL = 'http://localhost:5001';
+const API_URL = CLOUD_URL;
 
 const sb = supabase.createClient(SB_URL, SB_ANON);
 let user = null;
@@ -310,16 +312,18 @@ async function loadProfile() {
 }
 
 // ── API STATUS ────────────────────────────────────────────────────────────────
-async function checkApi() {
+async function checkApi(retries=5) {
   try {
-    const r = await fetch(API_URL + '/health', {signal: AbortSignal.timeout(2000)});
+    const r = await fetch(CLOUD_URL + '/health', {signal: AbortSignal.timeout(5000)});
     if (r.ok) {
       document.getElementById('apiDot').classList.add('on');
-      document.getElementById('apiLabel').textContent = 'Agent actif';
+      document.getElementById('apiLabel').textContent = 'Serveur actif';
       return;
     }
   } catch {}
-  document.getElementById('apiLabel').textContent = 'Agent hors ligne';
+  if (retries > 0) { setTimeout(() => checkApi(retries-1), 3000); return; }
+  document.getElementById('apiDot').classList.remove('on');
+  document.getElementById('apiLabel').textContent = 'Serveur hors ligne';
 }
 
 // ── SIGN OUT ──────────────────────────────────────────────────────────────────
@@ -403,12 +407,12 @@ async function loadChrome() {
   let agentOnline = false;
 
   try {
-    const r = await fetch(API_URL + '/chrome-downloads', {signal: AbortSignal.timeout(3000)});
+    const r = await fetch(LOCAL_URL + '/chrome-downloads', {signal: AbortSignal.timeout(3000)});
     if (!r.ok) throw new Error(await r.text());
     files = await r.json();
     agentOnline = true;
   } catch (e) {
-    console.warn('Agent MOTSA indisponible', e);
+    console.warn('Agent local MOTSA indisponible', e);
     files = [];
     agentOnline = false;
   }
@@ -495,26 +499,41 @@ async function runCertify(progId, fillId, labelId, btnId) {
     document.getElementById(labelId).textContent = `Certification de ${f.name}...`;
 
     try {
-      if (!userProfile) await loadProfile();
-      const {data:{session}} = await sb.auth.getSession();
+      document.getElementById(labelId).textContent = `Calcul du hash de ${f.name}...`;
+      const hashResp = await fetch(LOCAL_URL + '/hash', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({path: f.path})
+      });
+      if (!hashResp.ok) throw new Error('Agent local requis pour lire le fichier.');
+      const {sha256} = await hashResp.json();
 
-      const r = await fetch(API_URL+'/certify', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
+      document.getElementById(labelId).textContent = `Certification de ${f.name}...`;
+      const {data:{session}} = await sb.auth.getSession();
+      const r = await fetch(CLOUD_URL + '/certify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-          path:       f.path,
-          file_name:  f.name,
-          source_url: f.source_url || (f.source ? 'https://' + f.source : ''),
-          user_id:    user.id,
-          access_token: (await sb.auth.getSession()).data.session.access_token,
+          sha256,
+          file_name:    f.name,
+          source_url:   f.source_url || (f.source ? 'https://' + f.source : ''),
+          access_token: session.access_token,
         })
       });
       if (!r.ok) throw new Error(await r.text());
+
+      const blob = await r.blob();
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dlUrl; a.download = f.name.replace(/\.pdf$/i,'') + '_MOTSA.pdf';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(dlUrl);
       success++;
     } catch(e) {
       failed++;
       console.error('Certification impossible', e);
-      toast(`Erreur sur ${f.name}. Vérifiez que l’agent MOTSA est lancé.`, 'err');
+      toast(`Erreur sur ${f.name} : ${e.message}`, 'err');
+    }
     }
   }
 
