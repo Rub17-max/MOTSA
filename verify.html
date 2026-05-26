@@ -150,7 +150,7 @@ async function verifyFile(file) {
 
       const { data: doc, error: docErr } = await sb
         .from('documents')
-        .select('id, user_id, file_name, file_url, sha256, source_url, created_at')
+        .select('id, file_name, file_url, sha256, source_url, created_at')
         .eq('id', cert.document_id)
         .single();
 
@@ -159,26 +159,15 @@ async function verifyFile(file) {
         return;
       }
 
-      // Profil du titulaire (optionnel — on gère l'absence)
-      let fullName = '—';
-      const { data: profile } = await sb
-        .from('profiles')
-        .select('first_name, last_name, full_name')
-        .eq('id', doc.user_id)
-        .single();
-      if (profile) {
-        fullName = profile.full_name || [profile.first_name, profile.last_name].filter(Boolean).join(' ') || '—';
-      }
-
       const match = uploadedHash === (doc.sha256 || '');
-      renderResult(match, uploadedHash, doc, cert, fullName);
+      renderResult(match, uploadedHash, doc, cert);
       return;
     }
 
     // 3. Cas sans token : recherche par hash dans toute la base
     const { data: docs } = await sb
       .from('documents')
-      .select('id, user_id, file_name, file_url, sha256, source_url, created_at')
+      .select('id, file_name, file_url, sha256, source_url, created_at')
       .eq('sha256', uploadedHash)
       .limit(1);
 
@@ -197,17 +186,7 @@ async function verifyFile(file) {
 
     const cert = (certs && certs[0]) || {};
 
-    let fullName = '—';
-    const { data: profile } = await sb
-      .from('profiles')
-      .select('first_name, last_name, full_name')
-      .eq('id', doc.user_id)
-      .single();
-    if (profile) {
-      fullName = profile.full_name || [profile.first_name, profile.last_name].filter(Boolean).join(' ') || '—';
-    }
-
-    renderResult(true, uploadedHash, doc, cert, fullName);
+    renderResult(true, uploadedHash, doc, cert);
 
   } catch(e) {
     console.error(e);
@@ -219,7 +198,7 @@ async function verifyFile(file) {
 
 // ── RENDERERS ─────────────────────────────────────────────────────────────────
 
-function renderResult(match, uploadedHash, doc, cert, fullName) {
+function renderResult(match, uploadedHash, doc, cert) {
   const result = document.getElementById('result');
   result.className = 'state on';
 
@@ -235,7 +214,6 @@ function renderResult(match, uploadedHash, doc, cert, fullName) {
         </div>
         <div class="rows">
           <div class="row"><span class="rk">Document</span><span class="rv">${esc(doc.file_name || '—')}</span></div>
-          <div class="row"><span class="rk">Titulaire</span><span class="rv">${esc(fullName)}</span></div>
           <div class="row"><span class="rk">Source d'origine</span><span class="rv">${esc(sourceHost(doc.source_url))}</span></div>
           <div class="row"><span class="rk">Date de certification</span><span class="rv">${esc(fmtDate(cert.created_at || doc.created_at))}</span></div>
           <div class="row"><span class="rk">Statut</span><span class="rv">✓ Certifié par MOTSA</span></div>

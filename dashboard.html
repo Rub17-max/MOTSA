@@ -261,9 +261,12 @@
 <script>
 const SB_URL  = 'https://cggtyaklofxywlmaatam.supabase.co';
 const SB_ANON = 'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym';
+const params = new URLSearchParams(location.search);
+const agentPort = params.get('agentPort') || window.__MOTSA_AGENT_PORT__ || '5001';
 const CLOUD_URL = window.__MOTSA_CLOUD_URL__ || 'https://web-production-75ad99.up.railway.app';
-const LOCAL_URL = window.__MOTSA_LOCAL_URL__ || 'http://127.0.0.1:5001';
+const LOCAL_URL = window.__MOTSA_LOCAL_URL__ || `http://127.0.0.1:${agentPort}`;
 const API_URL = CLOUD_URL;
+console.log('[MOTSA] Local agent URL:', LOCAL_URL);
 
 const sb = supabase.createClient(SB_URL, SB_ANON);
 let user = null;
@@ -432,7 +435,7 @@ function renderChrome(listId, files, done, agentOnline = true) {
     list.innerHTML = `<div class="empty" style="padding:32px">
       <div class="empty-i"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2v6M10 12v.01"/><circle cx="10" cy="10" r="8"/></svg></div>
       <h3>Agent MOTSA non détecté</h3>
-      <p>Lancez l’agent local MOTSA sur cet ordinateur, puis cliquez sur “Actualiser”.</p>
+      <p>L’agent local n’est pas joignable sur ${esc(LOCAL_URL)}. Relancez l’application MOTSA, puis cliquez sur “Actualiser”.</p>
     </div>`;
     return;
   }
