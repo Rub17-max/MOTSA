@@ -264,9 +264,24 @@ const SB_ANON = 'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym';
 const params = new URLSearchParams(location.search);
 const agentPort = params.get('agentPort') || window.__MOTSA_AGENT_PORT__ || '5001';
 const CLOUD_URL = window.__MOTSA_CLOUD_URL__ || 'https://web-production-75ad99.up.railway.app';
-const LOCAL_URL = window.__MOTSA_LOCAL_URL__ || `http://127.0.0.1:${agentPort}`;
+
+// URL locale de l'agent. On teste plusieurs possibilités,
+// car l'app desktop peut passer un port différent selon le démarrage.
+let LOCAL_URL = window.__MOTSA_LOCAL_URL__ || `http://127.0.0.1:${agentPort}`;
+const AGENT_CANDIDATES = Array.from(new Set([
+  LOCAL_URL,
+  `http://127.0.0.1:${agentPort}`,
+  `http://localhost:${agentPort}`,
+  'http://127.0.0.1:5001',
+  'http://localhost:5001',
+  'http://127.0.0.1:5002',
+  'http://localhost:5002',
+  'http://127.0.0.1:5003',
+  'http://localhost:5003'
+]));
+
 const API_URL = CLOUD_URL;
-console.log('[MOTSA] Local agent URL:', LOCAL_URL);
+console.log('[MOTSA] Agent candidates:', AGENT_CANDIDATES);
 
 const sb = supabase.createClient(SB_URL, SB_ANON);
 let user = null;
@@ -404,15 +419,67 @@ function renderRows(tbodyId, docs) {
   }).join('');
 }
 
-// ── CHROME ────────────────────────────────────────────────────────────────────
+// ── CHROME / AGENT LOCAL ──────────────────────────────────────────────────────
+async function fetchWithTimeout(url, options = {}, timeout = 3000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      cache: 'no-store'
+    });
+    return res;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function detectAgent() {
+  for (const base of AGENT_CANDIDATES) {
+    try {
+      const r = await fetchWithTimeout(base + '/health', {}, 1800);
+      if (r.ok) {
+        LOCAL_URL = base;
+        console.log('[MOTSA] Agent détecté:', LOCAL_URL);
+        return true;
+      }
+    } catch (e) {
+      console.warn('[MOTSA] Agent non joignable sur', base, e?.message || e);
+    }
+  }
+  return false;
+}
+
+async function agentFetch(path, options = {}, timeout = 4000) {
+  try {
+    const r = await fetchWithTimeout(LOCAL_URL + path, options, timeout);
+    if (r.ok) return r;
+  } catch (e) {
+    console.warn('[MOTSA] Requête agent échouée sur', LOCAL_URL, e?.message || e);
+  }
+
+  const ok = await detectAgent();
+  if (!ok) throw new Error('Agent MOTSA non détecté.');
+
+  return await fetchWithTimeout(LOCAL_URL + path, options, timeout);
+}
+
 async function loadChrome() {
   let files = [];
   let agentOnline = false;
 
   try {
-    const r = await fetch(LOCAL_URL + '/chrome-downloads', {signal: AbortSignal.timeout(3000)});
+    await detectAgent();
+    const r = await agentFetch('/chrome-downloads', {}, 5000);
     if (!r.ok) throw new Error(await r.text());
     files = await r.json();
+
+    if (!Array.isArray(files)) {
+      throw new Error(files.error || 'Réponse agent invalide.');
+    }
+
     agentOnline = true;
   } catch (e) {
     console.warn('Agent MOTSA indisponible', e);
@@ -477,8 +544,8 @@ function toggleSel(id, listId) {
   });
 }
 
-function syncImportPage() {
-  renderChrome('clist2', chromeFiles, new Set(), true);
+async function syncImportPage() {
+  await loadChrome();
 }
 
 // ── CERTIFY ───────────────────────────────────────────────────────────────────
@@ -503,11 +570,11 @@ async function runCertify(progId, fillId, labelId, btnId) {
 
     try {
       document.getElementById(labelId).textContent = `Calcul du hash de ${f.name}...`;
-      const hashResp = await fetch(LOCAL_URL + '/hash', {
+      const hashResp = await agentFetch('/hash', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({path: f.path})
-      });
+      }, 10000);
       if (!hashResp.ok) throw new Error('Agent local requis pour calculer le hash.');
       const {sha256} = await hashResp.json();
 
