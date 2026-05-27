@@ -140,6 +140,47 @@ img,svg,video{max-width:100%;height:auto}
   }
 }
 
+
+
+/* MOTSA iPhone menu fix — clean 3-item bottom bar */
+.nav-links a[href="desktop.html"]{display:none!important}
+.nav-links .btn-primary.keep[href="desktop.html"],
+.nav-links a.btn-primary[href="desktop.html"]{
+  display:inline-flex!important;
+  background:#f8fbff!important;
+  color:var(--blue)!important;
+  border-color:rgba(26,58,143,.22)!important;
+  box-shadow:0 8px 22px rgba(26,58,143,.08)!important;
+}
+.nav-links .btn-primary.keep[href="desktop.html"]:hover,
+.nav-links a.btn-primary[href="desktop.html"]:hover{
+  background:#ffffff!important;
+  color:var(--blue2)!important;
+}
+@media(max-width:640px){
+  .nav{height:64px!important;min-height:64px!important;align-items:center!important;justify-content:flex-start!important}
+  .nav .logo{position:static!important;margin-right:auto!important}
+  .nav-links{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    left:10px!important;right:10px!important;
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+    padding:6px!important;border-radius:22px!important;
+  }
+  .nav-links a[href="/#product"],
+  .nav-links a[href="#product"],
+  .nav-links a[href="Privacy.html"],
+  .nav-links a[href="desktop.html"]:not(.btn){display:none!important}
+  .nav-links a{min-width:0!important;min-height:46px!important;font-size:12px!important;padding:8px 6px!important}
+  .nav-links .btn-primary.keep[href="desktop.html"],
+  .nav-links a.btn-primary[href="desktop.html"]{
+    display:flex!important;
+    background:#f8fbff!important;
+    color:var(--blue)!important;
+    border:1px solid rgba(26,58,143,.25)!important;
+    font-weight:600!important;
+  }
+}
+
 </style>
 </head>
 <body>
