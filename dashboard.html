@@ -17,17 +17,17 @@
     .lm{width:22px;height:22px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .lm svg{width:12px;height:12px}
     .nav{padding:12px 10px;flex:1}
-    .nhead{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--ink4);text-transform:uppercase;padding:0 10px;margin:14px 0 5px}
+    .nhead{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;padding:0 10px;margin:14px 0 5px;opacity:.7}
     .nhead:first-child{margin-top:0}
     .ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--ink3);font-size:14px;text-decoration:none;cursor:pointer;transition:all .12s;user-select:none}
     .ni:hover{background:var(--bg);color:var(--ink2)}
-    .ni.active{background:var(--bg);color:var(--ink);font-weight:500}
+    .ni.active{background:var(--blue3);color:var(--blue);font-weight:500;border-left:2px solid var(--blue);margin-left:-2px;padding-left:12px}
     .ni svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
-    .ni.active svg{opacity:1}
+    .ni.active svg{opacity:1;color:var(--blue)}
     .sb-bot{padding:14px 10px;border-top:1px solid var(--line)}
     .upill{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;cursor:pointer;transition:background .12s}
     .upill:hover{background:var(--bg)}
-    .uav{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--w);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
+    .uav{width:30px;height:30px;border-radius:50%;background:var(--blue);color:var(--w);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0}
     .uinfo{flex:1;min-width:0}
     .uemail{font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .uplan{font-size:11px;color:var(--ink4);font-family:'Geist Mono',monospace}
@@ -44,6 +44,8 @@
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:500;border-radius:7px;cursor:pointer;text-decoration:none;transition:all .12s;border:none;font-family:'Geist',sans-serif}
     .btn-dark{background:var(--ink);color:var(--w)}
     .btn-dark:hover{background:#2a2a2a}
+    .btn-blue{background:var(--blue);color:var(--w)}
+    .btn-blue:hover{background:var(--blue2)}
     .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}
     .btn-ghost:hover{background:var(--w);color:var(--ink)}
     .btn-sm{padding:5px 10px;font-size:12px;border-radius:6px}
@@ -70,7 +72,7 @@
     .ci:last-child{border:none}
     .ci:hover{background:var(--bg)}
     .cchk{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--line);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;background:var(--w)}
-    .cchk.on{background:var(--ink);border-color:var(--ink)}
+    .cchk.on{background:var(--blue);border-color:var(--blue)}
     .cchk.on::after{content:'';width:9px;height:7px;border-left:1.5px solid white;border-bottom:1.5px solid white;transform:rotate(-45deg) translateY(-1px)}
     .cicon{width:32px;height:32px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .cicon svg{width:15px;height:15px;color:var(--ink3)}
@@ -85,7 +87,7 @@
     .prog{display:none;margin-top:16px}
     .prog-l{font-size:12px;color:var(--ink3);margin-bottom:6px}
     .prog-bar{height:3px;background:var(--line);border-radius:999px;overflow:hidden}
-    .prog-fill{height:100%;background:var(--ink);border-radius:999px;width:0%;transition:width .4s}
+    .prog-fill{height:100%;background:var(--blue);border-radius:999px;width:0%;transition:width .4s}
 
     /* TABLE */
     table{width:100%;border-collapse:collapse}
@@ -123,7 +125,7 @@
     /* API STATUS */
     .api-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink3);font-family:'Geist Mono',monospace}
     .api-dot{width:6px;height:6px;border-radius:50%;background:var(--ink4)}
-    .api-dot.on{background:var(--g);box-shadow:0 0 6px var(--g)}
+    .api-dot.on{background:var(--blue);box-shadow:0 0 6px var(--blue)}
 
     @media(max-width:900px){.sb{display:none!important}.main{margin-left:0!important}.stats{grid-template-columns:1fr 1fr}.content{padding:20px}}
   </style>
@@ -131,11 +133,14 @@
 <body>
 
 <aside class="sb">
-  <div class="sb-top" style="display:flex;align-items:center;gap:8px">
-    <div class="lm" id="sidebarToggle" onclick="toggleSidebar()" style="cursor:pointer;flex-shrink:0" title="Masquer le menu">
-      <svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
-    </div>
-    <a class="logo logo-text" href="/" style="gap:0">MOTSA</a>
+  <div class="sb-top" style="display:flex;align-items:center;gap:10px">
+    <button id="sidebarToggle" onclick="toggleSidebar()" style="cursor:pointer;flex-shrink:0;background:none;border:none;padding:2px;display:flex;align-items:center" title="Masquer le menu">
+      <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M2 4h12M2 8h8M2 12h10" stroke="var(--ink3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <a class="logo logo-text" href="/" style="gap:8px;font-weight:600">
+      <img src="assets/icon.png" alt="MOTSA" style="width:24px;height:24px;border-radius:6px"/>
+      MOTSA
+    </a>
   </div>
   <div class="nav">
     <div class="nhead">Espace</div>
@@ -220,7 +225,7 @@
         </div>
         <div class="card-foot">
           <p><span id="selCount">0</span> sélectionné(s)</p>
-          <button class="btn btn-dark" id="certBtn" onclick="certify()" disabled style="opacity:.4">Certifier →</button>
+          <button class="btn btn-blue" id="certBtn" onclick="certify()" disabled style="opacity:.4">Certifier →</button>
         </div>
       </div>
 
@@ -255,7 +260,7 @@
         </div>
         <div class="card-foot">
           <p><span id="selCount2">0</span> sélectionné(s)</p>
-          <button class="btn btn-dark" id="certBtn2" onclick="certify2()" disabled style="opacity:.4">Certifier →</button>
+          <button class="btn btn-blue" id="certBtn2" onclick="certify2()" disabled style="opacity:.4">Certifier →</button>
         </div>
       </div>
     </div>
@@ -270,26 +275,34 @@
 const SB_URL  = 'https://cggtyaklofxywlmaatam.supabase.co';
 const SB_ANON = 'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym';
 const params = new URLSearchParams(location.search);
-const agentPort = params.get('agentPort') || window.__MOTSA_AGENT_PORT__ || '5001';
 const CLOUD_URL = window.__MOTSA_CLOUD_URL__ || 'https://web-production-75ad99.up.railway.app';
 
-// URL locale de l'agent. On teste plusieurs possibilités,
-// car l'app desktop peut passer un port différent selon le démarrage.
-let LOCAL_URL = window.__MOTSA_LOCAL_URL__ || `http://127.0.0.1:${agentPort}`;
-const AGENT_CANDIDATES = Array.from(new Set([
-  LOCAL_URL,
-  `http://127.0.0.1:${agentPort}`,
-  `http://localhost:${agentPort}`,
-  'http://127.0.0.1:5001',
-  'http://localhost:5001',
-  'http://127.0.0.1:5002',
-  'http://localhost:5002',
-  'http://127.0.0.1:5003',
-  'http://localhost:5003'
-]));
+// L'agent local ne fonctionne que depuis l'app desktop MOTSA.
+// window.__MOTSA_LOCAL_URL__ est injecté par Electron au démarrage.
+// Sur le web, IS_DESKTOP = false et la section Chrome est masquée.
+const IS_DESKTOP = !!window.__MOTSA_LOCAL_URL__;
+let LOCAL_URL = window.__MOTSA_LOCAL_URL__ || 'http://127.0.0.1:5001';
+
+async function detectAgentPort() {
+  // Scan tous les ports possibles — que ce soit depuis l'app ou le web.
+  // L'agent ne peut être lancé QUE par l'app desktop (jamais par le navigateur).
+  // Si l'app desktop est ouverte, l'agent répond et on affiche les PDFs.
+  const ports = [5001,5002,5003,5004,5010,5050,5100,5200,9001,9002];
+  for (const port of ports) {
+    try {
+      const r = await fetch(`http://127.0.0.1:${port}/health`, {signal: AbortSignal.timeout(400)});
+      if (r.ok) { LOCAL_URL = `http://127.0.0.1:${port}`; return LOCAL_URL; }
+    } catch {}
+  }
+  return null;
+}
 
 const API_URL = CLOUD_URL;
-console.log('[MOTSA] Agent candidates:', AGENT_CANDIDATES);
+const AGENT_PORTS = [5001,5002,5003,5004,5010,5050,5100,5200,9001,9002];
+const AGENT_CANDIDATES = AGENT_PORTS.flatMap(p => [
+  `http://127.0.0.1:${p}`,
+  `http://localhost:${p}`
+]);
 
 const sb = supabase.createClient(SB_URL, SB_ANON);
 let user = null;
@@ -469,7 +482,7 @@ async function agentFetch(path, options = {}, timeout = 4000) {
   }
 
   const ok = await detectAgent();
-  if (!ok) throw new Error('Agent MOTSA non détecté.');
+  if (!ok) throw new Error('Application MOTSA Desktop non détectée.');
 
   return await fetchWithTimeout(LOCAL_URL + path, options, timeout);
 }
@@ -479,6 +492,7 @@ async function loadChrome() {
   let agentOnline = false;
 
   try {
+    await detectAgentPort();
     await detectAgent();
     const r = await agentFetch('/chrome-downloads', {}, 5000);
     if (!r.ok) throw new Error(await r.text());
@@ -506,10 +520,12 @@ function renderChrome(listId, files, done, agentOnline = true) {
   const list = document.getElementById(listId);
   if (!list) return;
 
+
+
   if (!agentOnline) {
     list.innerHTML = `<div class="empty" style="padding:32px">
       <div class="empty-i"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2v6M10 12v.01"/><circle cx="10" cy="10" r="8"/></svg></div>
-      <h3>Agent MOTSA non détecté</h3>
+      <h3>Application MOTSA Desktop non détectée</h3>
       <p>L’agent local n’est pas joignable sur ${esc(LOCAL_URL)}. Relancez l’application MOTSA, puis cliquez sur “Actualiser”.</p>
     </div>`;
     return;
