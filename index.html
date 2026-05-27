@@ -2,7 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  
+  <meta name="theme-color" content="#f7f6f3"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="MOTSA"/>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/>
   <title>MOTSA — Document authenticity platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
@@ -84,6 +91,84 @@ h1 em{font-style:italic;color:var(--text3)}
 .amsg{display:none;margin-top:14px;padding:11px 14px;border-radius:12px;font-size:13px}.amsg.error{background:var(--dangerBg);color:var(--danger);border:1px solid #fecaca}.amsg.success{background:var(--successBg);color:var(--success);border:1px solid rgba(26,122,74,.18)}
 .afoot{margin-top:16px;text-align:center;color:var(--text3);font-size:13px}.afoot a{color:var(--blue);cursor:pointer}.btn-load{opacity:.6;pointer-events:none}
 @media(max-width:960px){.hero,.auth-zone{grid-template-columns:1fr}.visual{order:-1}.steps,.features,.trust-grid{grid-template-columns:1fr}h1{font-size:44px}.section-head{display:block}.section p.sub{margin-top:10px}}
+
+
+/* ─────────────────────────────────────────────────────────────
+   MOTSA iPhone / Mobile adaptation
+   - safe areas for iOS notch and home indicator
+   - bottom navigation on small screens
+   - larger touch targets
+   - single-column cards and forms
+   ───────────────────────────────────────────────────────────── */
+html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{width:100%;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom);touch-action:manipulation}
+button,.btn,.upload,input,textarea,select,a{-webkit-tap-highlight-color:transparent}
+button,.btn,.upload{min-height:48px}
+input,textarea,select{font-size:16px} /* prevents iOS zoom on focus */
+img,svg,video{max-width:100%;height:auto}
+
+@media (hover:none){
+  .btn:hover,.nav-links a:hover,.upload:hover,.doc-card:hover,.step:hover,.feature:hover,.trust-item:hover{transform:none;box-shadow:none;background:inherit}
+}
+
+@media(max-width:640px){
+  :root{--radius:20px;--shadow:0 18px 45px rgba(15,15,15,.055)}
+  body{font-size:14px;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+  .wrap{width:100%;padding-left:20px;padding-right:20px}
+  .nav{height:64px;min-height:64px;padding:calc(8px + env(safe-area-inset-top)) 18px 8px;background:rgba(247,246,243,.94);justify-content:center}
+  .nav .logo{position:absolute;left:18px;top:calc(16px + env(safe-area-inset-top))}
+  .nav .logo img{width:32px;height:32px;border-radius:10px}
+  .nav .logo span{font-size:14px}
+  .nav-links{position:fixed;z-index:80;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:7px;background:rgba(255,255,255,.86);border:1px solid rgba(230,230,228,.95);border-radius:24px;box-shadow:0 18px 50px rgba(15,15,15,.12);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .nav-links a{display:flex!important;align-items:center;justify-content:center;min-height:44px;padding:8px 6px;border-radius:17px;font-size:11.5px;line-height:1.05;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:transparent}
+  .nav-links a[href="/#product"],.nav-links a[href="Privacy.html"]{display:none!important}
+  .nav-links .btn{background:var(--blue);color:white;border-color:var(--blue);padding:8px 6px!important;box-shadow:none}
+  .hero{min-height:auto!important;grid-template-columns:1fr!important;gap:24px!important;padding:44px 0 42px!important}
+  .visual{order:0!important;padding:18px!important;border-radius:24px}.proof-card{padding:22px;border-radius:22px}
+  h1{font-size:clamp(36px,10.8vw,46px)!important;line-height:1.03!important;letter-spacing:-.025em!important}
+  .lead,.intro{font-size:16px!important;line-height:1.62!important;margin-bottom:24px!important}
+  .hero-cta,.actions{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;width:100%}
+  .btn{width:100%;min-height:52px;padding:13px 16px;font-size:14px}
+  .section{padding:48px 0!important}.section h2{font-size:34px!important}.section-head{display:block!important;margin-bottom:22px!important}
+  .steps,.features,.trust-grid,.guarantees,.stats,.doc-grid,.rows,.meta,.layout,.legal,.auth-zone{grid-template-columns:1fr!important;gap:12px!important;background:transparent!important;border:0!important}
+  .step,.feature,.trust-item,.g,.stat,.doc-card,.panel,.info-card,.contact-card,.auth-card{border:1px solid var(--line);border-radius:22px!important;box-shadow:var(--shadow);background:var(--surface)!important}
+  main{padding-left:20px!important;padding-right:20px!important;padding-top:34px!important;padding-bottom:34px!important}
+  .verify-card,.contact-card,.auth-card,.panel{padding:24px 18px!important;width:100%;max-width:none!important}
+  .upload{padding:32px 18px;border-radius:22px}.upload strong{font-size:16px}.result{padding:24px 18px;border-radius:22px}.proof-badge{width:54px;height:54px;font-size:28px}
+  .row{padding:13px}.row strong{font-size:12.5px}.ai-alert{border-radius:18px;padding:14px;gap:10px}.ai-alert .icon{width:26px;height:26px;flex-basis:26px}
+  .footer{padding:24px 20px calc(96px + env(safe-area-inset-bottom));gap:10px}.footer .links{gap:12px}
+  .toc{position:static!important;display:none}article{max-width:100%!important}h2{font-size:26px!important}
+  .topbar{padding:14px 18px!important;gap:12px;align-items:flex-start!important}.topbar>div:last-child{width:100%;justify-content:space-between!important}.content{padding:22px 18px 110px!important}.panel-head,.panel-foot{padding:18px!important;align-items:flex-start!important;flex-direction:column!important}.panel-body{padding:18px!important}
+  .sb{display:none!important}.main{margin-left:0!important;width:100%}.ci{align-items:flex-start;padding:14px}.cname{white-space:normal}.cbadge{display:none}.toast{left:18px;right:18px;bottom:calc(90px + env(safe-area-inset-bottom))}
+}
+
+@media(max-width:390px){
+  .nav-links a{font-size:10.8px;padding-left:4px;padding-right:4px}
+  .wrap,main{padding-left:16px!important;padding-right:16px!important}
+}
+
+
+/* MOTSA nav refinements: remove duplicate Desktop link and make Download app readable */
+.nav-links .btn-primary{
+  background:#eef4ff!important;
+  border-color:#c9d9ff!important;
+  color:#12377f!important;
+  box-shadow:0 10px 26px rgba(18,55,127,.10);
+}
+.nav-links .btn-primary:hover{
+  background:#ffffff!important;
+  border-color:#aebfff!important;
+  color:#0d2a66!important;
+  transform:translateY(-1px);
+}
+@media(max-width:860px){
+  .nav-links .btn-primary{
+    background:#eef4ff!important;
+    color:#12377f!important;
+    border-color:#c9d9ff!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -97,7 +182,6 @@ h1 em{font-style:italic;color:var(--text3)}
   <div class="nav-links">
     <a href="/#product">Product</a>
     <a href="verify.html">Verify</a>
-    <a href="desktop.html" class="keep">Desktop</a>
     <a href="Privacy.html">Security</a>
     <a href="/#auth" class="keep">Login</a>
     <a href="desktop.html" class="btn btn-primary keep" style="padding:8px 14px">Download app</a>

@@ -1,0 +1,25 @@
+{
+  "name": "MOTSA \u2014 Document authenticity platform",
+  "short_name": "MOTSA",
+  "description": "Verify document authenticity from iPhone, desktop or web.",
+  "display": "standalone",
+  "start_url": "/index.html",
+  "scope": "/",
+  "background_color": "#f7f6f3",
+  "theme_color": "#1a3a8f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
