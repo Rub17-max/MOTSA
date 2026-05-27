@@ -6,7 +6,7 @@
   <title>Vérification — MOTSA</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
-    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18);--r:#991b1b;--rbg:#fff3f3;--rbr:#fecaca}
+    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;--blue:#1a3a8f;--blue2:#2952cc;--blue3:#e8eef9;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18);--r:#991b1b;--rbg:#fff3f3;--rbr:#fecaca}
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
     nav{background:rgba(247,246,243,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 6%;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
@@ -16,7 +16,7 @@
     .btn:hover{background:var(--bg);color:var(--ink)}
     main{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 6%}
     .card{background:var(--w);border:1px solid var(--line);border-radius:18px;padding:42px 40px;width:100%;max-width:680px;box-shadow:0 4px 40px rgba(0,0,0,.06)}
-    .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--g);text-transform:uppercase;margin-bottom:18px}.kd{width:6px;height:6px;border-radius:50%;background:var(--g)}
+    .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;margin-bottom:18px}.kd{width:6px;height:6px;border-radius:50%;background:var(--g)}
     h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:34px;line-height:1.1;margin-bottom:10px}
     .lead{color:var(--ink2);font-weight:300;margin-bottom:28px;max-width:560px}
     .token-pill{display:none;margin-bottom:22px;font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink3);background:var(--bg);border:1px solid var(--line);padding:8px 11px;border-radius:999px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -61,7 +61,7 @@
 <body>
 <nav>
   <a class="logo" href="/">
-    <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <img src="assets/icon.png" alt="MOTSA" style="width:26px;height:26px;border-radius:7px"/>
     MOTSA
   </a>
   <a class="btn" href="/">Retour</a>

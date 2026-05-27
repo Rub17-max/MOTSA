@@ -14,6 +14,9 @@
       --line: #e6e6e4;
       --bg:   #f7f6f3;
       --w:    #fff;
+      --blue: #1a3a8f;
+      --blue2: #2952cc;
+      --blue3: #e8eef9;
       --g:    #1a7a4a;
       --gbg:  #eef8f2;
       --gbr:  rgba(26,122,74,.18);
@@ -23,26 +26,26 @@
     body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
 
     /* NAV */
-    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;background:rgba(247,246,243,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%}
-    .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:500;font-size:16px;letter-spacing:.05em}
-    .lm{width:24px;height:24px;border-radius:6px;background:var(--ink);display:flex;align-items:center;justify-content:center}
-    .lm svg{width:13px;height:13px}
-    .nav-r{display:flex;gap:8px}
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;height:58px;background:rgba(247,246,243,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-weight:600;font-size:16px;letter-spacing:.02em}
+    .logo img{width:28px;height:28px;border-radius:7px}
+    .nav-r{display:flex;gap:8px;align-items:center}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 20px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .15s;border:none;font-family:'Geist',sans-serif}
     .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}
     .btn-ghost:hover{background:var(--w);color:var(--ink)}
-    .btn-dark{background:var(--ink);color:var(--w)}
-    .btn-dark:hover{background:#2a2a2a}
+    .btn-blue{background:var(--blue);color:var(--w)}
+    .btn-blue:hover{background:var(--blue2)}
     .btn-full{width:100%}
     .btn-outline{background:transparent;color:var(--ink);border:1px solid var(--line)}
-    .btn-outline:hover{background:var(--bg)}
+    .btn-outline:hover{background:var(--w)}
 
     /* HERO */
-    .hero{min-height:100vh;display:grid;grid-template-columns:1fr 420px;gap:80px;align-items:center;padding:100px 6% 80px;position:relative;overflow:hidden;max-width:1200px;margin:0 auto}
-    .hero-bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(26,122,74,.05),transparent 70%);z-index:-1}
-    .hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.07) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
-    .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--g);text-transform:uppercase;margin-bottom:22px}
-    .kd{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2.4s ease-in-out infinite}
+    .hero-wrap{max-width:1200px;margin:0 auto;padding:0 6%}
+    .hero{min-height:100vh;display:grid;grid-template-columns:1fr 420px;gap:80px;align-items:center;padding:100px 0 80px;position:relative}
+    .hero-bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(26,58,143,.06),transparent 70%);z-index:-1}
+    .hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(26,58,143,.07) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
+    .kicker{display:inline-flex;align-items:center;gap:7px;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;margin-bottom:22px}
+    .kd{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:blink 2.4s ease-in-out infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
     h1{font-family:'Instrument Serif',serif;font-weight:400;font-size:56px;line-height:1.05;letter-spacing:-.015em;margin-bottom:22px}
     h1 em{font-style:italic;color:var(--ink3)}
@@ -50,13 +53,13 @@
     .hero-cta{display:flex;gap:10px;flex-wrap:wrap}
     .proof{display:flex;align-items:center;gap:14px;margin-top:48px}
     .avs{display:flex}
-    .av{width:30px;height:30px;border-radius:50%;border:2px solid var(--bg);background:var(--line);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--ink2)}
+    .av{width:30px;height:30px;border-radius:50%;border:2px solid var(--bg);background:var(--blue3);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--blue)}
     .av:first-child{margin-left:0}
     .pt{font-size:13px;color:var(--ink3);font-weight:300}
     .pt strong{color:var(--ink2);font-weight:500}
 
     /* AUTH CARD */
-    .acard{background:var(--w);border:1px solid var(--line);border-radius:18px;padding:36px 32px;box-shadow:0 4px 40px rgba(0,0,0,.06);animation:fadeUp .5s ease .15s both}
+    .acard{background:var(--w);border:1px solid var(--line);border-radius:18px;padding:36px 32px;box-shadow:0 4px 40px rgba(26,58,143,.08);animation:fadeUp .5s ease .15s both}
     @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     .atabs{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:28px;border:1px solid var(--line)}
     .atab{padding:9px;text-align:center;font-size:14px;font-weight:500;border-radius:7px;cursor:pointer;transition:all .15s;color:var(--ink3);user-select:none}
@@ -67,28 +70,40 @@
     .asub{font-size:14px;color:var(--ink3);font-weight:300;margin-bottom:24px}
     .field{margin-bottom:14px}
     .field label{display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:6px}
+    .pw-wrap{position:relative}
+    .pw-wrap input{width:100%;padding:11px 40px 11px 14px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:14px;font-family:'Geist',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
+    .pw-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,143,.08);background:var(--w)}
+    .pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink4);padding:2px;display:flex;align-items:center;transition:color .12s}
+    .pw-eye:hover{color:var(--ink2)}
     .field input{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--ink);font-size:14px;font-family:'Geist',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
-    .field input:focus{border-color:#a0a09e;box-shadow:0 0 0 3px rgba(0,0,0,.04);background:var(--w)}
+    .field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,58,143,.08);background:var(--w)}
     .field input::placeholder{color:var(--ink4)}
     .amsg{display:none;margin-top:14px;padding:11px 14px;border-radius:8px;font-size:13px;line-height:1.5}
     .amsg.error{background:#fff3f3;border:1px solid #fecaca;color:#991b1b}
     .amsg.success{background:var(--gbg);border:1px solid var(--gbr);color:var(--g)}
     .afoot{margin-top:16px;text-align:center;font-size:13px;color:var(--ink3)}
-    .afoot a{color:var(--ink2);text-decoration:underline;cursor:pointer}
+    .afoot a{color:var(--blue);text-decoration:none;cursor:pointer}
+    .afoot a:hover{text-decoration:underline}
     .btn-load{opacity:.6;pointer-events:none}
 
     /* FEATURES */
     .features{padding:80px 6%;background:var(--w);border-top:1px solid var(--line)}
     .features-inner{max-width:1100px;margin:0 auto}
     .ftop{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:52px}
-    .sk{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin-bottom:10px}
+    .sk{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.12em;color:var(--blue);text-transform:uppercase;margin-bottom:10px}
     .st{font-family:'Instrument Serif',serif;font-weight:400;font-size:36px;line-height:1.12;letter-spacing:-.01em}
     .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
     .feat{background:var(--w);padding:32px 28px;transition:background .15s}
-    .feat:hover{background:var(--bg)}
-    .fn{font-family:'Geist Mono',monospace;font-size:11px;color:var(--ink4);margin-bottom:18px;letter-spacing:.06em}
+    .feat:hover{background:var(--blue3)}
+    .fn{font-family:'Geist Mono',monospace;font-size:11px;color:var(--blue);margin-bottom:18px;letter-spacing:.06em}
     .feat h3{font-size:16px;font-weight:500;margin-bottom:8px}
     .feat p{font-size:14px;color:var(--ink2);line-height:1.65;font-weight:300}
+
+    /* PRIVACY BANNER */
+    .privacy-banner{background:var(--blue3);border:1px solid rgba(26,58,143,.15);border-radius:14px;padding:24px 28px;margin-top:52px;display:flex;align-items:flex-start;gap:16px}
+    .privacy-banner svg{width:22px;height:22px;color:var(--blue);flex-shrink:0;margin-top:2px}
+    .privacy-banner h4{font-size:15px;font-weight:500;color:var(--blue);margin-bottom:4px}
+    .privacy-banner p{font-size:13px;color:var(--ink2);font-weight:300;line-height:1.6}
 
     /* FOOTER */
     footer{border-top:1px solid var(--line);padding:24px 6%;background:var(--w);display:flex;align-items:center;justify-content:space-between}
@@ -98,10 +113,11 @@
     .flinks a:hover{color:var(--ink2)}
 
     @media(max-width:900px){
-      .hero{grid-template-columns:1fr;padding:90px 5% 60px;gap:48px}
+      .hero{grid-template-columns:1fr;padding:90px 0 60px;gap:48px}
       h1{font-size:40px}
       .fgrid{grid-template-columns:1fr}
       .ftop{flex-direction:column;align-items:flex-start;gap:16px}
+      .nav-r a:nth-child(-n+2){display:none}
     }
   </style>
 </head>
@@ -111,29 +127,28 @@
 
 <nav>
   <a class="logo" href="/">
-    <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <img src="assets/icon.png" alt="MOTSA"/>
     MOTSA
   </a>
   <div class="nav-r">
     <a href="#features" class="btn btn-ghost" style="padding:7px 14px;font-size:13px">Fonctionnement</a>
-    <a href="desktop.html" class="btn btn-ghost" style="padding:7px 14px;font-size:13px">Télécharger l’app</a>
+    <a href="desktop.html" class="btn btn-ghost" style="padding:7px 14px;font-size:13px">Télécharger l'app</a>
     <a href="verify.html" class="btn btn-ghost" style="padding:7px 14px;font-size:13px">Vérifier un document</a>
-    <a href="#auth" class="btn btn-dark" style="padding:7px 16px;font-size:13px">Se connecter</a>
+    <a href="#auth" class="btn btn-blue" style="padding:7px 16px;font-size:13px">Se connecter</a>
   </div>
 </nav>
 
-<div style="max-width:1200px;margin:0 auto;padding:0 6%">
-  <div class="hero" style="max-width:none;padding:100px 0 80px">
+<div class="hero-wrap">
+  <div class="hero">
 
     <div>
       <div class="kicker"><span class="kd"></span>Document integrity · v1.0</div>
       <h1>Vos documents,<br><em>prouvés à la source.</em></h1>
-      <p class="desc">MOTSA capture chaque PDF téléchargé depuis Chrome, calcule son empreinte cryptographique et délivre un certificat d'authenticité infalsifiable — automatiquement.</p>
+      <p class="desc">MOTSA détecte vos PDFs téléchargés depuis Chrome, calcule leur empreinte SHA-256 <strong>localement sur votre machine</strong> et génère un certificat d'authenticité — sans jamais stocker vos fichiers.</p>
       <div class="hero-cta">
-        <a href="#auth" class="btn btn-dark">Créer un compte gratuit</a>
-        <a href="desktop.html" class="btn btn-outline">Télécharger l’app Mac</a>
+        <a href="#auth" class="btn btn-blue">Créer un compte gratuit</a>
+        <a href="desktop.html" class="btn btn-outline">Télécharger l'app Mac</a>
         <a href="#features" class="btn btn-outline">Comment ça marche</a>
-        <a href="verify.html" class="btn btn-outline">Vérifier un document</a>
       </div>
       <div class="proof">
         <div class="avs">
@@ -154,8 +169,16 @@
         <h2 class="atitle">Bon retour.</h2>
         <p class="asub">Accédez à votre espace MOTSA.</p>
         <div class="field"><label>Adresse e-mail</label><input type="email" id="lEmail" placeholder="vous@exemple.com"/></div>
-        <div class="field"><label>Mot de passe</label><input type="password" id="lPass" placeholder="••••••••"/></div>
-        <button class="btn btn-dark btn-full" id="lBtn" onclick="login()">Se connecter</button>
+        <div class="field">
+          <label>Mot de passe</label>
+          <div class="pw-wrap">
+            <input type="password" id="lPass" placeholder="••••••••"/>
+            <button class="pw-eye" type="button" onclick="togglePw('lPass',this)" aria-label="Afficher le mot de passe">
+              <svg id="lPassIcon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn-blue btn-full" id="lBtn" onclick="login()">Se connecter</button>
         <div class="amsg" id="lMsg"></div>
         <p class="afoot">Pas de compte ? <a onclick="switchTab('signup')">S'inscrire</a></p>
       </div>
@@ -167,10 +190,18 @@
         <div class="field"><label>Nom</label><input type="text" id="sLastName" placeholder="Brami" autocomplete="family-name"/></div>
         <div class="field"><label>Date de naissance</label><input type="text" id="sBirthDate" placeholder="JJ/MM/AAAA" inputmode="numeric" autocomplete="bday"/></div>
         <div class="field"><label>Adresse e-mail</label><input type="email" id="sEmail" placeholder="vous@exemple.com" autocomplete="email"/></div>
-        <div class="field"><label>Mot de passe</label><input type="password" id="sPass" placeholder="8 caractères minimum" autocomplete="new-password"/></div>
-        <button class="btn btn-dark btn-full" id="sBtn" onclick="signup()">Créer mon compte</button>
+        <div class="field">
+          <label>Mot de passe</label>
+          <div class="pw-wrap">
+            <input type="password" id="sPass" placeholder="8 caractères minimum" autocomplete="new-password"/>
+            <button class="pw-eye" type="button" onclick="togglePw('sPass',this)" aria-label="Afficher le mot de passe">
+              <svg id="sPassIcon" viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn-blue btn-full" id="sBtn" onclick="signup()">Créer mon compte</button>
         <div class="amsg" id="sMsg"></div>
-        <p class="afoot" style="margin-top:12px;font-size:12px;color:var(--ink4)">En créant un compte vous acceptez nos <a href="#">CGU</a>.</p>
+        <p class="afoot" style="margin-top:12px;font-size:12px;color:var(--ink4)">En créant un compte vous acceptez nos <a href="CGU.html">CGU</a>.</p>
         <p class="afoot">Déjà inscrit ? <a onclick="switchTab('login')">Se connecter</a></p>
       </div>
     </div>
@@ -183,29 +214,66 @@
   <div class="features-inner">
     <div class="ftop">
       <div>
-        <div class="sk">Pourquoi MOTSA</div>
-        <h2 class="st">L'intégrité documentaire,<br>sans friction.</h2>
+        <div class="sk">Comment ça marche</div>
+        <h2 class="st">Zéro stockage de fichier.<br>100 % d'intégrité.</h2>
       </div>
-      <a href="desktop.html" class="btn btn-dark">Télécharger MOTSA Desktop</a>
+      <a href="desktop.html" class="btn btn-blue">Télécharger MOTSA Desktop</a>
     </div>
     <div class="fgrid">
-      <div class="feat"><div class="fn">01</div><h3>Capture automatique</h3><p>MOTSA surveille vos téléchargements Chrome. Chaque PDF est détecté et traité dès son arrivée.</p></div>
-      <div class="feat"><div class="fn">02</div><h3>Empreinte SHA-256</h3><p>Le hash est calculé sur le PDF final avec certificat. Toute modification ultérieure est détectable.</p></div>
-      <div class="feat"><div class="fn">03</div><h3>Certificat & QR code</h3><p>Une page certificat est injectée dans le PDF. Le QR code atteste l'origine : source, date, référant.</p></div>
-      <div class="feat"><div class="fn">04</div><h3>Stockage cloud</h3><p>Le PDF certifié et son hash sont synchronisés dans votre compte motsa.tech. Accessibles partout.</p></div>
-      <div class="feat"><div class="fn">05</div><h3>Vérification publique</h3><p>N'importe qui peut scanner le QR et confirmer l'origine du document — sans compte requis.</p></div>
-      <div class="feat"><div class="fn">06</div><h3>Traçabilité complète</h3><p>Source URL, date, référant Chrome — chaque métadonnée est conservée et liée au certificat.</p></div>
+      <div class="feat">
+        <div class="fn">01</div>
+        <h3>Détection locale des PDFs</h3>
+        <p>L'agent MOTSA lit votre historique Chrome directement sur votre machine. Aucun fichier ne quitte votre ordinateur à cette étape.</p>
+      </div>
+      <div class="feat">
+        <div class="fn">02</div>
+        <h3>Empreinte SHA-256 calculée chez vous</h3>
+        <p>Le hash cryptographique est calculé localement par l'agent. Seule cette empreinte — et non le PDF — est transmise à nos serveurs.</p>
+      </div>
+      <div class="feat">
+        <div class="fn">03</div>
+        <h3>Certificat généré côté serveur</h3>
+        <p>Notre serveur crée la page certificat avec QR code à partir du hash. Le PDF certifié vous est renvoyé directement pour téléchargement.</p>
+      </div>
+      <div class="feat">
+        <div class="fn">04</div>
+        <h3>Seul le hash est stocké</h3>
+        <p>Nous n'enregistrons jamais votre PDF. Uniquement son empreinte SHA-256 — à sens unique, irréversible. Le contenu de vos documents reste confidentiel.</p>
+      </div>
+      <div class="feat">
+        <div class="fn">05</div>
+        <h3>Vérification publique sans compte</h3>
+        <p>N'importe qui peut scanner le QR code ou déposer le PDF certifié sur motsa.tech pour confirmer son authenticité — le hash est recalculé localement dans le navigateur.</p>
+      </div>
+      <div class="feat">
+        <div class="fn">06</div>
+        <h3>Traçabilité complète</h3>
+        <p>Source URL, date de téléchargement, identité du titulaire — chaque métadonnée est liée au certificat et consultable publiquement via le token de vérification.</p>
+      </div>
+    </div>
+
+    <div class="privacy-banner">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1l5 2v5c0 3-5 6-5 6S3 11 3 8V3l5-2z"/></svg>
+      <div>
+        <h4>Vos fichiers ne quittent jamais votre machine</h4>
+        <p>MOTSA ne stocke ni ne transmet vos PDFs. Seule l'empreinte SHA-256 — mathématiquement irréversible — est enregistrée dans notre base. Il est impossible de retrouver votre document à partir de son hash.</p>
+      </div>
     </div>
   </div>
 </section>
 
 <footer>
-  <a class="logo" href="/" style="font-size:14px">
-    <div class="lm" style="width:18px;height:18px;border-radius:5px"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+  <a class="logo" href="/">
+    <img src="assets/icon.png" alt="MOTSA" style="width:20px;height:20px;border-radius:5px"/>
     MOTSA
   </a>
   <p>© 2026 MOTSA — motsa.tech</p>
-  <div class="flinks"><a href="desktop.html">App desktop</a><a href="Privacy.html">Confidentialité</a><a href="CGU.html">CGU</a><a href="Contact.html">Contact</a></div>
+  <div class="flinks">
+    <a href="desktop.html">App desktop</a>
+    <a href="Privacy.html">Confidentialité</a>
+    <a href="CGU.html">CGU</a>
+    <a href="Contact.html">Contact</a>
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -215,20 +283,27 @@
     'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym'
   );
 
-  // Redirect si déjà connecté
   sb.auth.getSession().then(({data}) => {
     if (data.session) location.href = '/dashboard.html';
   });
-
   sb.auth.onAuthStateChange((e, s) => {
     if (e === 'SIGNED_IN' && s) location.href = '/dashboard.html';
   });
+
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    btn.querySelector('svg').innerHTML = isHidden
+      ? '<path d="M2 2l12 12M6.5 6.6A2 2 0 0010 10M4.2 4.3C2.8 5.5 1.8 6.8 1 8c1.5 2.5 4 5 7 5a6.8 6.8 0 003.8-1.2M6.8 3.2A6.8 6.8 0 0115 8c-.5.9-1.2 1.8-2 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>'
+      : '<path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/>';
+  }
 
   function switchTab(t) {
     document.querySelectorAll('.atab').forEach((el,i) => el.classList.toggle('active', (t==='login'&&i===0)||(t==='signup'&&i===1)));
     document.getElementById('form-login').classList.toggle('active', t==='login');
     document.getElementById('form-signup').classList.toggle('active', t==='signup');
-    ['lMsg','sMsg'].forEach(id => { const el=document.getElementById(id); el.style.display='none'; });
+    ['lMsg','sMsg'].forEach(id => { const el=document.getElementById(id); if(el) el.style.display='none'; });
   }
 
   function msg(id, text, type) {
@@ -255,86 +330,35 @@
   function parseBirthDate(raw) {
     const m = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
     if (!m) return null;
-
-    const dd = Number(m[1]);
-    const mm = Number(m[2]);
-    const yyyy = Number(m[3]);
-    const d = new Date(yyyy, mm - 1, dd);
-
-    if (
-      d.getFullYear() !== yyyy ||
-      d.getMonth() !== mm - 1 ||
-      d.getDate() !== dd
-    ) return null;
-
+    const dd=Number(m[1]),mm=Number(m[2]),yyyy=Number(m[3]);
+    const d=new Date(yyyy,mm-1,dd);
+    if(d.getFullYear()!==yyyy||d.getMonth()!==mm-1||d.getDate()!==dd) return null;
     return `${yyyy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
   }
 
   async function signup() {
-    const firstName = document.getElementById('sFirstName').value.trim();
-    const lastName  = document.getElementById('sLastName').value.trim();
-    const birthRaw  = document.getElementById('sBirthDate').value.trim();
-    const email     = document.getElementById('sEmail').value.trim();
-    const pass      = document.getElementById('sPass').value;
-
-    if (!firstName || !lastName || !birthRaw || !email || !pass) {
-      msg('sMsg','Veuillez remplir tous les champs.','error');
-      return;
+    const firstName=document.getElementById('sFirstName').value.trim();
+    const lastName=document.getElementById('sLastName').value.trim();
+    const birthRaw=document.getElementById('sBirthDate').value.trim();
+    const email=document.getElementById('sEmail').value.trim();
+    const pass=document.getElementById('sPass').value;
+    if(!firstName||!lastName||!birthRaw||!email||!pass){msg('sMsg','Veuillez remplir tous les champs.','error');return;}
+    const birthDate=parseBirthDate(birthRaw);
+    if(!birthDate){msg('sMsg','Date de naissance invalide. Format : JJ/MM/AAAA.','error');return;}
+    if(pass.length<8){msg('sMsg','8 caractères minimum.','error');return;}
+    setLoad('sBtn',true,['Création...','Créer mon compte']);
+    const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{first_name:firstName,last_name:lastName,birth_date:birthDate}}});
+    if(error){setLoad('sBtn',false,['Création...','Créer mon compte']);msg('sMsg','Erreur : '+error.message,'error');return;}
+    if(data?.user){
+      await sb.from('profiles').upsert({id:data.user.id,first_name:firstName,last_name:lastName,birth_date:birthDate},{onConflict:'id'});
     }
-
-    const birthDate = parseBirthDate(birthRaw);
-    if (!birthDate) {
-      msg('sMsg','Date de naissance invalide. Format attendu : JJ/MM/AAAA.','error');
-      return;
-    }
-
-    if (pass.length < 8) {
-      msg('sMsg','8 caractères minimum.','error');
-      return;
-    }
-
-    setLoad('sBtn', true, ['Création...','Créer mon compte']);
-
-    const {data, error} = await sb.auth.signUp({
-      email,
-      password: pass,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          birth_date: birthDate
-        }
-      }
-    });
-
-    if (error) {
-      setLoad('sBtn', false, ['Création...','Créer mon compte']);
-      msg('sMsg','Erreur : ' + error.message,'error');
-      return;
-    }
-
-    if (data?.user) {
-      const {error: profileError} = await sb.from('profiles').upsert({
-        id: data.user.id,
-        first_name: firstName,
-        last_name: lastName,
-        birth_date: birthDate
-      }, { onConflict: 'id' });
-
-      if (profileError) {
-        setLoad('sBtn', false, ['Création...','Créer mon compte']);
-        msg('sMsg','Compte créé, mais erreur profil : ' + profileError.message,'error');
-        return;
-      }
-    }
-
-    setLoad('sBtn', false, ['Création...','Créer mon compte']);
+    setLoad('sBtn',false,['Création...','Créer mon compte']);
     msg('sMsg','Compte créé ! Vérifiez votre boîte mail.','success');
   }
 
   document.addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    document.getElementById('form-login').classList.contains('active') ? login() : signup();
+    if(e.key!=='Enter')return;
+    document.getElementById('form-login').classList.contains('active')?login():signup();
   });
 </script>
 </body>

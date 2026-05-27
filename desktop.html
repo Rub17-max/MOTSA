@@ -6,7 +6,10 @@
   <title>Télécharger MOTSA Desktop — MOTSA</title>
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
-    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18)}
+    :root{--ink:#0f0f0f;--ink2:#4a4a4a;--ink3:#888;--ink4:#bbb;--line:#e6e6e4;--bg:#f7f6f3;--w:#fff;--g:#1a7a4a;
+      --blue: #1a3a8f;
+      --blue2: #2952cc;
+      --blue3: #e8eef9;--gbg:#eef8f2;--gbr:rgba(26,122,74,.18)}
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--ink);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
@@ -16,7 +19,7 @@
     .nav-r{display:flex;gap:8px;align-items:center}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 20px;font-size:14px;font-weight:500;border-radius:8px;cursor:pointer;text-decoration:none;transition:all .15s;border:none;font-family:'Geist',sans-serif}
     .btn-ghost{background:transparent;color:var(--ink2);border:1px solid var(--line)}.btn-ghost:hover{background:var(--w);color:var(--ink)}
-    .btn-dark{background:var(--ink);color:var(--w)}.btn-dark:hover{background:#2a2a2a}
+    .btn-dark{background:var(--ink);color:var(--w)}.btn-dark:hover{background:#2a2a2a}.btn-blue{background:#1a3a8f;color:#fff}.btn-blue:hover{background:#2952cc}
     .btn-outline{background:transparent;color:var(--ink);border:1px solid var(--line)}.btn-outline:hover{background:var(--w)}
     .hero-bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 50% at 70% 35%,rgba(26,122,74,.06),transparent 70%);z-index:-1}
     .hero-bg::after{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(0,0,0,.07) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
@@ -53,7 +56,7 @@
 <div class="hero-bg"></div>
 <nav>
   <a class="logo" href="/">
-    <div class="lm"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <img src="assets/icon.png" alt="MOTSA" style="width:26px;height:26px;border-radius:7px"/>
     MOTSA
   </a>
   <div class="nav-r">
@@ -105,7 +108,7 @@
 
 <footer>
   <a class="logo" href="/" style="font-size:14px">
-    <div class="lm" style="width:18px;height:18px;border-radius:5px"><svg viewBox="0 0 12 12" fill="none"><path d="M2 3h8M2 6h5M2 9h7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <img src="assets/icon.png" alt="MOTSA" style="width:20px;height:20px;border-radius:5px"/>
     MOTSA
   </a>
   <p>© 2026 MOTSA — motsa.tech</p>
