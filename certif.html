@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Certify — MOTSA</title>
+  <meta name="description" content="Certify an official document with MOTSA. Universities and schools use this interface to register document hashes.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html">
+    <img src="assets/icon-512.png" alt="MOTSA">
+    MOTSA
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a class="active keep" href="certif.html">Certify</a>
+    <a href="verify.html">Verify</a>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="section" style="border-top:0;padding-top:56px">
+    <div class="kicker">Certify interface — Issuer</div>
+    <h1 style="max-width:800px">Certify an official document</h1>
+    <p class="lead">
+      This interface simulates the issuer portal. The PDF hash is computed locally in your browser — the file is never uploaded. MOTSA stores only the hash and metadata.
+    </p>
+
+    <div class="split">
+
+      <!-- ─── Left panel: form ─────────────────────────────── -->
+      <aside class="card panel">
+        <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">New certificate</h2>
+
+        <label class="upload-zone" for="pdf-input" id="upload-label">
+          <div class="upload-icon">📄</div>
+          <strong>Drop the official PDF here</strong>
+          <span class="upload-hint">Diploma, certificate, transcript — stays in your browser</span>
+          <span class="upload-filename" id="upload-filename"></span>
+        </label>
+        <input id="pdf-input" type="file" accept="application/pdf" onchange="onFileSelect(this)">
+
+        <div class="field">
+          <label for="issuer">Official issuer</label>
+          <select id="issuer">
+            <option value="paris1">Université Paris 1 Panthéon-Sorbonne</option>
+            <option value="sorbonne">Sorbonne Université</option>
+            <option value="hec">HEC Paris</option>
+            <option value="polytechnique">École Polytechnique</option>
+            <option value="sciences-po">Sciences Po Paris</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="holder">Holder's full name</label>
+          <input id="holder" type="text" value="Ruben Brami" placeholder="First and last name">
+        </div>
+
+        <div class="field">
+          <label for="doc-type">Document type</label>
+          <select id="doc-type">
+            <option value="certificat_scolarite">Certificate of enrollment</option>
+            <option value="diplome">Diploma</option>
+            <option value="releve_notes">Transcript</option>
+            <option value="attestation">Attestation</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="issued-at">Date of issuance</label>
+          <input id="issued-at" type="date">
+        </div>
+
+        <button class="btn primary full" id="certify-btn" onclick="certify()">
+          <span class="spinner"></span>
+          <span class="btn-label">Certify with MOTSA</span>
+        </button>
+      </aside>
+
+      <!-- ─── Right panel: output ──────────────────────────── -->
+      <section>
+        <!-- API call preview -->
+        <div class="api-block" id="api-preview">
+          <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          <span class="method">POST</span> <span class="path">/api/v1/certificates</span><br>
+          <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
+          {<br>
+          &nbsp;&nbsp;<span class="key">"issuer_id"</span>: <span class="val" id="p-issuer">"paris1"</span>,<br>
+          &nbsp;&nbsp;<span class="key">"holder"</span>:    <span class="val" id="p-holder">"Ruben Brami"</span>,<br>
+          &nbsp;&nbsp;<span class="key">"document_type"</span>: <span class="val" id="p-type">"certificat_scolarite"</span>,<br>
+          &nbsp;&nbsp;<span class="key">"issued_at"</span>: <span class="val" id="p-date">"2026-06-03"</span>,<br>
+          &nbsp;&nbsp;<span class="key">"document_hash"</span>: <span class="val" id="p-hash">"<span style="color:var(--dim)">— upload a PDF to compute —</span>"</span><br>
+          }
+        </div>
+
+        <!-- Result: success -->
+        <div class="result-panel ok" id="result-ok">
+          <span class="status-badge">Certified</span>
+          <h2>Certificate created</h2>
+          <p>The document is now registered with its official issuer. Share the certificate ID with the holder so they can include it in applications.</p>
+          <div class="hash-block" id="result-hash"></div>
+          <div style="margin-top:16px">
+            <button class="btn soft" onclick="copyHash()" style="font-size:13px;padding:9px 16px">Copy certificate ID</button>
+            <button class="btn" onclick="simulateModified()" style="font-size:13px;padding:9px 16px;margin-left:8px">Simulate tampered doc →</button>
+          </div>
+        </div>
+
+        <!-- Result: error -->
+        <div class="result-panel err" id="result-err">
+          <span class="status-badge">Error</span>
+          <h2>Certification failed</h2>
+          <p id="result-err-msg">An unexpected error occurred. Please try again or check your API key.</p>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>© 2026 MOTSA</span>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="verify.html">Verify</a>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+  <span>Issuer certification interface.</span>
+</footer>
+
+<div class="mobile-tabs">
+  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
+  <a class="active" href="certif.html"><span class="tab-icon">✎</span>Certify</a>
+  <a href="verify.html"><span class="tab-icon">✓</span>Verify</a>
+  <a href="dashboard.html"><span class="tab-icon">▦</span>Dash</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── State ── */
+let currentHash = null;
+let currentCertId = null;
+
+/* ── Init ── */
+document.getElementById('issued-at').value = new Date().toISOString().slice(0, 10);
+
+/* Live preview update */
+['issuer','holder','doc-type','issued-at'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updatePreview);
+});
+
+function updatePreview() {
+  document.getElementById('p-issuer').textContent = `"${document.getElementById('issuer').value}"`;
+  document.getElementById('p-holder').textContent = `"${document.getElementById('holder').value}"`;
+  document.getElementById('p-type').textContent = `"${document.getElementById('doc-type').value}"`;
+  document.getElementById('p-date').textContent = `"${document.getElementById('issued-at').value}"`;
+}
+
+/* ── File selection ── */
+function onFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const zone = document.getElementById('upload-label');
+  zone.classList.add('has-file');
+  zone.querySelector('.upload-icon').textContent = '✅';
+  zone.querySelector('strong').textContent = 'PDF selected';
+  document.getElementById('upload-filename').textContent = file.name;
+  computeHash(file).then(hash => {
+    currentHash = hash;
+    document.getElementById('p-hash').innerHTML = `"${hash.slice(0,32)}…"`;
+  });
+}
+
+/* ── SHA-256 ── */
+async function computeHash(file) {
+  const buf = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
+function randomHex(n) {
+  return [...crypto.getRandomValues(new Uint8Array(n))]
+    .map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── Certify ── */
+async function certify() {
+  const btn = document.getElementById('certify-btn');
+
+  /* Validate */
+  const holder = document.getElementById('holder').value.trim();
+  if (!holder) { showError('Holder name is required.'); return; }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  /* Compute hash */
+  const file = document.getElementById('pdf-input').files[0];
+  let hash;
+  if (file) {
+    hash = await computeHash(file);
+  } else {
+    /* Demo mode: generate a deterministic-looking hash */
+    hash = randomHex(32);
+  }
+
+  /* Simulate network latency (replace with real API call) */
+  await simulateAPI(hash);
+
+  btn.classList.remove('loading');
+  btn.disabled = false;
+}
+
+async function simulateAPI(hash) {
+  /* ─────────────────────────────────────────────────────────────────────
+     Replace this block with a real fetch() call when your backend is live:
+
+     const resp = await fetch('https://YOUR-RAILWAY-URL/api/v1/certificates', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': 'Bearer ' + API_KEY
+       },
+       body: JSON.stringify({
+         issuer_id:     document.getElementById('issuer').value,
+         holder:        document.getElementById('holder').value.trim(),
+         document_type: document.getElementById('doc-type').value,
+         issued_at:     document.getElementById('issued-at').value,
+         document_hash: hash
+       })
+     });
+     const data = await resp.json();
+     if (!resp.ok) { showError(data.message || 'API error'); return; }
+     showSuccess(data.certificate_id, hash, data.verification_url);
+
+     ─────────────────────────────────────────────────────────────────── */
+
+  await sleep(900);
+
+  /* Mock response */
+  const certId = 'motsa_' + randomHex(3).toUpperCase();
+  const issuerMap = {
+    'paris1':       'Université Paris 1 Panthéon-Sorbonne',
+    'sorbonne':     'Sorbonne Université',
+    'hec':          'HEC Paris',
+    'polytechnique':'École Polytechnique',
+    'sciences-po':  'Sciences Po Paris',
+  };
+  const issuerLabel = issuerMap[document.getElementById('issuer').value] || 'Unknown issuer';
+
+  showSuccess(certId, hash, issuerLabel);
+
+  /* Save to localStorage so verify.html can cross-check */
+  const store = JSON.parse(localStorage.getItem('motsa_certs') || '{}');
+  store[certId] = {
+    hash,
+    issuer: issuerLabel,
+    holder: document.getElementById('holder').value.trim(),
+    type:   document.getElementById('doc-type').value,
+    issued: document.getElementById('issued-at').value,
+    createdAt: new Date().toISOString()
+  };
+  localStorage.setItem('motsa_certs', JSON.stringify(store));
+
+  currentCertId = certId;
+  currentHash = hash;
+}
+
+function showSuccess(certId, hash, issuer) {
+  document.getElementById('result-err').classList.remove('show');
+  const ok = document.getElementById('result-ok');
+  ok.classList.add('show');
+
+  document.getElementById('p-hash').innerHTML = `"${hash.slice(0,32)}…"`;
+
+  document.getElementById('result-hash').innerHTML =
+    `<strong>certificate_id</strong> ${certId}<br>` +
+    `<strong>issuer</strong> ${issuer}<br>` +
+    `<strong>holder</strong> ${document.getElementById('holder').value.trim()}<br>` +
+    `<strong>issued_at</strong> ${document.getElementById('issued-at').value}<br>` +
+    `<strong>sha256</strong> ${hash}<br>` +
+    `<strong>verification_url</strong> https://verify.motsa.com/${certId}`;
+}
+
+function showError(msg) {
+  document.getElementById('result-ok').classList.remove('show');
+  document.getElementById('result-err-msg').textContent = msg;
+  document.getElementById('result-err').classList.add('show');
+}
+
+function copyHash() {
+  if (!currentCertId) return;
+  navigator.clipboard.writeText(currentCertId);
+  showToast('Certificate ID copied!');
+}
+
+function simulateModified() {
+  if (!currentCertId) return;
+  /* Redirect to verify with the cert ID pre-filled and tampered flag */
+  window.location.href = `verify.html?id=${currentCertId}&tampered=1`;
+}
+
+/* ── Helpers ── */
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function copyBlock(btn) {
+  const block = btn.closest('.api-block');
+  const text = block.innerText.replace('Copy\n','').trim();
+  navigator.clipboard.writeText(text);
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 2000);
+}
+</script>
+
+</body>
+</html>

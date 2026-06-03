@@ -1,535 +1,330 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-  
-  <meta name="theme-color" content="#f7f6f3"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="MOTSA"/>
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/>
-  <title>Verify document authenticity — MOTSA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
-  <style>
-:root{
-  --bg:#f7f6f3;--surface:#fff;--surface2:#fbfbfa;--line:#e6e6e4;
-  --text:#0f0f0f;--text2:#4a4a4a;--text3:#868686;--text4:#b8b8b8;
-  --blue:#1a3a8f;--blue2:#2952cc;--blueSoft:#e8eef9;
-  --success:#1a7a4a;--successBg:#eef8f2;--danger:#991b1b;--dangerBg:#fff3f3;
-  --warning:#d97706;--warningBg:#fffbeb;
-  --shadow:0 24px 70px rgba(15,15,15,.06);--radius:18px
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
-a{color:inherit;text-decoration:none}
-.nav{position:sticky;top:0;z-index:50;height:64px;background:rgba(247,246,243,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%}
-.logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.01em}
-.logo img{width:30px;height:30px;border-radius:8px;box-shadow:0 10px 24px rgba(26,58,143,.13)}
-.nav-links{display:flex;align-items:center;gap:8px}
-.nav-links a{font-size:13px;color:var(--text2);padding:8px 12px;border-radius:999px;transition:.16s}
-.nav-links a:hover{background:var(--surface);color:var(--text)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:500;cursor:pointer;transition:.16s;font-family:'Geist',sans-serif}
-.btn-primary,.btn-blue{background:var(--blue);border-color:var(--blue);color:white}
-.btn-primary:hover,.btn-blue:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 14px 34px rgba(26,58,143,.16)}
-.btn-ghost{background:transparent;color:var(--text2)}
-.btn-ghost:hover{background:var(--surface);color:var(--text)}
-.btn-outline{background:var(--surface);color:var(--text);border-color:var(--line)}
-.btn-outline:hover{border-color:rgba(26,58,143,.24);box-shadow:0 10px 30px rgba(15,15,15,.04)}
-.wrap{max-width:1160px;margin:0 auto;padding:0 6%}
-.kicker{display:inline-flex;align-items:center;gap:8px;font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--blue);margin-bottom:18px}
-.kicker::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 6px rgba(26,58,143,.08)}
-h1{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.018em}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-.footer{border-top:1px solid var(--line);background:var(--surface);padding:24px 6%;display:flex;align-items:center;justify-content:space-between;gap:18px}
-.footer p,.footer a{font-size:13px;color:var(--text3)}
-.footer .links{display:flex;gap:18px;flex-wrap:wrap}
-@media(max-width:860px){.nav{padding:0 5%;height:auto;min-height:64px}.nav-links{gap:4px;flex-wrap:wrap;justify-content:flex-end}.nav-links a:not(.keep){display:none}.footer{flex-direction:column;align-items:flex-start}}
-
-
-main{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;padding:64px 6%}
-.verify-card{max-width:740px;width:100%;padding:42px}
-.verify-card h1{font-size:44px;line-height:1.08;margin-bottom:10px}.lead{color:var(--text2);font-weight:300;max-width:590px;margin-bottom:28px}
-.token-pill{display:none;font-family:'Geist Mono';font-size:11px;color:var(--text3);background:var(--surface2);border:1px solid var(--line);padding:8px 12px;border-radius:999px;margin-bottom:18px;overflow:hidden;text-overflow:ellipsis}
-.upload{border:1.5px dashed var(--line);border-radius:20px;padding:40px 28px;text-align:center;cursor:pointer;background:#fff;transition:.16s}.upload:hover,.upload.drag{background:#fbfcff;border-color:rgba(26,58,143,.34);box-shadow:0 18px 50px rgba(26,58,143,.06)}.upload strong{display:block;font-size:17px;margin-bottom:5px}.upload span{color:var(--text3);font-size:13px}input[type=file]{display:none}
-.state{display:none;margin-top:24px}.state.on{display:block}.loading{padding:20px;text-align:center;color:var(--text3)}.spinner{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--blue);animation:spin .75s linear infinite;margin:0 auto 12px}@keyframes spin{to{transform:rotate(360deg)}}
-.result{border-radius:24px;padding:34px;border:1px solid var(--line);text-align:left}.result.ok{background:linear-gradient(180deg,#fff,#f7fbf8);border-color:rgba(26,122,74,.18)}.result.err{background:var(--dangerBg);border-color:#fecaca}.result.warn{background:var(--warningBg);border-color:#fde68a}.proof-badge{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--blue);color:#fff;font-size:32px;margin-bottom:20px;box-shadow:0 18px 50px rgba(26,58,143,.16)}.ok .proof-badge{background:var(--success)}.err .proof-badge{background:var(--danger)}.warn .proof-badge{background:var(--warning)}
-.result h2{font-size:28px;margin-bottom:4px}.rmsg{color:var(--text2);font-weight:300;margin-bottom:22px}
-.rows{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:22px 0}.row{background:rgba(255,255,255,.72);padding:15px}.row span{display:block;color:var(--text3);font-size:12px;margin-bottom:4px}.row strong{font-size:13px;word-break:break-word}
-.ai-alert{display:flex;gap:12px;align-items:flex-start;margin:18px 0 4px;padding:15px 16px;border-radius:16px;background:var(--warningBg);border:1px solid #fde68a;color:#78350f}.ai-alert strong{display:block;font-size:13px;margin-bottom:2px;color:#78350f}.ai-alert p{font-size:13px;line-height:1.45;color:#92400e}.ai-alert .icon{flex:0 0 28px;width:28px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--warning);color:white;font-weight:600}.ai-alert.high{background:#fff1f2;border-color:#fecdd3}.ai-alert.high strong{color:#881337}.ai-alert.high p{color:#9f1239}.ai-alert.high .icon{background:#be123c}.ai-alert.medium{background:#fffbeb;border-color:#fde68a}.ai-alert.low{background:#f8fafc;border-color:#e2e8f0}.ai-alert.low strong{color:#334155}.ai-alert.low p{color:#475569}.ai-alert.low .icon{background:#64748b}
-.advanced{border-top:1px solid var(--line);padding-top:14px;margin-top:10px}.advanced summary{cursor:pointer;color:var(--text3);font-size:13px}.hash-box{margin-top:12px;font-family:'Geist Mono';font-size:11px;color:var(--text3);word-break:break-all;line-height:1.8;background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:14px;padding:14px}.hash-box strong{color:var(--text2)}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.note-public{margin-top:16px;color:var(--text3);font-size:12px}
-@media(max-width:720px){.verify-card{padding:28px 20px}.verify-card h1{font-size:34px}.rows{grid-template-columns:1fr}}
-
-
-
-  .wrap,main{padding-left:16px!important;padding-right:16px!important}
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MOTSA — NAV MOBILE v3
-   Bottom tab bar iOS : 5 items, safe-area, sans conflits
-   ═══════════════════════════════════════════════════════════ */
-
-html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
-body{width:100%;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom);touch-action:manipulation}
-button,.btn,.upload,input,textarea,select,a{-webkit-tap-highlight-color:transparent}
-button,.btn,.upload{min-height:48px}
-input,textarea,select{font-size:16px}
-img,svg,video{max-width:100%;height:auto}
-
-/* Bouton App dans nav desktop : soft-blue */
-.nav-links .btn-primary{
-  background:#eef4ff;border-color:#c9d9ff;color:#12377f;
-  box-shadow:0 8px 22px rgba(26,58,143,.10);
-}
-.nav-links .btn-primary:hover{
-  background:#fff;border-color:#aebfff;color:#0d2a66;transform:translateY(-1px);
-}
-
-/* Tablet 641–860px */
-@media(max-width:860px){
-  .nav{padding:0 5%}
-  .nav-links a:not(.keep){display:none}
-  .nav-links .btn-primary{background:#eef4ff;color:#12377f;border-color:#c9d9ff}
-}
-
-@media(hover:none){
-  .btn:hover,.nav-links a:hover,.upload:hover,
-  .doc-card:hover,.step:hover,.feature:hover,.trust-item:hover{
-    transform:none;box-shadow:none;background:inherit
-  }
-}
-
-/* ── iPhone ≤640px : bottom tab bar 5 colonnes ── */
-@media(max-width:640px){
-  :root{--radius:20px;--shadow:0 18px 45px rgba(15,15,15,.055)}
-  body{font-size:14px;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
-
-  .nav{
-    height:54px!important;min-height:54px!important;
-    padding:0 16px!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    background:rgba(247,246,243,.96)!important;
-  }
-  .nav .logo{margin-right:auto}
-  .nav .logo img{width:28px;height:28px;border-radius:8px}
-
-  /* Tab bar 5 colonnes */
-  .nav-links{
-    position:fixed!important;z-index:100!important;
-    left:8px!important;right:8px!important;
-    bottom:calc(6px + env(safe-area-inset-bottom))!important;
-    display:grid!important;
-    grid-template-columns:repeat(5,1fr)!important;
-    gap:3px!important;padding:4px!important;
-    background:rgba(255,255,255,.92)!important;
-    border:1px solid rgba(215,215,212,.98)!important;
-    border-radius:20px!important;
-    box-shadow:0 14px 44px rgba(15,15,15,.14)!important;
-    backdrop-filter:blur(22px)!important;
-    -webkit-backdrop-filter:blur(22px)!important;
-  }
-
-  /* Reset tous les liens de nav */
-  .nav-links a{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    min-height:44px!important;
-    padding:6px 2px!important;
-    border-radius:15px!important;
-    font-size:10.5px!important;
-    font-weight:500!important;
-    line-height:1.1!important;
-    color:var(--text2)!important;
-    background:transparent!important;
-    border:none!important;
-    box-shadow:none!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-
-  /* Bouton App — tab bleu léger */
-  .nav-links a.btn-primary,
-  .nav-links a.btn[href="desktop.html"]{
-    display:flex!important;
-    background:#eef4ff!important;
-    color:var(--blue)!important;
-    border:1px solid rgba(26,58,143,.18)!important;
-    font-weight:600!important;
-    box-shadow:none!important;
-  }
-
-  /* Page layout */
-  .wrap{width:100%;padding-left:20px;padding-right:20px}
-  main{padding-left:20px!important;padding-right:20px!important;
-       padding-top:34px!important;padding-bottom:34px!important}
-
-  .hero{min-height:auto!important;grid-template-columns:1fr!important;
-        gap:24px!important;padding:44px 0 42px!important}
-  .visual{order:0!important;padding:18px!important;border-radius:24px}
-  .proof-card{padding:22px;border-radius:22px}
-  h1{font-size:clamp(34px,10vw,44px)!important;line-height:1.04!important;letter-spacing:-.022em!important}
-  .lead,.intro{font-size:16px!important;line-height:1.62!important;margin-bottom:24px!important}
-  .hero-cta,.actions{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;width:100%}
-  .btn{width:100%;min-height:52px;padding:13px 16px;font-size:14px}
-  .section{padding:48px 0!important}.section h2{font-size:34px!important}
-  .section-head{display:block!important;margin-bottom:22px!important}
-  .steps,.features,.trust-grid,.guarantees,.stats,.doc-grid,
-  .rows,.meta,.layout,.legal,.auth-zone{
-    grid-template-columns:1fr!important;gap:12px!important;
-    background:transparent!important;border:0!important
-  }
-  .step,.feature,.trust-item,.g,.stat,.doc-card,.panel,
-  .info-card,.contact-card,.auth-card{
-    border:1px solid var(--line);border-radius:22px!important;
-    box-shadow:var(--shadow);background:var(--surface)!important
-  }
-  .verify-card,.contact-card,.auth-card,.panel{
-    padding:24px 18px!important;width:100%;max-width:none!important
-  }
-  .upload{padding:32px 18px;border-radius:22px}
-  .upload strong{font-size:16px}
-  .result{padding:24px 18px;border-radius:22px}
-  .proof-badge{width:54px;height:54px;font-size:28px}
-  .row{padding:13px}.row strong{font-size:12.5px}
-  .ai-alert{border-radius:18px;padding:14px;gap:10px}
-  .ai-alert .icon{width:26px;height:26px;flex-basis:26px}
-  .footer{padding:24px 20px calc(94px + env(safe-area-inset-bottom));gap:10px}
-  .footer .links{gap:12px}
-  .toc{display:none!important}
-  article{max-width:100%!important}
-  h2{font-size:26px!important}
-  .topbar{padding:14px 18px!important;gap:12px;align-items:flex-start!important}
-  .topbar>div:last-child{width:100%;justify-content:space-between!important}
-  .content{padding:22px 18px 108px!important}
-  .panel-head,.panel-foot{padding:18px!important;align-items:flex-start!important;flex-direction:column!important}
-  .panel-body{padding:18px!important}
-  .sb{display:none!important}.main{margin-left:0!important;width:100%}
-  .ci{align-items:flex-start;padding:14px}.cname{white-space:normal}.cbadge{display:none}
-  .toast{left:18px;right:18px;bottom:calc(88px + env(safe-area-inset-bottom))}
-}
-
-@media(max-width:390px){
-  .wrap,main{padding-left:14px!important;padding-right:14px!important}
-  .nav-links a{font-size:9.5px!important}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Verify — MOTSA</title>
+  <meta name="description" content="Verify a document's authenticity with MOTSA. Upload the PDF and enter the certificate ID to check integrity.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav class="nav">
-  <a class="logo" href="/"><img src="assets/icon.png" alt="MOTSA"/><span>MOTSA</span></a>
+  <a class="logo" href="index.html">
+    <img src="assets/icon-512.png" alt="MOTSA">
+    MOTSA
+  </a>
   <div class="nav-links">
-    <a href="/#product" class="keep">Product</a>
-    <a href="verify.html" class="keep">Verify</a>
-    <a href="Privacy.html" class="keep">Security</a>
-    <a href="/#auth" class="keep">Login</a>
-    <a href="desktop.html" class="btn btn-primary keep">App</a>
+    <a href="index.html">Home</a>
+    <a href="certif.html">Certify</a>
+    <a class="active keep" href="verify.html">Verify</a>
+    <a href="dashboard.html">Dashboard</a>
   </div>
 </nav>
-<main>
-  <div class="verify-card card">
-    <div class="kicker">Public verification</div>
-    <h1>Drop a document to verify authenticity.</h1>
-    <p class="lead">MOTSA checks whether this file matches its original certified version. The verification is performed locally in your browser.</p>
-    <div class="token-pill" id="tokenPill"></div>
-    <label for="fileCheck"><div class="upload" id="dropZone"><strong>Choose or drop a PDF</strong><span>The file itself is not uploaded to MOTSA.</span></div></label>
-    <input type="file" id="fileCheck" accept="application/pdf" onchange="verifyFile(this.files[0])"/>
-    <div class="state" id="loading"><div class="loading"><div class="spinner"></div>Checking authenticity...</div></div>
-    <div class="state" id="result"></div>
-  </div>
+
+<main class="wrap">
+  <section class="section" style="border-top:0;padding-top:56px">
+    <div class="kicker">Verify interface — HR / Recruiter</div>
+    <h1 style="max-width:800px">Verify a document</h1>
+    <p class="lead">
+      Upload the PDF you received from the candidate and enter the certificate ID (or scan the QR code). MOTSA recomputes the hash locally — the file never leaves your browser.
+    </p>
+
+    <div class="split">
+
+      <!-- ─── Left panel: form ─────────────────────────────── -->
+      <aside class="card panel">
+        <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">Check document</h2>
+
+        <label class="upload-zone" for="vpdf-input" id="vupload-label">
+          <div class="upload-icon">📄</div>
+          <strong>Upload the received PDF</strong>
+          <span class="upload-hint">Hash computed locally — never uploaded</span>
+          <span class="upload-filename" id="vupload-filename"></span>
+        </label>
+        <input id="vpdf-input" type="file" accept="application/pdf" onchange="onFileSelect(this)">
+
+        <div class="field">
+          <label for="cert-id">Certificate ID or QR code</label>
+          <input id="cert-id" type="text" placeholder="motsa_XXXXXX" autocomplete="off" spellcheck="false">
+        </div>
+
+        <button class="btn primary full" id="verify-btn" onclick="verifyDoc()">
+          <span class="spinner"></span>
+          <span class="btn-label">Verify document</span>
+        </button>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn soft" style="flex:1;font-size:13px" onclick="loadDemo('ok')">Demo: authentic</button>
+          <button class="btn" style="flex:1;font-size:13px" onclick="loadDemo('modified')">Demo: modified</button>
+          <button class="btn" style="flex:1;font-size:13px" onclick="loadDemo('unknown')">Demo: unknown</button>
+        </div>
+      </aside>
+
+      <!-- ─── Right panel: results ─────────────────────────── -->
+      <section>
+
+        <!-- Idle state -->
+        <div id="idle-state" style="padding:40px 24px;text-align:center;color:var(--muted);background:white;border:1px solid var(--line);border-radius:var(--r);">
+          <div style="font-size:48px;margin-bottom:16px;line-height:1">🔍</div>
+          <div style="font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px">Ready to verify</div>
+          <div style="font-size:13px">Upload a PDF and enter the certificate ID, then click "Verify document".</div>
+        </div>
+
+        <!-- VERIFIED -->
+        <div class="result-panel ok" id="result-ok">
+          <span class="status-badge">Verified</span>
+          <h2>Document authentic</h2>
+          <p>This PDF matches the version certified by the official issuer. It has not been modified since issuance.</p>
+          <div class="detail-row"><span>Issuer</span><strong id="v-issuer">—</strong></div>
+          <div class="detail-row"><span>Holder</span><strong id="v-holder">—</strong></div>
+          <div class="detail-row"><span>Document type</span><strong id="v-type">—</strong></div>
+          <div class="detail-row"><span>Issued on</span><strong id="v-issued">—</strong></div>
+          <div class="hash-block" id="v-hash"></div>
+        </div>
+
+        <!-- MODIFIED -->
+        <div class="result-panel err" id="result-modified">
+          <span class="status-badge">Modified</span>
+          <h2>Document has been altered</h2>
+          <p>The hash of the uploaded PDF does not match the certified version. This document may have been tampered with — do not accept it.</p>
+          <div class="hash-block" id="v-hash-modified">
+            <strong>received sha256</strong> —<br>
+            <strong>certified sha256</strong> —
+          </div>
+        </div>
+
+        <!-- UNKNOWN -->
+        <div class="result-panel warn" id="result-unknown">
+          <span class="status-badge">Unknown</span>
+          <h2>Certificate not found</h2>
+          <p>No MOTSA certificate matches this ID. Either the ID is incorrect, or this document has not been certified with MOTSA.</p>
+          <div class="hash-block" id="v-hash-unknown"></div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- ─── API reference ─────────────────────────────────── -->
+    <div style="margin-top:48px">
+      <div class="kicker">API call</div>
+      <div class="api-block" style="margin-top:12px">
+        <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+        <span class="method">POST</span> <span class="path">/api/v1/verify</span><br>
+        <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
+        {<br>
+        &nbsp;&nbsp;<span class="key">"certificate_id"</span>: <span class="val" id="api-cid">"motsa_XXXXXX"</span>,<br>
+        &nbsp;&nbsp;<span class="key">"document_hash"</span>: <span class="val" id="api-hash">"<span style='color:#5470a0'>— computed on upload —</span>"</span><br>
+        }
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer class="footer">
-  <a class="logo" href="/"><img src="assets/icon.png" alt="MOTSA"/><span>MOTSA</span></a>
-  <p>© 2026 MOTSA — Document trust layer.</p>
-  <div class="links"><a href="Privacy.html">Privacy</a><a href="CGU.html">Terms</a><a href="Contact.html">Contact</a><a href="desktop.html">Desktop app</a></div>
+  <span>© 2026 MOTSA</span>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="certif.html">Certify</a>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+  <span>Clear results: verified, modified, or unknown.</span>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<div class="mobile-tabs">
+  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
+  <a href="certif.html"><span class="tab-icon">✎</span>Certify</a>
+  <a class="active" href="verify.html"><span class="tab-icon">✓</span>Verify</a>
+  <a href="dashboard.html"><span class="tab-icon">▦</span>Dash</a>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const sb = supabase.createClient(
-  'https://cggtyaklofxywlmaatam.supabase.co',
-  'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym'
-);
+/* ── State ── */
+let computedHash = null;
 
-const token = new URLSearchParams(location.search).get('token') || '';
-
-if (token) {
-  const pill = document.getElementById('tokenPill');
-  pill.style.display = 'block';
-  pill.textContent = 'Certificate detected · token ' + token;
-}
-
-// ── UTILS ────────────────────────────────────────────────────────────────────
-
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function fmtDate(v){ if(!v) return '—'; try { return new Date(v).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); } catch { return v; } }
-function sourceHost(v){ try { return new URL(v||'').hostname || v || '—'; } catch { return v || '—'; } }
-
-const AI_SOURCE_CATEGORIES = [
-  {
-    label: 'Generative AI platform',
-    severity: 'high',
-    domains: [
-      'chatgpt.com','openai.com','sora.com','claude.ai','anthropic.com','gemini.google.com','bard.google.com',
-      'deepseek.com','chat.deepseek.com','grok.com','x.ai','mistral.ai','chat.mistral.ai','lechat.mistral.ai',
-      'copilot.microsoft.com','bing.com','poe.com','you.com','character.ai','meta.ai','perplexity.ai'
-    ],
-    title: 'Generative AI source detected',
-    message: 'The original source appears to be a generative AI platform. MOTSA confirms file integrity since certification, but this does not prove that the original content was human-made.'
-  },
-  {
-    label: 'AI image/video/audio generation',
-    severity: 'high',
-    domains: [
-      'midjourney.com','runwayml.com','pika.art','klingai.com','klingai.io','hailuoai.video','hailuoai.com',
-      'stability.ai','dreamstudio.ai','leonardo.ai','ideogram.ai','firefly.adobe.com','elevenlabs.io','heygen.com',
-      'synthesia.io','d-id.com','luma.ai','kaiber.ai','invideo.io','veed.io'
-    ],
-    title: 'AI media generation source detected',
-    message: 'The original source appears to be an AI media generation platform. MOTSA verifies that this file has not changed since certification, but the source may indicate AI-generated visual, audio, or video content.'
-  },
-  {
-    label: 'AI writing / presentation / productivity tool',
-    severity: 'medium',
-    domains: [
-      'gamma.app','beautiful.ai','tome.app','canva.com','notion.ai','notion.so','jasper.ai','copy.ai','writesonic.com',
-      'grammarly.com','quillbot.com','wordtune.com','rytr.me','slidesgo.com','pitch.com','adobe.com'
-    ],
-    title: 'AI-assisted creation tool detected',
-    message: 'The original source appears to be an AI-assisted productivity or creation tool. This is not automatically suspicious, but it should be disclosed when the document is expected to be strictly human-authored.'
-  },
-  {
-    label: 'AI research / search assistant',
-    severity: 'medium',
-    domains: [
-      'perplexity.ai','you.com','phind.com','consensus.app','elicit.com','scite.ai','semanticscholar.org','notebooklm.google.com'
-    ],
-    title: 'AI research assistant source detected',
-    message: 'The original source appears to be an AI research or search assistant. MOTSA verifies integrity, but the content may rely on AI-assisted synthesis or retrieval.'
-  },
-  {
-    label: 'AI coding / app builder',
-    severity: 'low',
-    domains: [
-      'lovable.dev','bolt.new','v0.dev','replit.com','cursor.com','github.com','copilot.github.com','codeium.com',
-      'windsurf.com','stackblitz.com','huggingface.co','replicate.com'
-    ],
-    title: 'AI development platform detected',
-    message: 'The original source appears to be an AI-assisted development or model hosting platform. This may be normal for technical files, but it should be interpreted in context.'
+/* ── URL params (from certif.html "Simulate tampered" button) ── */
+const params = new URLSearchParams(location.search);
+if (params.get('id')) {
+  document.getElementById('cert-id').value = params.get('id');
+  if (params.get('tampered') === '1') {
+    /* Pre-fill a wrong hash to simulate tampering */
+    computedHash = [...crypto.getRandomValues(new Uint8Array(32))]
+      .map(x => x.toString(16).padStart(2,'0')).join('');
+    updateApiBlock();
+    document.getElementById('vupload-label').querySelector('strong').textContent = 'Tampered PDF (simulated)';
+    document.getElementById('vupload-label').classList.add('has-file');
+    document.getElementById('vupload-label').querySelector('.upload-icon').textContent = '⚠️';
   }
-];
-
-function normalizedHost(url) {
-  try { return new URL(url || '').hostname.toLowerCase().replace(/^www\./, ''); }
-  catch { return String(url || '').toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]; }
 }
 
-function detectAiSource(sourceUrl) {
-  const host = normalizedHost(sourceUrl);
-  if (!host) return null;
-
-  for (const category of AI_SOURCE_CATEGORIES) {
-    const domain = category.domains.find(d => host === d || host.endsWith('.' + d));
-    if (domain) return { ...category, domain, host };
-  }
-  return null;
-}
-
-function renderAiSourceAlert(sourceUrl) {
-  const ai = detectAiSource(sourceUrl);
-  if (!ai) return '';
-  return `
-    <div class="ai-alert ${esc(ai.severity)}" role="alert">
-      <div class="icon">!</div>
-      <div>
-        <strong>${esc(ai.title)}</strong>
-        <p>${esc(ai.message)}<br><strong>Category:</strong> ${esc(ai.label)} · <strong>Detected source:</strong> ${esc(sourceHost(sourceUrl))}</p>
-      </div>
-    </div>`;
-}
-
-function showLoading(on){ document.getElementById('loading').classList.toggle('on', !!on); }
-
-// ── SHA-256 calculated in the browser (WebCrypto — no network upload) ──────
-
-async function sha256File(file) {
-  const buf = await file.arrayBuffer();
-  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
-// ── MAIN VERIFICATION ───────────────────────────────────────────────────
-
-async function verifyFile(file) {
+/* ── File select ── */
+function onFileSelect(input) {
+  const file = input.files[0];
   if (!file) return;
-  document.getElementById('dropZone').querySelector('strong').textContent = file.name;
-  document.getElementById('result').className = 'state';
-  document.getElementById('result').innerHTML = '';
-  showLoading(true);
-
-  try {
-    // 1. Calcul hash local (100% client-side)
-    const uploadedHash = await sha256File(file);
-
-    // 2. QR case: known token → find the exact certificate
-    if (token) {
-      const { data: cert, error: certErr } = await sb
-        .from('certificates')
-        .select('document_id, verification_token, certificate_url, created_at')
-        .eq('verification_token', token)
-        .single();
-
-      if (certErr || !cert) {
-        renderError('Certificate not found.', 'This verification token does not exist in the MOTSA registry.', uploadedHash);
-        return;
-      }
-
-      const { data: doc, error: docErr } = await sb
-        .from('documents')
-        .select('id, file_name, file_url, sha256, source_url, created_at')
-        .eq('id', cert.document_id)
-        .single();
-
-      if (docErr || !doc) {
-        renderError('Document not found.', 'The document linked to this certificate was not found in the registry.', uploadedHash);
-        return;
-      }
-
-      const match = uploadedHash === (doc.sha256 || '');
-      renderResult(match, uploadedHash, doc, cert);
-      return;
-    }
-
-    // 3. Case without token: search by hash across the database
-    const { data: docs } = await sb
-      .from('documents')
-      .select('id, file_name, file_url, sha256, source_url, created_at')
-      .eq('sha256', uploadedHash)
-      .limit(1);
-
-    if (!docs || !docs.length) {
-      renderNotFound(uploadedHash);
-      return;
-    }
-
-    const doc = docs[0];
-
-    const { data: certs } = await sb
-      .from('certificates')
-      .select('verification_token, certificate_url, created_at')
-      .eq('document_id', doc.id)
-      .limit(1);
-
-    const cert = (certs && certs[0]) || {};
-
-    renderResult(true, uploadedHash, doc, cert);
-
-  } catch(e) {
-    console.error(e);
-    renderError('Unexpected error.', 'An error occurred during verification. Please try again.', '—');
-  } finally {
-    showLoading(false);
-  }
+  const zone = document.getElementById('vupload-label');
+  zone.classList.add('has-file');
+  zone.querySelector('.upload-icon').textContent = '✅';
+  zone.querySelector('strong').textContent = 'PDF selected';
+  document.getElementById('vupload-filename').textContent = file.name;
+  computeHash(file).then(hash => {
+    computedHash = hash;
+    updateApiBlock();
+  });
 }
 
-// ── RENDERERS ─────────────────────────────────────────────────────────────────
+async function computeHash(file) {
+  const buf = await file.arrayBuffer();
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2,'0')).join('');
+}
 
-function renderResult(match, uploadedHash, doc, cert) {
-  const result = document.getElementById('result');
-  result.className = 'state on';
+function updateApiBlock() {
+  const cid = document.getElementById('cert-id').value || 'motsa_XXXXXX';
+  document.getElementById('api-cid').textContent = `"${cid}"`;
+  if (computedHash) {
+    document.getElementById('api-hash').textContent = `"${computedHash.slice(0,32)}…"`;
+  }
+}
+document.getElementById('cert-id').addEventListener('input', updateApiBlock);
 
-  if (match) {
-    result.innerHTML = `
-      <div class="result ok">
-        <div class="proof-badge">✓</div>
-        <h2>Authentic document</h2>
-        <p class="rmsg">This file matches the original certified version.</p>
-        ${renderAiSourceAlert(doc.source_url)}
-        <div class="rows">
-          <div class="row"><span>Document</span><strong>${esc(doc.file_name || '—')}</strong></div>
-          <div class="row"><span>Source</span><strong>${esc(sourceHost(doc.source_url))}</strong></div>
-          <div class="row"><span>Certified</span><strong>${esc(fmtDate(cert.created_at || doc.created_at))}</strong></div>
-          <div class="row"><span>Verified</span><strong>${new Date().toLocaleString('fr-FR')}</strong></div>
-        </div>
-        <details class="advanced">
-          <summary>Advanced details</summary>
-          <div class="hash-box"><strong>SHA-256 verified</strong><br>${esc(uploadedHash)}</div>
-        </details>
-        <div class="actions">
-          ${doc.file_url ? `<a href="${esc(doc.file_url)}" target="_blank" class="btn btn-outline">Download certified PDF</a>` : ''}
-          ${cert.verification_token ? `<a href="/verify.html?token=${esc(cert.verification_token)}" class="btn btn-ghost">Verification link</a>` : ''}
-        </div>
-        <p class="note-public">Verification is local in your browser. The file itself is not uploaded to MOTSA.</p>
-      </div>`;
+/* ── Verify ── */
+async function verifyDoc() {
+  const btn = document.getElementById('verify-btn');
+  const certId = document.getElementById('cert-id').value.trim();
+
+  if (!certId) { showToast('Enter a certificate ID first.'); return; }
+  if (!computedHash) { showToast('Upload a PDF first (or use a demo button).'); return; }
+
+  btn.classList.add('loading'); btn.disabled = true;
+  hideAll();
+
+  await simulateVerifyAPI(certId, computedHash);
+
+  btn.classList.remove('loading'); btn.disabled = false;
+}
+
+async function simulateVerifyAPI(certId, hash) {
+  /* ─────────────────────────────────────────────────────────────────────
+     Replace with real API call when backend is live:
+
+     const resp = await fetch('https://YOUR-RAILWAY-URL/api/v1/verify', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': 'Bearer ' + API_KEY
+       },
+       body: JSON.stringify({ certificate_id: certId, document_hash: hash })
+     });
+     const data = await resp.json();
+     if (!resp.ok) { showUnknown(hash); return; }
+     if (data.status === 'verified')  showVerified(data);
+     if (data.status === 'modified')  showModified(hash, data.certified_hash);
+     if (data.status === 'unknown')   showUnknown(hash);
+
+     ─────────────────────────────────────────────────────────────────── */
+
+  await sleep(800);
+
+  /* Check localStorage for certs created in this session */
+  const store = JSON.parse(localStorage.getItem('motsa_certs') || '{}');
+  const cert = store[certId];
+
+  if (!cert) {
+    showUnknown(hash);
     return;
   }
 
-  result.innerHTML = `
-    <div class="result err">
-      <div class="proof-badge">✕</div>
-      <h2>Document modified</h2>
-      <p class="rmsg">This file no longer matches the certified version.</p>
-      ${renderAiSourceAlert(doc.source_url)}
-      <details class="advanced" open>
-        <summary>Advanced details</summary>
-        <div class="hash-box">
-          <strong>Uploaded file hash</strong><br>${esc(uploadedHash)}<br><br>
-          <strong>Expected hash</strong><br>${esc(doc.sha256 || '—')}
-        </div>
-      </details>
-    </div>`;
+  if (cert.hash === hash) {
+    showVerified(cert, hash, certId);
+  } else {
+    showModified(hash, cert.hash);
+  }
 }
 
-function renderNotFound(uploadedHash) {
-  const result = document.getElementById('result');
-  result.className = 'state on';
-  result.innerHTML = `
-    <div class="result warn">
-      <div class="proof-badge">?</div>
-      <h2>No certified match</h2>
-      <p class="rmsg">MOTSA could not find a certified version matching this file.</p>
-      <details class="advanced">
-        <summary>Advanced details</summary>
-        <div class="hash-box"><strong>Calculated SHA-256</strong><br>${esc(uploadedHash)}</div>
-      </details>
-    </div>`;
+const typeLabels = {
+  certificat_scolarite: 'Certificate of enrollment',
+  diplome:              'Diploma',
+  releve_notes:         'Transcript',
+  attestation:          'Attestation',
+};
+
+function showVerified(cert, hash, certId) {
+  hideAll();
+  document.getElementById('idle-state').style.display = 'none';
+  document.getElementById('v-issuer').textContent = cert.issuer || '—';
+  document.getElementById('v-holder').textContent  = cert.holder  || '—';
+  document.getElementById('v-type').textContent    = typeLabels[cert.type] || cert.type || '—';
+  document.getElementById('v-issued').textContent  = cert.issued  || '—';
+  document.getElementById('v-hash').innerHTML =
+    `<strong>certificate_id</strong> ${certId}<br>` +
+    `<strong>sha256</strong> ${hash}`;
+  document.getElementById('result-ok').classList.add('show');
 }
 
-function renderError(title, msg, uploadedHash) {
-  showLoading(false);
-  const result = document.getElementById('result');
-  result.className = 'state on';
-  result.innerHTML = `
-    <div class="result err">
-      <div class="proof-badge">!</div>
-      <h2>${esc(title)}</h2>
-      <p class="rmsg">${esc(msg)}</p>
-      ${uploadedHash && uploadedHash !== '—' ? `<details class="advanced"><summary>Advanced details</summary><div class="hash-box"><strong>Calculated SHA-256</strong><br>${esc(uploadedHash)}</div></details>` : ''}
-    </div>`;
+function showModified(received, certified) {
+  hideAll();
+  document.getElementById('idle-state').style.display = 'none';
+  document.getElementById('v-hash-modified').innerHTML =
+    `<strong>received sha256 </strong> ${received}<br>` +
+    `<strong>certified sha256</strong> ${certified}`;
+  document.getElementById('result-modified').classList.add('show');
 }
 
+function showUnknown(hash) {
+  hideAll();
+  document.getElementById('idle-state').style.display = 'none';
+  document.getElementById('v-hash-unknown').innerHTML =
+    `<strong>computed sha256</strong> ${hash}<br>` +
+    `<strong>status</strong> no matching certificate in registry`;
+  document.getElementById('result-unknown').classList.add('show');
+}
 
-// ── DRAG & DROP (desktop + mobile) ────────────────────────────────────────────
+function hideAll() {
+  ['result-ok','result-modified','result-unknown'].forEach(id =>
+    document.getElementById(id).classList.remove('show'));
+}
 
-const dz = document.getElementById('dropZone');
+/* ── Demo buttons ── */
+function loadDemo(type) {
+  hideAll();
+  document.getElementById('idle-state').style.display = 'none';
 
-['dragenter','dragover'].forEach(evt => dz.addEventListener(evt, e => {
-  e.preventDefault(); dz.classList.add('drag');
-}));
-['dragleave','drop'].forEach(evt => dz.addEventListener(evt, e => {
-  e.preventDefault(); dz.classList.remove('drag');
-}));
-dz.addEventListener('drop', e => verifyFile(e.dataTransfer.files[0]));
+  if (type === 'ok') {
+    showVerified({
+      issuer: 'Université Paris 1 Panthéon-Sorbonne',
+      holder: 'Ruben Brami',
+      type:   'certificat_scolarite',
+      issued: '2026-06-03'
+    }, 'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657', 'motsa_DEMO01');
 
-// Touch (mobile)
-dz.addEventListener('touchstart', () => {}, { passive: true });
+  } else if (type === 'modified') {
+    showModified(
+      'fe491f9394ed4e7c42069d77a2321e3fd237593ccb4d81c627da2d1f76a6e261',
+      'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657'
+    );
+  } else {
+    showUnknown('a0b1c2d3e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0b1c2d3e4f5ab');
+  }
+}
+
+/* ── Helpers ── */
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+function copyBlock(btn) {
+  const block = btn.closest('.api-block');
+  const text = block.innerText.replace('Copy\n','').trim();
+  navigator.clipboard.writeText(text);
+  btn.textContent = 'Copied!';
+  setTimeout(() => btn.textContent = 'Copy', 2000);
+}
 </script>
 
 </body>

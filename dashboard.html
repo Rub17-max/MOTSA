@@ -1,738 +1,196 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-  
-  <meta name="theme-color" content="#f7f6f3"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="MOTSA"/>
-  <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Dashboard — MOTSA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
-  <style>
-:root{
-  --bg:#f7f6f3;--surface:#fff;--surface2:#fbfbfa;--line:#e6e6e4;
-  --text:#0f0f0f;--text2:#4a4a4a;--text3:#868686;--text4:#b8b8b8;
-  --blue:#1a3a8f;--blue2:#2952cc;--blueSoft:#e8eef9;
-  --success:#1a7a4a;--successBg:#eef8f2;--danger:#991b1b;--dangerBg:#fff3f3;
-  --shadow:0 24px 70px rgba(15,15,15,.06);--radius:18px
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Geist',sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
-a{color:inherit;text-decoration:none}
-.nav{position:sticky;top:0;z-index:50;height:64px;background:rgba(247,246,243,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%}
-.logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.01em}
-.logo img{width:30px;height:30px;border-radius:8px;box-shadow:0 10px 24px rgba(26,58,143,.13)}
-.nav-links{display:flex;align-items:center;gap:8px}
-.nav-links a{font-size:13px;color:var(--text2);padding:8px 12px;border-radius:999px;transition:.16s}
-.nav-links a:hover{background:var(--surface);color:var(--text)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:500;cursor:pointer;transition:.16s;font-family:'Geist',sans-serif}
-.btn-primary,.btn-blue{background:var(--blue);border-color:var(--blue);color:white}
-.btn-primary:hover,.btn-blue:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 14px 34px rgba(26,58,143,.16)}
-.btn-ghost{background:transparent;color:var(--text2)}
-.btn-ghost:hover{background:var(--surface);color:var(--text)}
-.btn-outline{background:var(--surface);color:var(--text);border-color:var(--line)}
-.btn-outline:hover{border-color:rgba(26,58,143,.24);box-shadow:0 10px 30px rgba(15,15,15,.04)}
-.btn-full{width:100%}
-.wrap{max-width:1160px;margin:0 auto;padding:0 6%}
-.kicker{display:inline-flex;align-items:center;gap:8px;font-family:'Geist Mono',monospace;text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--blue);margin-bottom:18px}
-.kicker::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--blue);box-shadow:0 0 0 6px rgba(26,58,143,.08)}
-h1,h2.hero-title{font-family:'Instrument Serif',serif;font-weight:400;letter-spacing:-.018em}
-.muted{color:var(--text3)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-.footer{border-top:1px solid var(--line);background:var(--surface);padding:24px 6%;display:flex;align-items:center;justify-content:space-between;gap:18px}
-.footer p,.footer a{font-size:13px;color:var(--text3)}
-.footer .links{display:flex;gap:18px;flex-wrap:wrap}
-@media(max-width:860px){.nav{padding:0 5%;height:auto;min-height:64px}.nav-links{gap:4px;flex-wrap:wrap;justify-content:flex-end}.nav-links a:not(.keep){display:none}.footer{flex-direction:column;align-items:flex-start}}
-
-
-body{display:flex;background:var(--bg)}
-.sb{width:250px;min-height:100vh;position:fixed;inset:0 auto 0 0;background:#fbfcff;border-right:1px solid rgba(26,58,143,.12);padding:18px 12px;display:flex;flex-direction:column;z-index:20}
-.sb-top{display:flex;align-items:center;gap:10px;padding:8px 8px 20px;border-bottom:1px solid var(--line)}
-.sb-top button{background:transparent;border:0;cursor:pointer;color:var(--text3)}
-.sb.collapsed{width:64px}.sb.collapsed .logo-text,.sb.collapsed .nav,.sb.collapsed .sb-bot{display:none}
-.main{margin-left:250px;min-height:100vh;flex:1;transition:.2s}
-.nav{display:block;position:static;height:auto;background:transparent;border:0;backdrop-filter:none;padding:0}
-.nhead{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);opacity:.75;margin:22px 10px 8px}
-.ni{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:var(--text3);font-size:14px;cursor:pointer;text-decoration:none;transition:.16s}
-.ni:hover{background:white;color:var(--text)}
-.ni.active{background:var(--blueSoft);color:var(--blue);font-weight:500}
-.ni svg{width:16px;height:16px}
-.sb-bot{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px}
-.upill{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.uav{width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}.uemail{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}.uplan{font-family:'Geist Mono';font-size:11px;color:var(--text4)}
-.signout{background:transparent;border:0;color:var(--text3);cursor:pointer;padding:8px;border-radius:10px;width:100%;text-align:left}
-.signout:hover{background:var(--blueSoft);color:var(--blue)}
-.topbar{height:auto;min-height:76px;background:rgba(247,246,243,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:18px 36px;position:sticky;top:0;z-index:10}
-.tb-title{font-size:18px;font-weight:600}.tb-sub{color:var(--text3);font-size:13px;margin-top:2px}
-.content{padding:34px 36px;max-width:1180px}
-.api-status{display:inline-flex;align-items:center;gap:7px;color:var(--text3);font-family:'Geist Mono';font-size:12px}
-.api-dot{width:7px;height:7px;border-radius:50%;background:var(--text4)}.api-dot.on{background:var(--blue)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
-.stat{padding:22px}.stat-l{color:var(--text3);font-size:13px}.stat-v{font-family:'Instrument Serif';font-size:38px;color:var(--blue);line-height:1;margin:10px 0 4px}.stat-s{color:var(--text4);font-size:12px}
-.panel{padding:0;margin-bottom:24px;overflow:hidden}.panel-head{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:22px 24px;border-bottom:1px solid var(--line)}.panel-head h2{font-size:16px}.panel-head p{color:var(--text3);font-size:13px}.panel-body{padding:24px}.panel-foot{padding:16px 24px;border-top:1px solid var(--line);background:var(--surface2);display:flex;justify-content:space-between;align-items:center;color:var(--text3)}
-.doc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-.doc-card{background:white;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 18px 54px rgba(15,15,15,.04);transition:.16s}.doc-card:hover{transform:translateY(-1px);box-shadow:0 22px 60px rgba(26,58,143,.08)}
-.doc-status{display:inline-flex;color:var(--success);background:var(--successBg);border:1px solid rgba(26,122,74,.16);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:500;margin-bottom:14px}
-.doc-card h3{font-size:16px;margin-bottom:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.doc-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;color:var(--text3);font-size:12px}.doc-meta strong{display:block;color:var(--text);font-size:13px;margin-top:2px}
-.advanced{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}.advanced summary{cursor:pointer;color:var(--text3);font-size:13px}.advanced-grid{display:grid;grid-template-columns:90px 1fr;gap:8px;margin-top:12px;font-size:12px;color:var(--text3)}.advanced-grid code{word-break:break-all;color:var(--text2);font-family:'Geist Mono';font-size:11px}
-.doc-actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
-.clist{border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.ci{display:flex;align-items:center;gap:14px;padding:14px 16px;background:white;border-bottom:1px solid var(--line)}.ci:last-child{border-bottom:0}.ci:hover{background:#fbfcff}
-.cchk{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line);cursor:pointer}.cchk.on{background:var(--blue);border-color:var(--blue)}.cchk.on::after{content:'✓';color:white;font-size:13px;display:flex;justify-content:center;line-height:18px}
-.cicon{width:34px;height:34px;border-radius:10px;background:var(--blueSoft);display:flex;align-items:center;justify-content:center;color:var(--blue)}.cicon svg{width:16px}
-.cinfo{flex:1;min-width:0}.cname{font-family:'Geist Mono';font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cmeta{font-size:12px;color:var(--text3)}
-.cbadge{font-size:11px;border-radius:999px;padding:4px 9px;background:var(--blueSoft);color:var(--blue)}.cbadge.done{background:var(--surface2);color:var(--text4)}
-.prog{display:none;margin-top:16px}.prog-l{font-family:'Geist Mono';font-size:12px;color:var(--blue);margin-bottom:8px}.prog-bar{height:4px;background:var(--line);border-radius:999px;overflow:hidden}.prog-fill{height:100%;background:var(--blue);width:0%;transition:.3s}
-.empty{text-align:center;padding:48px 20px;color:var(--text3)}.empty-mark{font-size:32px;color:var(--blue);margin-bottom:10px}.empty h3{color:var(--text);font-size:18px;margin-bottom:6px}.empty p{margin-bottom:18px}
-.toast{position:fixed;right:24px;bottom:24px;background:var(--text);color:white;padding:12px 16px;border-radius:14px;opacity:0;transform:translateY(20px);transition:.2s;z-index:99}.toast.show{opacity:1;transform:translateY(0)}.toast.ok{background:var(--blue)}.toast.err{background:var(--danger)}
-@media(max-width:1000px){.sb{display:none}.main{margin-left:0}.stats,.doc-grid{grid-template-columns:1fr}.content,.topbar{padding-left:20px;padding-right:20px}}
-
-
-
-  .wrap,main{padding-left:16px!important;padding-right:16px!important}
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MOTSA — NAV MOBILE v3
-   Bottom tab bar iOS : 5 items, safe-area, sans conflits
-   ═══════════════════════════════════════════════════════════ */
-
-html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}
-body{width:100%;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom);touch-action:manipulation}
-button,.btn,.upload,input,textarea,select,a{-webkit-tap-highlight-color:transparent}
-button,.btn,.upload{min-height:48px}
-input,textarea,select{font-size:16px}
-img,svg,video{max-width:100%;height:auto}
-
-/* Bouton App dans nav desktop : soft-blue */
-.nav-links .btn-primary{
-  background:#eef4ff;border-color:#c9d9ff;color:#12377f;
-  box-shadow:0 8px 22px rgba(26,58,143,.10);
-}
-.nav-links .btn-primary:hover{
-  background:#fff;border-color:#aebfff;color:#0d2a66;transform:translateY(-1px);
-}
-
-/* Tablet 641–860px */
-@media(max-width:860px){
-  .nav{padding:0 5%}
-  .nav-links a:not(.keep){display:none}
-  .nav-links .btn-primary{background:#eef4ff;color:#12377f;border-color:#c9d9ff}
-}
-
-@media(hover:none){
-  .btn:hover,.nav-links a:hover,.upload:hover,
-  .doc-card:hover,.step:hover,.feature:hover,.trust-item:hover{
-    transform:none;box-shadow:none;background:inherit
-  }
-}
-
-/* ── iPhone ≤640px : bottom tab bar 5 colonnes ── */
-@media(max-width:640px){
-  :root{--radius:20px;--shadow:0 18px 45px rgba(15,15,15,.055)}
-  body{font-size:14px;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
-
-  .nav{
-    height:54px!important;min-height:54px!important;
-    padding:0 16px!important;
-    align-items:center!important;
-    justify-content:flex-start!important;
-    background:rgba(247,246,243,.96)!important;
-  }
-  .nav .logo{margin-right:auto}
-  .nav .logo img{width:28px;height:28px;border-radius:8px}
-
-  /* Tab bar 5 colonnes */
-  .nav-links{
-    position:fixed!important;z-index:100!important;
-    left:8px!important;right:8px!important;
-    bottom:calc(6px + env(safe-area-inset-bottom))!important;
-    display:grid!important;
-    grid-template-columns:repeat(5,1fr)!important;
-    gap:3px!important;padding:4px!important;
-    background:rgba(255,255,255,.92)!important;
-    border:1px solid rgba(215,215,212,.98)!important;
-    border-radius:20px!important;
-    box-shadow:0 14px 44px rgba(15,15,15,.14)!important;
-    backdrop-filter:blur(22px)!important;
-    -webkit-backdrop-filter:blur(22px)!important;
-  }
-
-  /* Reset tous les liens de nav */
-  .nav-links a{
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    min-height:44px!important;
-    padding:6px 2px!important;
-    border-radius:15px!important;
-    font-size:10.5px!important;
-    font-weight:500!important;
-    line-height:1.1!important;
-    color:var(--text2)!important;
-    background:transparent!important;
-    border:none!important;
-    box-shadow:none!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-  }
-
-  /* Bouton App — tab bleu léger */
-  .nav-links a.btn-primary,
-  .nav-links a.btn[href="desktop.html"]{
-    display:flex!important;
-    background:#eef4ff!important;
-    color:var(--blue)!important;
-    border:1px solid rgba(26,58,143,.18)!important;
-    font-weight:600!important;
-    box-shadow:none!important;
-  }
-
-  /* Page layout */
-  .wrap{width:100%;padding-left:20px;padding-right:20px}
-  main{padding-left:20px!important;padding-right:20px!important;
-       padding-top:34px!important;padding-bottom:34px!important}
-
-  .hero{min-height:auto!important;grid-template-columns:1fr!important;
-        gap:24px!important;padding:44px 0 42px!important}
-  .visual{order:0!important;padding:18px!important;border-radius:24px}
-  .proof-card{padding:22px;border-radius:22px}
-  h1{font-size:clamp(34px,10vw,44px)!important;line-height:1.04!important;letter-spacing:-.022em!important}
-  .lead,.intro{font-size:16px!important;line-height:1.62!important;margin-bottom:24px!important}
-  .hero-cta,.actions{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;width:100%}
-  .btn{width:100%;min-height:52px;padding:13px 16px;font-size:14px}
-  .section{padding:48px 0!important}.section h2{font-size:34px!important}
-  .section-head{display:block!important;margin-bottom:22px!important}
-  .steps,.features,.trust-grid,.guarantees,.stats,.doc-grid,
-  .rows,.meta,.layout,.legal,.auth-zone{
-    grid-template-columns:1fr!important;gap:12px!important;
-    background:transparent!important;border:0!important
-  }
-  .step,.feature,.trust-item,.g,.stat,.doc-card,.panel,
-  .info-card,.contact-card,.auth-card{
-    border:1px solid var(--line);border-radius:22px!important;
-    box-shadow:var(--shadow);background:var(--surface)!important
-  }
-  .verify-card,.contact-card,.auth-card,.panel{
-    padding:24px 18px!important;width:100%;max-width:none!important
-  }
-  .upload{padding:32px 18px;border-radius:22px}
-  .upload strong{font-size:16px}
-  .result{padding:24px 18px;border-radius:22px}
-  .proof-badge{width:54px;height:54px;font-size:28px}
-  .row{padding:13px}.row strong{font-size:12.5px}
-  .ai-alert{border-radius:18px;padding:14px;gap:10px}
-  .ai-alert .icon{width:26px;height:26px;flex-basis:26px}
-  .footer{padding:24px 20px calc(94px + env(safe-area-inset-bottom));gap:10px}
-  .footer .links{gap:12px}
-  .toc{display:none!important}
-  article{max-width:100%!important}
-  h2{font-size:26px!important}
-  .topbar{padding:14px 18px!important;gap:12px;align-items:flex-start!important}
-  .topbar>div:last-child{width:100%;justify-content:space-between!important}
-  .content{padding:22px 18px 108px!important}
-  .panel-head,.panel-foot{padding:18px!important;align-items:flex-start!important;flex-direction:column!important}
-  .panel-body{padding:18px!important}
-  .sb{display:none!important}.main{margin-left:0!important;width:100%}
-  .ci{align-items:flex-start;padding:14px}.cname{white-space:normal}.cbadge{display:none}
-  .toast{left:18px;right:18px;bottom:calc(88px + env(safe-area-inset-bottom))}
-}
-
-@media(max-width:390px){
-  .wrap,main{padding-left:14px!important;padding-right:14px!important}
-  .nav-links a{font-size:9.5px!important}
-}
-</style>
+  <meta name="description" content="Issuer dashboard. Monitor certified documents, verifications, and API usage.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<aside class="sb">
-  <div class="sb-top">
-    <button id="sidebarToggle" onclick="toggleSidebar()" title="Hide menu">☰</button>
-    <a class="logo logo-text" href="/"><img src="assets/icon.png" alt="MOTSA"/>MOTSA</a>
+
+<nav class="nav">
+  <a class="logo" href="index.html">
+    <img src="assets/icon-512.png" alt="MOTSA">
+    MOTSA
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="certif.html">Certify</a>
+    <a href="verify.html">Verify</a>
+    <a class="active keep" href="dashboard.html">Dashboard</a>
   </div>
-  <div class="nav">
-    <div class="nhead">Workspace</div>
-    <a class="ni active" onclick="setPage('home',this)">▦ Dashboard</a>
-    <a class="ni" onclick="setPage('docs',this)">□ Documents</a>
-    <div class="nhead">Tools</div>
-    <a class="ni" onclick="setPage('import',this)">↓ Certify downloads</a>
-    <a class="ni" href="verify.html">✓ Verify document</a>
-    <a class="ni" href="desktop.html">⌘ Desktop app</a>
-  </div>
-  <div class="sb-bot">
-    <div class="upill"><div class="uav" id="uav">?</div><div><div class="uemail" id="uemail">loading...</div><div class="uplan">Starter</div></div></div>
-    <button class="signout" onclick="signOut()">Sign out →</button>
-  </div>
-</aside>
-<div class="main">
-  <div class="topbar">
-    <div><div class="tb-title" id="tbTitle">All verified documents in one place.</div><div class="tb-sub">Monitor authenticity and integrity across your files.</div></div>
-    <div style="display:flex;align-items:center;gap:12px"><div class="api-status"><span class="api-dot" id="apiDot"></span><span id="apiLabel">Server</span></div><button class="btn btn-primary" onclick="setPage('import',null)">Certify</button></div>
-  </div>
-  <div class="content">
-    <div id="page-home">
-      <div class="stats">
-        <div class="stat card"><div class="stat-l">Verified documents</div><div class="stat-v" id="sTot">—</div><div class="stat-s">total</div></div>
-        <div class="stat card"><div class="stat-l">Integrity checks</div><div class="stat-v" id="sMth">—</div><div class="stat-s">this month</div></div>
-        <div class="stat card"><div class="stat-l">Latest proof</div><div class="stat-v" id="sLast" style="font-size:20px;padding-top:8px">—</div><div class="stat-s">&nbsp;</div></div>
+</nav>
+
+<main class="wrap">
+  <section class="section" style="border-top:0;padding-top:56px">
+    <div class="kicker">Issuer dashboard</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:36px">
+      <div>
+        <h1 style="font-size:clamp(32px,4vw,52px);margin-bottom:8px">Documents</h1>
+        <p style="color:var(--muted);font-size:14px">Université Paris 1 Panthéon-Sorbonne — issuer_id: paris1</p>
       </div>
-      <section class="panel card" id="importCard">
-        <div class="panel-head"><div><h2>Certify downloaded PDFs</h2><p>Select recent documents and create a verifiable proof.</p></div><button class="btn btn-ghost" onclick="loadChrome()">Refresh</button></div>
-        <div class="panel-body"><div class="clist" id="clist"></div><div class="prog" id="prog"><div class="prog-l" id="progL">Certification in progress...</div><div class="prog-bar"><div class="prog-fill" id="progF"></div></div></div></div>
-        <div class="panel-foot"><p><span id="selCount">0</span> selected</p><button class="btn btn-primary" id="certBtn" onclick="certify()" disabled style="opacity:.45">Certify →</button></div>
-      </section>
-      <section class="panel card">
-        <div class="panel-head"><div><h2>Recent documents</h2><p>Verified files, source and certification date.</p></div><span class="muted" id="docCountBadge">—</span></div>
-        <div class="panel-body"><div id="docTbody" class="doc-grid"></div></div>
-      </section>
+      <a class="btn primary" href="certif.html">+ Certify new document</a>
     </div>
-    <div id="page-docs" style="display:none">
-      <section class="panel card"><div class="panel-head"><div><h2>All documents</h2><p>Your document trust workspace.</p></div><span class="muted" id="docCountBadge2">—</span></div><div class="panel-body"><div id="docTbody2" class="doc-grid"></div></div></section>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <h3 id="stat-total">—</h3>
+        <p>Documents certified</p>
+      </div>
+      <div class="stat-card">
+        <h3>347</h3>
+        <p>Verifications this month</p>
+      </div>
+      <div class="stat-card">
+        <h3>99.98%</h3>
+        <p>API uptime (30d)</p>
+      </div>
     </div>
-    <div id="page-import" style="display:none">
-      <section class="panel card"><div class="panel-head"><div><h2>Certify downloads</h2><p>Create proof for PDFs detected on this device.</p></div><button class="btn btn-ghost" onclick="loadChrome()">Refresh</button></div><div class="panel-body"><div class="clist" id="clist2"></div><div class="prog" id="prog2"><div class="prog-l" id="progL2">Certification in progress...</div><div class="prog-bar"><div class="prog-fill" id="progF2"></div></div></div></div><div class="panel-foot"><p><span id="selCount2">0</span> selected</p><button class="btn btn-primary" id="certBtn2" onclick="certify2()" disabled style="opacity:.45">Certify →</button></div></section>
+
+    <!-- API status bar -->
+    <div style="background:white;border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 20px;display:flex;gap:24px;align-items:center;margin-bottom:28px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:99px;background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.15);display:inline-block"></span>
+        <span style="font-size:13px;font-weight:500">API operational</span>
+      </div>
+      <div style="color:var(--muted);font-size:13px">POST /api/v1/certificates <span style="color:var(--green)">✓ 18ms</span></div>
+      <div style="color:var(--muted);font-size:13px">POST /api/v1/verify <span style="color:var(--green)">✓ 12ms</span></div>
+      <div style="color:var(--muted);font-size:13px;margin-left:auto">Last checked: <span id="last-checked">—</span></div>
     </div>
+
+    <!-- Docs table -->
+    <div class="data-table" id="docs-table">
+      <div class="table-head">
+        <span>Document</span>
+        <span>Holder</span>
+        <span>Issued</span>
+        <span>Certificate ID</span>
+        <span>Status</span>
+      </div>
+      <!-- Rows injected by JS -->
+      <div id="table-body"></div>
+    </div>
+
+    <div id="empty-state" style="display:none;text-align:center;padding:48px 24px;color:var(--muted)">
+      <div style="font-size:36px;margin-bottom:14px">📋</div>
+      <div style="font-weight:500;color:var(--text2);margin-bottom:6px">No certificates yet</div>
+      <div style="font-size:13px;margin-bottom:20px">Certified documents will appear here.</div>
+      <a class="btn primary" href="certif.html">Certify your first document</a>
+    </div>
+
+    <!-- API quick reference -->
+    <div style="margin-top:48px">
+      <div class="kicker">Quick reference</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+        <div class="api-block">
+          <span class="method">POST</span> <span class="path">/api/v1/certificates</span><br>
+          <span class="dim">→ Returns certificate_id + verification_url</span>
+        </div>
+        <div class="api-block">
+          <span class="method">POST</span> <span class="path">/api/v1/verify</span><br>
+          <span class="dim">→ Returns verified | modified | unknown</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>© 2026 MOTSA</span>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="certif.html">Certify</a>
+    <a href="verify.html">Verify</a>
   </div>
+  <span>University / school issuer dashboard.</span>
+</footer>
+
+<div class="mobile-tabs">
+  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
+  <a href="certif.html"><span class="tab-icon">✎</span>Certify</a>
+  <a href="verify.html"><span class="tab-icon">✓</span>Verify</a>
+  <a class="active" href="dashboard.html"><span class="tab-icon">▦</span>Dash</a>
 </div>
-<div class="toast" id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-const SB_URL  = 'https://cggtyaklofxywlmaatam.supabase.co';
-const SB_ANON = 'sb_publishable_dgA16fgQCo8cSQB0Mf3Zsg_E1ddpvym';
-const params = new URLSearchParams(location.search);
-const CLOUD_URL = window.__MOTSA_CLOUD_URL__ || 'https://web-production-75ad99.up.railway.app';
+const typeLabels = {
+  certificat_scolarite: 'Certificate of enrollment',
+  diplome:              'Diploma',
+  releve_notes:         'Transcript',
+  attestation:          'Attestation',
+};
 
-// The local agent only works from the MOTSA desktop app.
-// window.__MOTSA_LOCAL_URL__ is injected by Electron at startup.
-// On the web, IS_DESKTOP = false and the Chrome section is hidden.
-const IS_DESKTOP = !!window.__MOTSA_LOCAL_URL__;
-let LOCAL_URL = window.__MOTSA_LOCAL_URL__ || 'http://127.0.0.1:5001';
+/* ── Seed data (displayed when no local certs exist) ── */
+const seedCerts = {
+  'motsa_A3C91F': {
+    hash:    'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657',
+    issuer:  'Université Paris 1 Panthéon-Sorbonne',
+    holder:  'Ruben Brami',
+    type:    'certificat_scolarite',
+    issued:  '2026-06-02',
+    createdAt: '2026-06-02T09:14:00.000Z',
+  },
+  'motsa_B7E204': {
+    hash:    '9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8',
+    issuer:  'Université Paris 1 Panthéon-Sorbonne',
+    holder:  'Sarah Cohen',
+    type:    'releve_notes',
+    issued:  '2026-05-28',
+    createdAt: '2026-05-28T11:30:00.000Z',
+  },
+  'motsa_C5D310': {
+    hash:    '1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2',
+    issuer:  'Université Paris 1 Panthéon-Sorbonne',
+    holder:  'David Amar',
+    type:    'diplome',
+    issued:  '2026-05-14',
+    createdAt: '2026-05-14T14:00:00.000Z',
+  },
+};
 
-async function detectAgentPort() {
-  // Scan all possible ports, whether from the app or the web.
-  // The agent can ONLY be launched by the desktop app, never by the browser.
-  // If the desktop app is open, the agent responds and PDFs are displayed.
-  const ports = [5001,5002,5003,5004,5010,5050,5100,5200,9001,9002];
-  for (const port of ports) {
-    try {
-      const r = await fetch(`http://127.0.0.1:${port}/health`, {signal: AbortSignal.timeout(400)});
-      if (r.ok) { LOCAL_URL = `http://127.0.0.1:${port}`; return LOCAL_URL; }
-    } catch {}
-  }
-  return null;
-}
+function loadDashboard() {
+  /* Merge seed + localStorage certs */
+  const local = JSON.parse(localStorage.getItem('motsa_certs') || '{}');
+  const all = { ...seedCerts, ...local };
+  const entries = Object.entries(all).reverse();
 
-const API_URL = CLOUD_URL;
-const AGENT_PORTS = [5001,5002,5003,5004,5010,5050,5100,5200,9001,9002];
-const AGENT_CANDIDATES = AGENT_PORTS.flatMap(p => [
-  `http://127.0.0.1:${p}`,
-  `http://localhost:${p}`
-]);
+  document.getElementById('stat-total').textContent = (1284 + Object.keys(local).length).toLocaleString();
+  document.getElementById('last-checked').textContent = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 
-const sb = supabase.createClient(SB_URL, SB_ANON);
-let user = null;
-let sel  = new Set();
-let chromeFiles = [];
-let userProfile = null;
+  const body = document.getElementById('table-body');
+  body.innerHTML = '';
 
-// ── INIT ──────────────────────────────────────────────────────────────────────
-async function init() {
-  const {data:{session}} = await sb.auth.getSession();
-  if (!session) { location.href='/'; return; }
-  user = session.user;
-
-  document.getElementById('uemail').textContent = user.email;
-  document.getElementById('uav').textContent    = user.email[0].toUpperCase();
-
-  await loadProfile();
-
-  checkApi();
-  await loadDocs();
-  await loadChrome();
-}
-
-
-// ── PROFILE ───────────────────────────────────────────────────────────────────
-async function loadProfile() {
-  const {data, error} = await sb
-    .from('profiles')
-    .select('first_name,last_name,birth_date,full_name')
-    .eq('id', user.id)
-    .single();
-
-  if (error) {
-    console.warn('User profile not found or inaccessible', error);
-    userProfile = null;
+  if (entries.length === 0) {
+    document.getElementById('docs-table').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'block';
     return;
   }
 
-  userProfile = data;
-
-  const displayName = [data.first_name, data.last_name].filter(Boolean).join(' ').trim();
-  if (displayName) {
-    document.getElementById('uemail').textContent = displayName;
-    document.getElementById('uav').textContent = (data.first_name?.[0] || user.email[0]).toUpperCase();
-  }
-}
-
-// ── API STATUS ────────────────────────────────────────────────────────────────
-async function checkApi(retries=5) {
-  try {
-    const r = await fetch(CLOUD_URL + '/health', {signal: AbortSignal.timeout(2000)});
-    if (r.ok) {
-      document.getElementById('apiDot').classList.add('on');
-      document.getElementById('apiLabel').textContent = 'Serveur actif';
-      return;
-    }
-  } catch {}
-  if (retries > 0) { setTimeout(() => checkApi(retries-1), 3000); return; }
-  document.getElementById('apiDot').classList.remove('on');
-  document.getElementById('apiLabel').textContent = 'Serveur hors ligne';
-}
-
-// ── SIGN OUT ──────────────────────────────────────────────────────────────────
-async function signOut() { await sb.auth.signOut(); location.href='/'; }
-
-// ── NAVIGATION ────────────────────────────────────────────────────────────────
-function setPage(p, el) {
-  ['home','docs','import'].forEach(id => {
-    document.getElementById('page-'+id).style.display = id===p ? 'block' : 'none';
-  });
-  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
-  if (el) el.classList.add('active');
-  const titles = {home:'Dashboard', docs:'My documents', import:'Import from Chrome'};
-  document.getElementById('tbTitle').textContent = titles[p];
-  if (p === 'import') syncImportPage();
-}
-
-// ── DOCS ──────────────────────────────────────────────────────────────────────
-async function loadDocs() {
-  const {data, error} = await sb
-    .from('documents')
-    .select('*, certificates(verification_token,certificate_url)')
-    .eq('user_id', user.id)
-    .order('created_at', {ascending:false});
-
-  if (error) { console.error(error); return; }
-
-  // Stats
-  document.getElementById('sTot').textContent = data.length;
-  const now = new Date();
-  const mth = data.filter(d => {
-    const dt = new Date(d.created_at);
-    return dt.getMonth()===now.getMonth() && dt.getFullYear()===now.getFullYear();
-  }).length;
-  document.getElementById('sMth').textContent = mth;
-  if (data.length) {
-    document.getElementById('sLast').textContent = new Date(data[0].created_at)
-      .toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-  }
-
-  const lbl = data.length + ' document' + (data.length!==1?'s':'');
-  document.getElementById('docCountBadge').textContent  = lbl;
-  document.getElementById('docCountBadge2').textContent = lbl;
-
-  renderRows('docTbody',  data);
-  renderRows('docTbody2', data);
-}
-
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function renderRows(tbodyId, docs) {
-  const wrap = document.getElementById(tbodyId);
-  if (!wrap) return;
-  if (!docs.length) {
-    wrap.innerHTML = `<div class="empty">
-      <div class="empty-mark">□</div>
-      <h3>No certified documents yet.</h3>
-      <p>Download the desktop app to start certifying documents automatically.</p>
-      <a href="desktop.html" class="btn btn-primary">Download desktop app</a>
-    </div>`;
-    return;
-  }
-  wrap.innerHTML = docs.map(d => {
-    const cert  = d.certificates?.[0];
-    const token = cert?.verification_token || '';
-    const url   = d.file_url || '';
-    const date  = new Date(d.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
-    let src = 'Unknown source';
-    try { src = new URL(d.source_url||'').hostname || 'Unknown source'; } catch {}
-    const hash = d.sha256 || '—';
-    return `<article class="doc-card">
-      <div class="doc-main">
-        <div class="doc-status">✓ Verified</div>
-        <h3>${esc(d.file_name)}</h3>
-        <div class="doc-meta">
-          <span>Source <strong>${esc(src)}</strong></span>
-          <span>Certified <strong>${date}</strong></span>
-        </div>
-      </div>
-      <details class="advanced">
-        <summary>Advanced details</summary>
-        <div class="advanced-grid">
-          <span>SHA-256</span><code>${esc(hash)}</code>
-          <span>Source URL</span><code>${esc(d.source_url || '—')}</code>
-        </div>
-      </details>
-      <div class="doc-actions">
-        ${token?`<a href="verify.html?token=${esc(token)}" class="btn btn-primary">Verify</a>`:''}
-        ${url?`<a href="${esc(url)}" target="_blank" class="btn btn-ghost">Download</a>`:''}
-      </div>
-    </article>`;
-  }).join('');
-}
-
-
-// ── CHROME / AGENT LOCAL ──────────────────────────────────────────────────────
-async function fetchWithTimeout(url, options = {}, timeout = 3000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const res = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-      cache: 'no-store'
+  entries.forEach(([certId, cert]) => {
+    const row = document.createElement('div');
+    row.className = 'table-row';
+    const dateStr = cert.issued ? new Date(cert.issued).toLocaleDateString('en-GB') : '—';
+    row.innerHTML = `
+      <strong>${typeLabels[cert.type] || cert.type || '—'}</strong>
+      <span>${cert.holder || '—'}</span>
+      <span>${dateStr}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${certId}</span>
+      <span><span class="pill-status certified">Certified</span></span>
+    `;
+    row.style.cursor = 'pointer';
+    row.title = `SHA-256: ${cert.hash?.slice(0,32)}…`;
+    row.addEventListener('click', () => {
+      window.location.href = `verify.html?id=${certId}`;
     });
-    return res;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function detectAgent() {
-  for (const base of AGENT_CANDIDATES) {
-    try {
-      const r = await fetchWithTimeout(base + '/health', {}, 1800);
-      if (r.ok) {
-        LOCAL_URL = base;
-        console.log('[MOTSA] Agent detected:', LOCAL_URL);
-        return true;
-      }
-    } catch (e) {
-      console.warn('[MOTSA] Agent unreachable on', base, e?.message || e);
-    }
-  }
-  return false;
-}
-
-async function agentFetch(path, options = {}, timeout = 4000) {
-  try {
-    const r = await fetchWithTimeout(LOCAL_URL + path, options, timeout);
-    if (r.ok) return r;
-  } catch (e) {
-    console.warn('[MOTSA] Agent request failed on', LOCAL_URL, e?.message || e);
-  }
-
-  const ok = await detectAgent();
-  if (!ok) throw new Error('MOTSA Desktop app not detected.');
-
-  return await fetchWithTimeout(LOCAL_URL + path, options, timeout);
-}
-
-async function loadChrome() {
-  let files = [];
-  let agentOnline = false;
-
-  try {
-    await detectAgentPort();
-    await detectAgent();
-    const r = await agentFetch('/chrome-downloads', {}, 5000);
-    if (!r.ok) throw new Error(await r.text());
-    files = await r.json();
-
-    if (!Array.isArray(files)) {
-      throw new Error(files.error || 'Invalid agent response.');
-    }
-
-    agentOnline = true;
-  } catch (e) {
-    console.warn('Agent MOTSA indisponible', e);
-    files = [];
-    agentOnline = false;
-  }
-
-  chromeFiles = files;
-
-  const {data:existing} = await sb.from('documents').select('file_name').eq('user_id',user.id);
-  const done = new Set((existing||[]).map(d => d.file_name));
-  renderChrome('clist',  files, done, agentOnline);
-  renderChrome('clist2', files, done, agentOnline);
-}
-function renderChrome(listId, files, done, agentOnline = true) {
-  const list = document.getElementById(listId);
-  if (!list) return;
-
-
-
-  if (!agentOnline) {
-    const isElectron = !!window.__MOTSA_LOCAL_URL__;
-    if (isElectron) {
-      list.innerHTML = `<div class="empty" style="padding:36px;text-align:center">
-        <div class="empty-i" style="background:#fff3f3;border-color:#fecaca;margin:0 auto 14px">
-          <svg viewBox="0 0 20 20" fill="none" stroke="#991b1b" stroke-width="1.5" width="20" height="20"><path d="M10 2v6M10 12v.01"/><circle cx="10" cy="10" r="8"/></svg>
-        </div>
-        <h3 style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px">MOTSA agent unreachable</h3>
-        <p style="font-size:13px;color:var(--ink3);font-weight:300;margin-bottom:16px;max-width:340px;margin-left:auto;margin-right:auto">The local agent is not responding. Try reopening the MOTSA app or restart your Mac if the issue persists.</p>
-        <button class="btn btn-ghost btn-sm" onclick="loadChrome()">↺ Try again</button>
-      </div>`;
-    } else {
-      list.innerHTML = `<div style="padding:40px;text-align:center">
-        <div style="width:54px;height:54px;border-radius:14px;background:var(--blue3);display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5" width="26" height="26"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 16v5" stroke-linecap="round"/></svg>
-        </div>
-        <h3 style="font-size:17px;font-weight:500;color:var(--ink);margin-bottom:8px">Open the MOTSA Desktop app to get started</h3>
-        <p style="font-size:13px;color:var(--ink3);font-weight:300;line-height:1.7;margin-bottom:22px;max-width:380px;margin-left:auto;margin-right:auto">The MOTSA agent must be launched from the desktop app to detect your Chrome PDFs and calculate their SHA-256 fingerprint locally. Once the app is open, come back here and refresh.</p>
-        <a href="desktop.html" style="display:inline-flex;align-items:center;gap:8px;padding:11px 24px;font-size:14px;border-radius:9px;background:var(--blue);color:#fff;text-decoration:none;font-weight:500">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M8 2v8M5 7l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h12" stroke-linecap="round"/></svg>
-          Download MOTSA Desktop
-        </a>
-        <button class="btn btn-ghost btn-sm" onclick="loadChrome()" style="margin-left:8px">↺ App is open? Refresh</button>
-        <p style="font-size:12px;color:var(--ink4);margin-top:10px">macOS · Free · The PDF never leaves your device</p>
-      </div>`;
-    }
-    return;
-  }
-
-  if (!files.length) {
-    list.innerHTML = `<div class="empty" style="padding:32px">
-      <div class="empty-i"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h9l4 4v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M13 2v4h4"/></svg></div>
-      <h3>No recent PDF detected</h3>
-      <p>Download a PDF with Chrome, then refresh the list.</p>
-    </div>`;
-    return;
-  }
-
-  list.innerHTML = files.map(f => {
-    const isDone = done.has(f.name);
-    return `<div class="ci">
-      <div class="cchk ${isDone?'on':''}" id="chk-${listId}-${f.id}" onclick="${isDone?'':  `toggleSel(${f.id},'${listId}')`}" style="${isDone?'opacity:.4;cursor:default':'cursor:pointer'}"></div>
-      <div class="cicon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M10 2v3h3"/></svg></div>
-      <div class="cinfo">
-        <div class="cname">${esc(f.name)}</div>
-        <div class="cmeta">${esc(f.source || 'source inconnue')} · ${esc(f.date || '')} · ${esc(f.size || '')}</div>
-      </div>
-      <span class="cbadge ${isDone?'done':'new'}">${isDone?'Certified':'New'}</span>
-    </div>`;
-  }).join('');
-}
-function toggleSel(id, listId) {
-  sel.has(id) ? sel.delete(id) : sel.add(id);
-  ['clist','clist2'].forEach(l => {
-    const el = document.getElementById('chk-'+l+'-'+id);
-    if (el) el.classList.toggle('on', sel.has(id));
-  });
-  const c = sel.size;
-  document.getElementById('selCount').textContent  = c;
-  document.getElementById('selCount2').textContent = c;
-  ['certBtn','certBtn2'].forEach(b => {
-    const el = document.getElementById(b);
-    el.disabled = c===0; el.style.opacity = c===0?'.4':'1';
+    body.appendChild(row);
   });
 }
 
-async function syncImportPage() {
-  await loadChrome();
-}
-
-// ── CERTIFY ───────────────────────────────────────────────────────────────────
-async function certify()  { await runCertify('prog','progF','progL','certBtn'); }
-async function certify2() { await runCertify('prog2','progF2','progL2','certBtn2'); }
-
-async function runCertify(progId, fillId, labelId, btnId) {
-  if (!sel.size) return;
-  const files = chromeFiles.filter(f => sel.has(f.id));
-
-  document.getElementById(btnId).disabled = true;
-  document.getElementById(progId).style.display = 'block';
-
-  let success = 0;
-  let failed = 0;
-
-  for (let i=0; i<files.length; i++) {
-    const f   = files[i];
-    const pct = Math.round(((i+.5)/files.length)*100);
-    document.getElementById(fillId).style.width  = pct+'%';
-    document.getElementById(labelId).textContent = `Certifying ${f.name}...`;
-
-    try {
-      document.getElementById(labelId).textContent = `Calculating hash for ${f.name}...`;
-      const hashResp = await agentFetch('/hash', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({path: f.path})
-      }, 10000);
-      if (!hashResp.ok) throw new Error('Local agent required to calculate the hash.');
-      const {sha256} = await hashResp.json();
-
-      document.getElementById(labelId).textContent = `Certifying ${f.name}...`;
-      const {data:{session}} = await sb.auth.getSession();
-      const r = await fetch(CLOUD_URL + '/certify', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          sha256,
-          file_name:    f.name,
-          source_url:   f.source_url || (f.source ? 'https://' + f.source : ''),
-          access_token: session.access_token,
-        })
-      });
-      if (!r.ok) throw new Error(await r.text());
-
-      const blob = await r.blob();
-      const dlUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = dlUrl; a.download = f.name.replace(/.pdf$/i,'') + '_MOTSA.pdf';
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a); URL.revokeObjectURL(dlUrl);
-      success++;
-    } catch(e) {
-      failed++;
-      console.error('Certification impossible', e);
-      toast(`Error on ${f.name} : ${e.message}`, 'err');
-    }
-  }
-
-  document.getElementById(fillId).style.width = '100%';
-  document.getElementById(labelId).textContent = 'Done.';
-
-  setTimeout(async () => {
-    document.getElementById(progId).style.display  = 'none';
-    document.getElementById(fillId).style.width    = '0%';
-    document.getElementById(btnId).style.opacity   = '.4';
-    document.getElementById(btnId).disabled        = true;
-    sel.clear();
-    ['selCount','selCount2'].forEach(id => document.getElementById(id).textContent='0');
-    if (success) toast(`${success} document(s) certified.`, 'ok');
-    if (failed && !success) toast(`No document certified. MOTSA agent required.`, 'err');
-    await loadDocs();
-    await loadChrome();
-  }, 700);
-}
-// ── SIDEBAR TOGGLE ───────────────────────────────────────────────────────────
-function toggleSidebar() {
-  const sb = document.querySelector('.sb');
-  const main = document.querySelector('.main');
-  const collapsed = sb.classList.toggle('collapsed');
-  main.style.marginLeft = collapsed ? '58px' : 'var(--sb)';
-  document.getElementById('sidebarToggle').title = collapsed ? 'Show menu' : 'Hide menu';
-}
-
-// ── TOAST ─────────────────────────────────────────────────────────────────────
-function toast(msg, type='') {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.className = 'toast show '+type;
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-init();
+loadDashboard();
 </script>
 
 </body>
