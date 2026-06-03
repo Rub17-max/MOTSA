@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verifier Login — MOTSA</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="auth-root">
+
+  <!-- ── Left: branding ─────────────────────────────── -->
+  <div class="auth-left">
+    <a class="logo" href="index.html" style="margin-bottom:56px">
+      <img src="assets/icon-512.png" alt="MOTSA" style="width:32px;height:32px;border-radius:9px">
+      MOTSA
+    </a>
+
+    <div class="auth-left-badge">✓ Verifier portal</div>
+
+    <h1 style="font-size:clamp(32px,4vw,52px);margin-bottom:20px;max-width:420px">
+      Verify credentials<br><em>in seconds.</em>
+    </h1>
+    <p style="font-size:16px;color:var(--text2);font-weight:300;max-width:380px;line-height:1.7;margin-bottom:48px">
+      Your HR team's portal for verifying candidate documents. Upload the PDF and get an instant, definitive result — Verified, Modified, or Unknown.
+    </p>
+
+    <div class="auth-feature">
+      <div class="auth-feature-icon">🔍</div>
+      <div class="auth-feature-text">
+        <h4>Three clear outcomes</h4>
+        <p>No scores. No grey areas. Verified, Modified, or Unknown — with issuer details attached.</p>
+      </div>
+    </div>
+    <div class="auth-feature">
+      <div class="auth-feature-icon">🛡️</div>
+      <div class="auth-feature-text">
+        <h4>Privacy by design</h4>
+        <p>The candidate's PDF is hashed locally in your browser. No document is ever uploaded.</p>
+      </div>
+    </div>
+    <div class="auth-feature">
+      <div class="auth-feature-icon">📋</div>
+      <div class="auth-feature-text">
+        <h4>Full verification history</h4>
+        <p>Every check your team runs is logged and auditable in your dashboard.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:auto;padding-top:40px;font-size:13px;color:var(--muted)">
+      Are you a university or school? →
+      <a href="login-issuer.html" style="color:var(--blue);font-weight:500">Issuer portal</a>
+    </div>
+  </div>
+
+  <!-- ── Right: dark form ────────────────────────────── -->
+  <div class="auth-right verifier-side">
+    <div class="auth-form-wrap">
+
+      <div class="auth-badge verifier">✓ Verifier account</div>
+
+      <h2 style="font-size:22px;font-weight:600;font-family:'DM Sans',sans-serif;margin-bottom:6px">
+        Welcome back
+      </h2>
+      <p style="font-size:14px;margin-bottom:24px">
+        Sign in to verify candidate documents.
+      </p>
+
+      <!-- Tabs -->
+      <div class="form-tabs">
+        <button class="form-tab active" onclick="switchTab('login',this)">Sign in</button>
+        <button class="form-tab"        onclick="switchTab('register',this)">Create account</button>
+      </div>
+
+      <div class="auth-error"   id="auth-error"></div>
+      <div class="auth-success" id="auth-success"></div>
+
+      <!-- ── LOGIN ── -->
+      <div id="tab-login">
+        <div class="field">
+          <label for="login-email">Work email</label>
+          <input id="login-email" type="email" placeholder="you@company.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn primary full" id="login-btn" onclick="doLogin()" style="margin-top:4px">
+          <span class="spinner"></span>
+          <span class="btn-label">Sign in as Verifier</span>
+        </button>
+      </div>
+
+      <!-- ── REGISTER ── -->
+      <div id="tab-register" style="display:none">
+        <div class="field">
+          <label for="reg-name">Full name</label>
+          <input id="reg-name" type="text" placeholder="Marc Dupont" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="reg-email">Work email</label>
+          <input id="reg-email" type="email" placeholder="m.dupont@company.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="reg-org">Company / Organisation</label>
+          <select id="reg-org">
+            <option value="">Loading organisations…</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="reg-password">Password <span style="font-weight:400;opacity:.6">(min. 8 chars)</span></label>
+          <input id="reg-password" type="password" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <button class="btn primary full" id="register-btn" onclick="doRegister()" style="margin-top:4px">
+          <span class="spinner"></span>
+          <span class="btn-label">Create Verifier account</span>
+        </button>
+        <p style="font-size:12px;opacity:.5;margin-top:12px;text-align:center;line-height:1.5">
+          Your company must already be registered with MOTSA. Contact
+          <a href="mailto:hello@motsa.com" style="color:#6ca0f5">hello@motsa.com</a> to onboard.
+        </p>
+      </div>
+
+      <div class="auth-toggle">
+        University or school? <a href="login-issuer.html">Issuer portal →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="auth.js"></script>
+<script>
+(async () => {
+  await redirectIfLoggedIn();
+
+  const { data: orgs } = await fetchOrganizations('verifier');
+  const sel = document.getElementById('reg-org');
+  sel.innerHTML = orgs.length
+    ? orgs.map(o => `<option value="${o.id}">${o.name}</option>`).join('')
+    : '<option value="">No organisations available</option>';
+})();
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-login').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('tab-register').style.display = tab === 'register' ? '' : 'none';
+  clearMessages();
+}
+
+async function doLogin() {
+  const btn = document.getElementById('login-btn');
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) { showError('Please fill in all fields.'); return; }
+
+  btn.classList.add('loading'); btn.disabled = true;
+  clearMessages();
+
+  const { error } = await signIn({ email, password });
+  if (error) {
+    showError(error.message || 'Sign in failed. Check your credentials.');
+    btn.classList.remove('loading'); btn.disabled = false;
+    return;
+  }
+
+  const profile = await getProfile();
+  if (!profile || profile.account_type !== 'verifier') {
+    await signOut();
+    showError('This email is registered as an Issuer account. Use the issuer portal.');
+    btn.classList.remove('loading'); btn.disabled = false;
+    return;
+  }
+
+  window.location.href = 'verify.html';
+}
+
+async function doRegister() {
+  const btn = document.getElementById('register-btn');
+  const fullName = document.getElementById('reg-name').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const orgId    = document.getElementById('reg-org').value;
+  const password = document.getElementById('reg-password').value;
+
+  if (!fullName || !email || !orgId || !password) {
+    showError('Please fill in all fields.'); return;
+  }
+  if (password.length < 8) {
+    showError('Password must be at least 8 characters.'); return;
+  }
+
+  btn.classList.add('loading'); btn.disabled = true;
+  clearMessages();
+
+  const { error } = await signUp({
+    email, password, fullName,
+    organizationId: orgId,
+    accountType: 'verifier',
+  });
+
+  btn.classList.remove('loading'); btn.disabled = false;
+
+  if (error) { showError(error.message || 'Registration failed.'); return; }
+  showSuccess('Account created! Check your email to confirm, then sign in.');
+  switchTab('login', document.querySelectorAll('.form-tab')[0]);
+}
+
+function showError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg; el.classList.add('show');
+}
+function showSuccess(msg) {
+  const el = document.getElementById('auth-success');
+  el.textContent = msg; el.classList.add('show');
+}
+function clearMessages() {
+  document.getElementById('auth-error').classList.remove('show');
+  document.getElementById('auth-success').classList.remove('show');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const loginVisible = document.getElementById('tab-login').style.display !== 'none';
+  loginVisible ? doLogin() : doRegister();
+});
+</script>
+</body>
+</html>

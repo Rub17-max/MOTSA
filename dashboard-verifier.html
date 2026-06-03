@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Verification History — MOTSA</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html">
+    <img src="assets/icon-512.png" alt="MOTSA">
+    MOTSA
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="verify.html">Verify</a>
+    <a class="active keep" href="dashboard-verifier.html">History</a>
+    <div id="nav-user"></div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="section" style="border-top:0;padding-top:56px">
+    <div class="kicker">Verifier dashboard</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:36px">
+      <div>
+        <h1 id="dash-title" style="font-size:clamp(28px,4vw,48px);margin-bottom:6px">Verification history</h1>
+        <p id="dash-subtitle" style="color:var(--muted);font-size:14px">Loading…</p>
+      </div>
+      <a class="btn primary" href="verify.html">+ Verify a document</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <h3 id="stat-total">—</h3>
+        <p>Total verifications</p>
+      </div>
+      <div class="stat-card" style="border-left:3px solid var(--green)">
+        <h3 id="stat-verified" style="color:var(--green)">—</h3>
+        <p>Verified (authentic)</p>
+      </div>
+      <div class="stat-card" style="border-left:3px solid var(--red)">
+        <h3 id="stat-modified" style="color:var(--red)">—</h3>
+        <p>Modified / Unknown</p>
+      </div>
+    </div>
+
+    <!-- History table -->
+    <div class="data-table" id="history-table">
+      <div class="table-head" style="grid-template-columns:1fr 1fr 1fr 1fr .8fr">
+        <span>Certificate ID</span>
+        <span>Holder</span>
+        <span>Issuer</span>
+        <span>Date</span>
+        <span>Result</span>
+      </div>
+      <div id="history-body">
+        <div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Loading…</div>
+      </div>
+    </div>
+
+    <div id="empty-state" style="display:none;text-align:center;padding:48px 24px;color:var(--muted)">
+      <div style="font-size:36px;margin-bottom:14px">🔍</div>
+      <div style="font-weight:500;color:var(--text2);margin-bottom:6px">No verifications yet</div>
+      <div style="font-size:13px;margin-bottom:20px">Every document you verify will be logged here.</div>
+      <a class="btn primary" href="verify.html">Verify your first document</a>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>© 2026 MOTSA</span>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="verify.html">Verify</a>
+  </div>
+  <span>Verifier history dashboard.</span>
+</footer>
+
+<div class="mobile-tabs">
+  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
+  <a href="verify.html"><span class="tab-icon">✓</span>Verify</a>
+  <a class="active" href="dashboard-verifier.html"><span class="tab-icon">📋</span>History</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="auth.js"></script>
+<script>
+const resultColors = {
+  verified: 'var(--green)',
+  modified: 'var(--red)',
+  revoked:  'var(--red)',
+  expired:  'var(--orange)',
+  unknown:  'var(--orange)',
+};
+const resultLabels = {
+  verified: '✓ Verified',
+  modified: '✗ Modified',
+  revoked:  '✗ Revoked',
+  expired:  '⚠ Expired',
+  unknown:  '? Unknown',
+};
+
+(async () => {
+  const profile = await requireAuth('verifier');
+  if (!profile) return;
+  await mountUserChip();
+
+  const orgName = profile.organizations?.name || '—';
+  document.getElementById('dash-subtitle').textContent = `${orgName}`;
+
+  const { data: events, error } = await fetchMyVerifications();
+
+  if (error) {
+    document.getElementById('history-body').innerHTML =
+      `<div style="padding:24px;color:var(--red);font-size:13px">Error: ${error.message}</div>`;
+    return;
+  }
+
+  // Stats
+  const verified = events.filter(e => e.result === 'verified').length;
+  const bad      = events.filter(e => ['modified','revoked','expired','unknown'].includes(e.result)).length;
+  document.getElementById('stat-total').textContent    = events.length;
+  document.getElementById('stat-verified').textContent = verified;
+  document.getElementById('stat-modified').textContent = bad;
+
+  if (events.length === 0) {
+    document.getElementById('history-table').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'block';
+    return;
+  }
+
+  const body = document.getElementById('history-body');
+  body.innerHTML = '';
+  events.forEach(ev => {
+    const row = document.createElement('div');
+    row.className = 'table-row';
+    row.style.cssText = 'grid-template-columns:1fr 1fr 1fr 1fr .8fr';
+    const dateStr = ev.created_at
+      ? new Date(ev.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+      : '—';
+    const color = resultColors[ev.result] || 'var(--muted)';
+    const label = resultLabels[ev.result] || ev.result;
+    row.innerHTML = `
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${ev.submitted_certificate_code || '—'}</span>
+      <span>${ev.holder_name || '—'}</span>
+      <span>${ev.issuer_name || '—'}</span>
+      <span style="color:var(--muted)">${dateStr}</span>
+      <span style="font-weight:600;font-size:13px;color:${color}">${label}</span>`;
+    body.appendChild(row);
+  });
+})();
+</script>
+</body>
+</html>

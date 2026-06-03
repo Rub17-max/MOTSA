@@ -4,9 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Verify — MOTSA</title>
-  <meta name="description" content="Verify a document's authenticity with MOTSA. Upload the PDF and enter the certificate ID to check integrity.">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -18,23 +15,23 @@
   </a>
   <div class="nav-links">
     <a href="index.html">Home</a>
-    <a href="certif.html">Certify</a>
     <a class="active keep" href="verify.html">Verify</a>
-    <a href="dashboard.html">Dashboard</a>
+    <a href="dashboard-verifier.html">History</a>
+    <div id="nav-user"></div>
   </div>
 </nav>
 
 <main class="wrap">
   <section class="section" style="border-top:0;padding-top:56px">
     <div class="kicker">Verify interface — HR / Recruiter</div>
-    <h1 style="max-width:800px">Verify a document</h1>
+    <h1 id="page-title" style="max-width:800px">Verify a document</h1>
     <p class="lead">
-      Upload the PDF you received from the candidate and enter the certificate ID (or scan the QR code). MOTSA recomputes the hash locally — the file never leaves your browser.
+      Upload the PDF you received from the candidate and enter the certificate ID. The hash is computed locally — the file never leaves your browser.
     </p>
 
     <div class="split">
 
-      <!-- ─── Left panel: form ─────────────────────────────── -->
+      <!-- ── Form ─────────────────────────────────────── -->
       <aside class="card panel">
         <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">Check document</h2>
 
@@ -47,8 +44,10 @@
         <input id="vpdf-input" type="file" accept="application/pdf" onchange="onFileSelect(this)">
 
         <div class="field">
-          <label for="cert-id">Certificate ID or QR code</label>
-          <input id="cert-id" type="text" placeholder="motsa_XXXXXX" autocomplete="off" spellcheck="false">
+          <label for="cert-id">Certificate ID</label>
+          <input id="cert-id" type="text" placeholder="motsa_XXXXXX"
+            autocomplete="off" spellcheck="false"
+            style="font-family:'DM Mono',monospace;font-size:14px">
         </div>
 
         <button class="btn primary full" id="verify-btn" onclick="verifyDoc()">
@@ -58,16 +57,14 @@
 
         <div style="display:flex;gap:8px;margin-top:10px">
           <button class="btn soft" style="flex:1;font-size:13px" onclick="loadDemo('ok')">Demo: authentic</button>
-          <button class="btn" style="flex:1;font-size:13px" onclick="loadDemo('modified')">Demo: modified</button>
-          <button class="btn" style="flex:1;font-size:13px" onclick="loadDemo('unknown')">Demo: unknown</button>
+          <button class="btn"      style="flex:1;font-size:13px" onclick="loadDemo('modified')">Demo: modified</button>
+          <button class="btn"      style="flex:1;font-size:13px" onclick="loadDemo('unknown')">Demo: unknown</button>
         </div>
       </aside>
 
-      <!-- ─── Right panel: results ─────────────────────────── -->
+      <!-- ── Results ───────────────────────────────────── -->
       <section>
-
-        <!-- Idle state -->
-        <div id="idle-state" style="padding:40px 24px;text-align:center;color:var(--muted);background:white;border:1px solid var(--line);border-radius:var(--r);">
+        <div id="idle-state" style="padding:40px 24px;text-align:center;color:var(--muted);background:white;border:1px solid var(--line);border-radius:var(--r)">
           <div style="font-size:48px;margin-bottom:16px;line-height:1">🔍</div>
           <div style="font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px">Ready to verify</div>
           <div style="font-size:13px">Upload a PDF and enter the certificate ID, then click "Verify document".</div>
@@ -82,6 +79,7 @@
           <div class="detail-row"><span>Holder</span><strong id="v-holder">—</strong></div>
           <div class="detail-row"><span>Document type</span><strong id="v-type">—</strong></div>
           <div class="detail-row"><span>Issued on</span><strong id="v-issued">—</strong></div>
+          <div class="detail-row"><span>Expires on</span><strong id="v-expires">—</strong></div>
           <div class="hash-block" id="v-hash"></div>
         </div>
 
@@ -90,10 +88,23 @@
           <span class="status-badge">Modified</span>
           <h2>Document has been altered</h2>
           <p>The hash of the uploaded PDF does not match the certified version. This document may have been tampered with — do not accept it.</p>
-          <div class="hash-block" id="v-hash-modified">
-            <strong>received sha256</strong> —<br>
-            <strong>certified sha256</strong> —
-          </div>
+          <div class="hash-block" id="v-hash-modified"></div>
+        </div>
+
+        <!-- REVOKED -->
+        <div class="result-panel err" id="result-revoked">
+          <span class="status-badge">Revoked</span>
+          <h2>Certificate has been revoked</h2>
+          <p>The issuing institution has revoked this certificate. Contact them directly for more information.</p>
+          <div class="hash-block" id="v-hash-revoked"></div>
+        </div>
+
+        <!-- EXPIRED -->
+        <div class="result-panel warn" id="result-expired">
+          <span class="status-badge">Expired</span>
+          <h2>Certificate has expired</h2>
+          <p>This certificate was valid at issuance but has since expired. The document itself has not been modified.</p>
+          <div class="hash-block" id="v-hash-expired"></div>
         </div>
 
         <!-- UNKNOWN -->
@@ -103,11 +114,10 @@
           <p>No MOTSA certificate matches this ID. Either the ID is incorrect, or this document has not been certified with MOTSA.</p>
           <div class="hash-block" id="v-hash-unknown"></div>
         </div>
-
       </section>
     </div>
 
-    <!-- ─── API reference ─────────────────────────────────── -->
+    <!-- API reference -->
     <div style="margin-top:48px">
       <div class="kicker">API call</div>
       <div class="api-block" style="margin-top:12px">
@@ -116,7 +126,7 @@
         <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
         {<br>
         &nbsp;&nbsp;<span class="key">"certificate_id"</span>: <span class="val" id="api-cid">"motsa_XXXXXX"</span>,<br>
-        &nbsp;&nbsp;<span class="key">"document_hash"</span>: <span class="val" id="api-hash">"<span style='color:#5470a0'>— computed on upload —</span>"</span><br>
+        &nbsp;&nbsp;<span class="key">"document_hash"</span>:  <span class="val" id="api-hash"><span style="color:#5470a0">— computed on upload —</span></span><br>
         }
       </div>
     </div>
@@ -127,123 +137,24 @@
   <span>© 2026 MOTSA</span>
   <div class="footer-links">
     <a href="index.html">Home</a>
-    <a href="certif.html">Certify</a>
-    <a href="dashboard.html">Dashboard</a>
+    <a href="dashboard-verifier.html">History</a>
   </div>
   <span>Clear results: verified, modified, or unknown.</span>
 </footer>
 
 <div class="mobile-tabs">
   <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
-  <a href="certif.html"><span class="tab-icon">✎</span>Certify</a>
   <a class="active" href="verify.html"><span class="tab-icon">✓</span>Verify</a>
-  <a href="dashboard.html"><span class="tab-icon">▦</span>Dash</a>
+  <a href="dashboard-verifier.html"><span class="tab-icon">📋</span>History</a>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="auth.js"></script>
 <script>
-/* ── State ── */
+let profile = null;
 let computedHash = null;
-
-/* ── URL params (from certif.html "Simulate tampered" button) ── */
-const params = new URLSearchParams(location.search);
-if (params.get('id')) {
-  document.getElementById('cert-id').value = params.get('id');
-  if (params.get('tampered') === '1') {
-    /* Pre-fill a wrong hash to simulate tampering */
-    computedHash = [...crypto.getRandomValues(new Uint8Array(32))]
-      .map(x => x.toString(16).padStart(2,'0')).join('');
-    updateApiBlock();
-    document.getElementById('vupload-label').querySelector('strong').textContent = 'Tampered PDF (simulated)';
-    document.getElementById('vupload-label').classList.add('has-file');
-    document.getElementById('vupload-label').querySelector('.upload-icon').textContent = '⚠️';
-  }
-}
-
-/* ── File select ── */
-function onFileSelect(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const zone = document.getElementById('vupload-label');
-  zone.classList.add('has-file');
-  zone.querySelector('.upload-icon').textContent = '✅';
-  zone.querySelector('strong').textContent = 'PDF selected';
-  document.getElementById('vupload-filename').textContent = file.name;
-  computeHash(file).then(hash => {
-    computedHash = hash;
-    updateApiBlock();
-  });
-}
-
-async function computeHash(file) {
-  const buf = await file.arrayBuffer();
-  const digest = await crypto.subtle.digest('SHA-256', buf);
-  return [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2,'0')).join('');
-}
-
-function updateApiBlock() {
-  const cid = document.getElementById('cert-id').value || 'motsa_XXXXXX';
-  document.getElementById('api-cid').textContent = `"${cid}"`;
-  if (computedHash) {
-    document.getElementById('api-hash').textContent = `"${computedHash.slice(0,32)}…"`;
-  }
-}
-document.getElementById('cert-id').addEventListener('input', updateApiBlock);
-
-/* ── Verify ── */
-async function verifyDoc() {
-  const btn = document.getElementById('verify-btn');
-  const certId = document.getElementById('cert-id').value.trim();
-
-  if (!certId) { showToast('Enter a certificate ID first.'); return; }
-  if (!computedHash) { showToast('Upload a PDF first (or use a demo button).'); return; }
-
-  btn.classList.add('loading'); btn.disabled = true;
-  hideAll();
-
-  await simulateVerifyAPI(certId, computedHash);
-
-  btn.classList.remove('loading'); btn.disabled = false;
-}
-
-async function simulateVerifyAPI(certId, hash) {
-  /* ─────────────────────────────────────────────────────────────────────
-     Replace with real API call when backend is live:
-
-     const resp = await fetch('https://YOUR-RAILWAY-URL/api/v1/verify', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json',
-         'Authorization': 'Bearer ' + API_KEY
-       },
-       body: JSON.stringify({ certificate_id: certId, document_hash: hash })
-     });
-     const data = await resp.json();
-     if (!resp.ok) { showUnknown(hash); return; }
-     if (data.status === 'verified')  showVerified(data);
-     if (data.status === 'modified')  showModified(hash, data.certified_hash);
-     if (data.status === 'unknown')   showUnknown(hash);
-
-     ─────────────────────────────────────────────────────────────────── */
-
-  await sleep(800);
-
-  /* Check localStorage for certs created in this session */
-  const store = JSON.parse(localStorage.getItem('motsa_certs') || '{}');
-  const cert = store[certId];
-
-  if (!cert) {
-    showUnknown(hash);
-    return;
-  }
-
-  if (cert.hash === hash) {
-    showVerified(cert, hash, certId);
-  } else {
-    showModified(hash, cert.hash);
-  }
-}
 
 const typeLabels = {
   certificat_scolarite: 'Certificate of enrollment',
@@ -252,80 +163,141 @@ const typeLabels = {
   attestation:          'Attestation',
 };
 
-function showVerified(cert, hash, certId) {
-  hideAll();
-  document.getElementById('idle-state').style.display = 'none';
-  document.getElementById('v-issuer').textContent = cert.issuer || '—';
-  document.getElementById('v-holder').textContent  = cert.holder  || '—';
-  document.getElementById('v-type').textContent    = typeLabels[cert.type] || cert.type || '—';
-  document.getElementById('v-issued').textContent  = cert.issued  || '—';
-  document.getElementById('v-hash').innerHTML =
-    `<strong>certificate_id</strong> ${certId}<br>` +
-    `<strong>sha256</strong> ${hash}`;
-  document.getElementById('result-ok').classList.add('show');
+(async () => {
+  profile = await requireAuth('verifier');
+  if (!profile) return;
+  document.getElementById('page-title').textContent =
+    `Verify a document — ${profile.organizations?.name || ''}`;
+  await mountUserChip();
+
+  // URL param pre-fill
+  const params = new URLSearchParams(location.search);
+  if (params.get('id')) document.getElementById('cert-id').value = params.get('id');
+})();
+
+function onFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const zone = document.getElementById('vupload-label');
+  zone.classList.add('has-file');
+  zone.querySelector('.upload-icon').textContent = '✅';
+  zone.querySelector('strong').textContent = 'PDF ready';
+  document.getElementById('vupload-filename').textContent = file.name;
+  sha256(file).then(hash => {
+    computedHash = hash;
+    document.getElementById('api-hash').textContent = `"${hash.slice(0, 32)}…"`;
+  });
 }
 
-function showModified(received, certified) {
-  hideAll();
-  document.getElementById('idle-state').style.display = 'none';
-  document.getElementById('v-hash-modified').innerHTML =
-    `<strong>received sha256 </strong> ${received}<br>` +
-    `<strong>certified sha256</strong> ${certified}`;
-  document.getElementById('result-modified').classList.add('show');
-}
+document.getElementById('cert-id').addEventListener('input', () => {
+  document.getElementById('api-cid').textContent =
+    `"${document.getElementById('cert-id').value || 'motsa_XXXXXX'}"`;
+});
 
-function showUnknown(hash) {
-  hideAll();
-  document.getElementById('idle-state').style.display = 'none';
-  document.getElementById('v-hash-unknown').innerHTML =
-    `<strong>computed sha256</strong> ${hash}<br>` +
-    `<strong>status</strong> no matching certificate in registry`;
-  document.getElementById('result-unknown').classList.add('show');
-}
+async function verifyDoc() {
+  if (!profile) return;
+  const btn    = document.getElementById('verify-btn');
+  const certId = document.getElementById('cert-id').value.trim();
+  if (!certId)       { showToast('Enter a certificate ID first.');    return; }
+  if (!computedHash) { showToast('Upload a PDF first.');              return; }
 
-function hideAll() {
-  ['result-ok','result-modified','result-unknown'].forEach(id =>
-    document.getElementById(id).classList.remove('show'));
-}
-
-/* ── Demo buttons ── */
-function loadDemo(type) {
+  btn.classList.add('loading'); btn.disabled = true;
   hideAll();
+
+  const { result, cert } = await verifyCertificate({
+    verifierOrgId: profile.organization_id,
+    verifiedBy:    profile.id,
+    certificateCode: certId,
+    documentHash:  computedHash,
+  });
+
+  btn.classList.remove('loading'); btn.disabled = false;
   document.getElementById('idle-state').style.display = 'none';
 
-  if (type === 'ok') {
-    showVerified({
-      issuer: 'Université Paris 1 Panthéon-Sorbonne',
-      holder: 'Ruben Brami',
-      type:   'certificat_scolarite',
-      issued: '2026-06-03'
-    }, 'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657', 'motsa_DEMO01');
+  renderResult(result, cert, certId);
+}
 
-  } else if (type === 'modified') {
-    showModified(
-      'fe491f9394ed4e7c42069d77a2321e3fd237593ccb4d81c627da2d1f76a6e261',
-      'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657'
-    );
+function renderResult(result, cert, certId) {
+  if (result === 'verified') {
+    document.getElementById('v-issuer').textContent  = cert?.organizations?.name || cert?.issuer_org_id || '—';
+    document.getElementById('v-holder').textContent  = cert?.holder_name  || '—';
+    document.getElementById('v-type').textContent    = typeLabels[cert?.document_type] || cert?.document_type || '—';
+    document.getElementById('v-issued').textContent  = cert?.issued_at    || '—';
+    document.getElementById('v-expires').textContent = cert?.expires_at   || 'No expiry';
+    document.getElementById('v-hash').innerHTML =
+      `<strong>certificate_id</strong> ${certId}<br>` +
+      `<strong>sha256</strong> ${computedHash}`;
+    document.getElementById('result-ok').classList.add('show');
+
+  } else if (result === 'modified') {
+    document.getElementById('v-hash-modified').innerHTML =
+      `<strong>received sha256 </strong>${computedHash}<br>` +
+      `<strong>certified sha256</strong>${cert?.document_hash || '—'}`;
+    document.getElementById('result-modified').classList.add('show');
+
+  } else if (result === 'revoked') {
+    document.getElementById('v-hash-revoked').innerHTML =
+      `<strong>certificate_id</strong> ${certId}<br>` +
+      `<strong>issued to</strong> ${cert?.holder_name || '—'}`;
+    document.getElementById('result-revoked').classList.add('show');
+
+  } else if (result === 'expired') {
+    document.getElementById('v-hash-expired').innerHTML =
+      `<strong>certificate_id</strong> ${certId}<br>` +
+      `<strong>expired on</strong> ${cert?.expires_at || '—'}`;
+    document.getElementById('result-expired').classList.add('show');
+
   } else {
-    showUnknown('a0b1c2d3e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0b1c2d3e4f5a0b1c2d3e4f5ab');
+    document.getElementById('v-hash-unknown').innerHTML =
+      `<strong>submitted id</strong> ${certId}<br>` +
+      `<strong>sha256</strong> ${computedHash}<br>` +
+      `<strong>status</strong> not found in registry`;
+    document.getElementById('result-unknown').classList.add('show');
   }
 }
 
-/* ── Helpers ── */
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function hideAll() {
+  ['result-ok','result-modified','result-revoked','result-expired','result-unknown']
+    .forEach(id => document.getElementById(id).classList.remove('show'));
+}
+
+/* Demo buttons (no Supabase call, no logging) */
+function loadDemo(type) {
+  hideAll();
+  document.getElementById('idle-state').style.display = 'none';
+  computedHash = computedHash || 'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657';
+
+  if (type === 'ok') {
+    renderResult('verified', {
+      organizations: { name: 'Université Paris 1 Panthéon-Sorbonne' },
+      holder_name:   'Ruben Brami',
+      document_type: 'certificat_scolarite',
+      issued_at:     '2026-06-02',
+      document_hash: computedHash,
+    }, 'motsa_A3C91F');
+
+  } else if (type === 'modified') {
+    computedHash = 'fe491f9394ed4e7c42069d77a2321e3fd237593ccb4d81c627da2d1f76a6e261';
+    renderResult('modified', {
+      document_hash: 'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657'
+    }, 'motsa_A3C91F');
+
+  } else {
+    renderResult('unknown', null, 'motsa_XXXXXX');
+  }
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 function copyBlock(btn) {
-  const block = btn.closest('.api-block');
-  const text = block.innerText.replace('Copy\n','').trim();
+  const text = btn.closest('.api-block').innerText.replace('Copy\n','').trim();
   navigator.clipboard.writeText(text);
   btn.textContent = 'Copied!';
   setTimeout(() => btn.textContent = 'Copy', 2000);
 }
 </script>
-
 </body>
 </html>
