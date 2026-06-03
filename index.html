@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>MOTSA — Document Certification API</title>
+  <meta name="description" content="MOTSA connects trusted issuers with verifiers. Universities certify document hashes. HR teams verify PDF integrity in seconds.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a class="logo" href="index.html">
+    <img src="assets/icon-512.png" alt="MOTSA">
+    MOTSA
+  </a>
+  <div class="nav-links">
+    <a class="active keep" href="index.html">Home</a>
+    <a class="keep" href="login-issuer.html">Issuers</a>
+    <a class="keep" href="login-verifier.html">Verifiers</a>
+    <a class="btn-nav keep" href="login-verifier.html">Verify a document</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ─── Hero ─────────────────────────────────────────────── -->
+  <section class="hero">
+    <div>
+      <div class="kicker">API-first document trust</div>
+      <h1>Certify documents.<br><em>Verify them instantly.</em></h1>
+      <p class="lead">
+        MOTSA connects trusted issuers — universities, schools, official bodies — with anyone who needs to verify a document's authenticity. One API call to certify. One API call to verify.
+      </p>
+      <div class="btn-group">
+        <a class="btn primary" href="login-issuer.html">Issuer portal →</a>
+        <a class="btn soft"    href="login-verifier.html">Verifier portal →</a>
+      </div>
+    </div>
+
+    <div class="hero-proof">
+      <div class="badge-verified">✓</div>
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px">Document verified</div>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:20px;margin-top:0">Unmodified since official issuance — 02/06/2026</p>
+      <div class="proof-row"><span>Issuer</span><strong>Université Paris 1 Panthéon-Sorbonne</strong></div>
+      <div class="proof-row"><span>Holder</span><strong>Ruben Brami</strong></div>
+      <div class="proof-row"><span>Document</span><strong>Certificate of enrollment</strong></div>
+      <div class="proof-row"><span>Integrity</span><strong style="color:var(--green)">Hash match ✓</strong></div>
+      <div class="proof-row">
+        <span>Certificate ID</span>
+        <strong style="font-family:'DM Mono',monospace;font-size:12px">motsa_A3C91F</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Two portals ──────────────────────────────────────── -->
+  <section class="section">
+    <div class="kicker">Two separate portals</div>
+    <h2 style="margin-bottom:40px">One platform, two roles.</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+
+      <!-- Issuer -->
+      <div style="background:white;border:1px solid var(--line);border-radius:var(--r);padding:36px;box-shadow:var(--shadow-sm)">
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font:600 11px 'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;background:var(--soft);border:1px solid #c4d8fb;color:var(--blue);margin-bottom:20px">
+          ✎ Issuer
+        </div>
+        <h3 style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:10px">Universities &amp; schools</h3>
+        <p style="color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:24px">
+          Certify diplomas, transcripts, and enrollment certificates. The PDF hash is computed locally — the file never leaves your browser. Each certificate gets a permanent ID and verification URL.
+        </p>
+        <ul style="list-style:none;margin-bottom:28px">
+          <li style="font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:10px"><span style="color:var(--green)">✓</span> Issue &amp; manage certificates</li>
+          <li style="font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:10px"><span style="color:var(--green)">✓</span> View verification history on your docs</li>
+          <li style="font-size:13px;color:var(--text2);padding:7px 0;display:flex;gap:10px"><span style="color:var(--green)">✓</span> Revoke certificates if needed</li>
+        </ul>
+        <a class="btn primary full" href="login-issuer.html">Sign in as Issuer →</a>
+      </div>
+
+      <!-- Verifier -->
+      <div style="background:#0c1a3a;border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:36px;box-shadow:var(--shadow-sm)">
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font:600 11px 'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.3);color:#93c5fd;margin-bottom:20px">
+          ✓ Verifier
+        </div>
+        <h3 style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:10px;color:white">HR teams &amp; recruiters</h3>
+        <p style="color:#8da4c8;font-size:14px;line-height:1.65;margin-bottom:24px">
+          Verify candidate documents in seconds. Upload the received PDF and enter the certificate ID — MOTSA instantly tells you whether the document is authentic, modified, or unknown.
+        </p>
+        <ul style="list-style:none;margin-bottom:28px">
+          <li style="font-size:13px;color:#8da4c8;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:10px"><span style="color:#4ade80">✓</span> Verify any MOTSA-certified document</li>
+          <li style="font-size:13px;color:#8da4c8;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:10px"><span style="color:#4ade80">✓</span> Three clear outcomes: verified, modified, unknown</li>
+          <li style="font-size:13px;color:#8da4c8;padding:7px 0;display:flex;gap:10px"><span style="color:#4ade80">✓</span> Full audit log of your team's verifications</li>
+        </ul>
+        <a class="btn full" href="login-verifier.html" style="background:#2563eb;border-color:#2563eb;color:white">Sign in as Verifier →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── How it works ─────────────────────────────────────── -->
+  <section class="section">
+    <div class="kicker">How it works</div>
+    <h2 style="margin-bottom:40px">Two API calls. Absolute trust.</h2>
+    <div class="grid3">
+      <div class="tile">
+        <div class="tile-num">01 — Certify</div>
+        <h3>Issuer API</h3>
+        <p>The university sends document metadata and the SHA-256 hash of the PDF. MOTSA returns a certificate ID and a permanent verification URL.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-num">02 — Verify</div>
+        <h3>Verification API</h3>
+        <p>The HR team uploads the received PDF. MOTSA recomputes the hash locally and compares it to the certified version — nothing is ever uploaded.</p>
+      </div>
+      <div class="tile">
+        <div class="tile-num">03 — Result</div>
+        <h3>Clear outcome</h3>
+        <p>No vague scores. The result is <strong>Verified</strong>, <strong>Modified</strong>, or <strong>Unknown</strong> — with full issuer and holder details.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>© 2026 MOTSA</span>
+  <div class="footer-links">
+    <a href="login-issuer.html">Issuer portal</a>
+    <a href="login-verifier.html">Verifier portal</a>
+  </div>
+  <span>Issuer-certified document integrity.</span>
+</footer>
+
+<div class="mobile-tabs">
+  <a class="active" href="index.html"><span class="tab-icon">⌂</span>Home</a>
+  <a href="login-issuer.html"><span class="tab-icon">✎</span>Issuer</a>
+  <a href="login-verifier.html"><span class="tab-icon">✓</span>Verify</a>
+</div>
+
+</body>
+</html>
