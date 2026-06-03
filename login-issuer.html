@@ -106,7 +106,60 @@
         <div class="field">
           <label for="reg-org">Institution</label>
           <select id="reg-org">
-            <option value="">Loading institutions…</option>
+            <option value="">— Select your institution —</option>
+            <optgroup label="Universités">
+              <option value="10000000-0000-0000-0000-000000000001">Université Paris 1 Panthéon-Sorbonne</option>
+              <option value="10000000-0000-0000-0000-000000000002">Sorbonne Université</option>
+              <option value="univ-paris2">Université Paris 2 Assas</option>
+              <option value="univ-paris8">Université Paris 8 Vincennes-Saint-Denis</option>
+              <option value="univ-lyon1">Université Claude Bernard Lyon 1</option>
+              <option value="univ-bordeaux">Université de Bordeaux</option>
+              <option value="univ-strasbourg">Université de Strasbourg</option>
+              <option value="univ-toulouse">Université Toulouse III Paul Sabatier</option>
+              <option value="univ-aix">Aix-Marseille Université</option>
+              <option value="univ-nantes">Université de Nantes</option>
+              <option value="univ-lille">Université de Lille</option>
+              <option value="univ-rennes">Université de Rennes 1</option>
+              <option value="univ-grenoble">Université Grenoble Alpes</option>
+            </optgroup>
+            <optgroup label="Grandes écoles">
+              <option value="10000000-0000-0000-0000-000000000003">HEC Paris</option>
+              <option value="10000000-0000-0000-0000-000000000004">École Polytechnique</option>
+              <option value="10000000-0000-0000-0000-000000000005">Sciences Po Paris</option>
+              <option value="escp">ESCP Business School</option>
+              <option value="essec">ESSEC Business School</option>
+              <option value="edhec">EDHEC Business School</option>
+              <option value="em-lyon">EM Lyon Business School</option>
+              <option value="grenoble-em">Grenoble École de Management</option>
+              <option value="centrale-paris">CentraleSupélec</option>
+              <option value="mines-paris">Mines Paris – PSL</option>
+              <option value="enpc">École des Ponts ParisTech</option>
+              <option value="ensae">ENSAE Paris</option>
+              <option value="ens-paris">École Normale Supérieure Paris</option>
+              <option value="ens-lyon">École Normale Supérieure de Lyon</option>
+            </optgroup>
+            <optgroup label="Écoles d'ingénieurs">
+              <option value="insa-lyon">INSA Lyon</option>
+              <option value="insa-toulouse">INSA Toulouse</option>
+              <option value="epita">EPITA</option>
+              <option value="epitech">Epitech</option>
+              <option value="telecom-paris">Télécom Paris</option>
+              <option value="efrei">EFREI Paris</option>
+              <option value="ece">ECE Paris</option>
+              <option value="isep">ISEP</option>
+            </optgroup>
+            <optgroup label="Établissements privés">
+              <option value="esg">ESG Management School</option>
+              <option value="ipag">IPAG Business School</option>
+              <option value="ipssi">IPSSI</option>
+              <option value="sup-de-vinci">Sup de Vinci</option>
+              <option value="iscom">ISCOM</option>
+              <option value="ican">ICAN</option>
+              <option value="3is">3iS Institut de l'Image</option>
+            </optgroup>
+            <optgroup label="Autre">
+              <option value="other">Autre établissement</option>
+            </optgroup>
           </select>
         </div>
         <div class="field">
@@ -133,15 +186,7 @@
 <script src="auth.js"></script>
 <script>
 (async () => {
-  // If already logged in, redirect
   await redirectIfLoggedIn();
-
-  // Load issuer orgs into dropdown
-  const { data: orgs } = await fetchOrganizations('issuer');
-  const sel = document.getElementById('reg-org');
-  sel.innerHTML = orgs.length
-    ? orgs.map(o => `<option value="${o.id}">${o.name}</option>`).join('')
-    : '<option value="">No institutions available</option>';
 })();
 
 function switchTab(tab, btn) {

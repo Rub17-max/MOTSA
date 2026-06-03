@@ -105,7 +105,59 @@
         <div class="field">
           <label for="reg-org">Company / Organisation</label>
           <select id="reg-org">
-            <option value="">Loading organisations…</option>
+            <option value="">— Select your organisation —</option>
+            <optgroup label="Conseil & Finance">
+              <option value="20000000-0000-0000-0000-000000000002">BNP Paribas — Talent Acquisition</option>
+              <option value="20000000-0000-0000-0000-000000000003">McKinsey & Company France</option>
+              <option value="sg">Société Générale RH</option>
+              <option value="cacib">Crédit Agricole CIB</option>
+              <option value="axa">AXA Group HR</option>
+              <option value="pwc">PwC France</option>
+              <option value="deloitte">Deloitte France</option>
+              <option value="kpmg">KPMG France</option>
+              <option value="ey">EY France</option>
+              <option value="bcg">Boston Consulting Group</option>
+              <option value="bain">Bain & Company</option>
+            </optgroup>
+            <optgroup label="Tech & Numérique">
+              <option value="google-fr">Google France</option>
+              <option value="meta-fr">Meta France</option>
+              <option value="microsoft-fr">Microsoft France</option>
+              <option value="amazon-fr">Amazon France</option>
+              <option value="capgemini">Capgemini</option>
+              <option value="sopra">Sopra Steria</option>
+              <option value="atos">Atos</option>
+              <option value="doctolib">Doctolib</option>
+              <option value="contentsquare">Contentsquare</option>
+              <option value="alan">Alan</option>
+            </optgroup>
+            <optgroup label="Luxe & Retail">
+              <option value="20000000-0000-0000-0000-000000000001">LVMH — Direction RH</option>
+              <option value="kering">Kering Group RH</option>
+              <option value="hermes">Hermès International</option>
+              <option value="loreal">L'Oréal Group HR</option>
+              <option value="sephora">Sephora</option>
+              <option value="decathlon">Decathlon</option>
+            </optgroup>
+            <optgroup label="Industrie & Énergie">
+              <option value="totalenergies">TotalEnergies</option>
+              <option value="airbus">Airbus Group</option>
+              <option value="safran">Safran</option>
+              <option value="saint-gobain">Saint-Gobain</option>
+              <option value="michelin">Michelin</option>
+              <option value="schneider">Schneider Electric</option>
+            </optgroup>
+            <optgroup label="Cabinet de recrutement">
+              <option value="randstad">Randstad France</option>
+              <option value="manpower">ManpowerGroup</option>
+              <option value="adecco">Adecco France</option>
+              <option value="hays">Hays France</option>
+              <option value="michael-page">Michael Page</option>
+              <option value="robert-half">Robert Half</option>
+            </optgroup>
+            <optgroup label="Autre">
+              <option value="other-verifier">Autre organisation</option>
+            </optgroup>
           </select>
         </div>
         <div class="field">
@@ -134,12 +186,6 @@
 <script>
 (async () => {
   await redirectIfLoggedIn();
-
-  const { data: orgs } = await fetchOrganizations('verifier');
-  const sel = document.getElementById('reg-org');
-  sel.innerHTML = orgs.length
-    ? orgs.map(o => `<option value="${o.id}">${o.name}</option>`).join('')
-    : '<option value="">No organisations available</option>';
 })();
 
 function switchTab(tab, btn) {
