@@ -26,7 +26,7 @@
     <div class="kicker">Verify interface — HR / Recruiter</div>
     <h1 id="page-title" style="max-width:800px">Verify a document</h1>
     <p class="lead">
-      Upload the PDF you received from the candidate and enter the certificate ID. The hash is computed locally — the file never leaves your browser.
+      Drop or upload the PDF you received. The hash is computed locally — the file never leaves your browser.
     </p>
 
     <div class="split">
@@ -35,22 +35,16 @@
       <aside class="card panel">
         <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">Check document</h2>
 
-        <label class="upload-zone" for="vpdf-input" id="vupload-label">
-          <div class="upload-icon">📄</div>
-          <strong>Upload the received PDF</strong>
-          <span class="upload-hint">Hash computed locally — never uploaded</span>
+        <!-- Drop zone — DIV not LABEL to avoid event conflicts -->
+        <div class="upload-zone" id="drop-zone" onclick="document.getElementById('vpdf-input').click()">
+          <div class="upload-icon" id="drop-icon">📄</div>
+          <strong id="drop-title">Drop or click to upload PDF</strong>
+          <span class="upload-hint" id="drop-hint">Hash computed locally — never uploaded</span>
           <span class="upload-filename" id="vupload-filename"></span>
-        </label>
-        <input id="vpdf-input" type="file" accept="application/pdf" onchange="onFileSelect(this)">
-
-        <div class="field">
-          <label for="cert-id">Certificate ID</label>
-          <input id="cert-id" type="text" placeholder="motsa_XXXXXX"
-            autocomplete="off" spellcheck="false"
-            style="font-family:'DM Mono',monospace;font-size:14px">
         </div>
+        <input id="vpdf-input" type="file" accept="application/pdf">
 
-        <button class="btn primary full" id="verify-btn" onclick="verifyDoc()">
+        <button class="btn primary full" id="verify-btn" onclick="verifyDoc()" disabled>
           <span class="spinner"></span>
           <span class="btn-label">Verify document</span>
         </button>
@@ -67,7 +61,7 @@
         <div id="idle-state" style="padding:40px 24px;text-align:center;color:var(--muted);background:white;border:1px solid var(--line);border-radius:var(--r)">
           <div style="font-size:48px;margin-bottom:16px;line-height:1">🔍</div>
           <div style="font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px">Ready to verify</div>
-          <div style="font-size:13px">Upload a PDF and enter the certificate ID, then click "Verify document".</div>
+          <div style="font-size:13px">Upload the PDF — MOTSA identifies the certificate automatically from its hash.</div>
         </div>
 
         <!-- VERIFIED -->
@@ -87,7 +81,7 @@
         <div class="result-panel err" id="result-modified">
           <span class="status-badge">Modified</span>
           <h2>Document has been altered</h2>
-          <p>The hash of the uploaded PDF does not match the certified version. This document may have been tampered with — do not accept it.</p>
+          <p>The hash of the uploaded PDF does not match any certified version. This document may have been tampered with — do not accept it.</p>
           <div class="hash-block" id="v-hash-modified"></div>
         </div>
 
@@ -111,7 +105,7 @@
         <div class="result-panel warn" id="result-unknown">
           <span class="status-badge">Unknown</span>
           <h2>Certificate not found</h2>
-          <p>No MOTSA certificate matches this ID. Either the ID is incorrect, or this document has not been certified with MOTSA.</p>
+          <p>No MOTSA certificate matches this document. It has not been certified with MOTSA, or the file has been modified.</p>
           <div class="hash-block" id="v-hash-unknown"></div>
         </div>
       </section>
@@ -125,8 +119,7 @@
         <span class="method">POST</span> <span class="path">/api/v1/verify</span><br>
         <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
         {<br>
-        &nbsp;&nbsp;<span class="key">"certificate_id"</span>: <span class="val" id="api-cid">"motsa_XXXXXX"</span>,<br>
-        &nbsp;&nbsp;<span class="key">"document_hash"</span>:  <span class="val" id="api-hash"><span style="color:#5470a0">— computed on upload —</span></span><br>
+        &nbsp;&nbsp;<span class="key">"document_hash"</span>: <span class="val" id="api-hash"><span style="color:#5470a0">— computed on upload —</span></span><br>
         }
       </div>
     </div>
@@ -169,87 +162,125 @@ const typeLabels = {
   document.getElementById('page-title').textContent =
     `Verify a document — ${profile.organizations?.name || ''}`;
   await mountUserChip();
-
-  // URL param pre-fill
-  const params = new URLSearchParams(location.search);
-  if (params.get('id')) document.getElementById('cert-id').value = params.get('id');
 })();
 
-function onFileSelect(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const zone = document.getElementById('vupload-label');
-  zone.classList.add('has-file');
-  zone.querySelector('.upload-icon').textContent = '✅';
-  zone.querySelector('strong').textContent = 'PDF ready';
+/* ── File handling ───────────────────────────────────────────
+   Handles both click-to-select AND drag & drop.
+   Uses a DIV drop zone (not a label) to avoid browser
+   conflicts between drag events and the file input. */
+
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('vpdf-input');
+
+// Click handled by onclick on the div → triggers input.click()
+
+// Drag & drop
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZone.classList.add('has-file');
+  document.getElementById('drop-title').textContent = 'Drop to verify';
+});
+
+dropZone.addEventListener('dragleave', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!computedHash) dropZone.classList.remove('has-file');
+  document.getElementById('drop-title').textContent = 'Drop or click to upload PDF';
+});
+
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  const file = e.dataTransfer?.files?.[0];
+  if (file && file.type === 'application/pdf') {
+    processFile(file);
+  } else {
+    showToast('Please drop a PDF file.');
+    if (!computedHash) dropZone.classList.remove('has-file');
+  }
+});
+
+// File input change (click to select)
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (file) processFile(file);
+});
+
+function processFile(file) {
+  dropZone.classList.add('has-file');
+  document.getElementById('drop-icon').textContent = '⏳';
+  document.getElementById('drop-title').textContent = 'Computing hash…';
+  document.getElementById('drop-hint').style.display = 'none';
   document.getElementById('vupload-filename').textContent = file.name;
+  document.getElementById('vupload-filename').style.display = 'block';
+
   sha256(file).then(hash => {
     computedHash = hash;
+    document.getElementById('drop-icon').textContent = '✅';
+    document.getElementById('drop-title').textContent = 'PDF ready';
     document.getElementById('api-hash').textContent = `"${hash.slice(0, 32)}…"`;
+    // Enable the verify button
+    document.getElementById('verify-btn').disabled = false;
   });
 }
 
-document.getElementById('cert-id').addEventListener('input', () => {
-  document.getElementById('api-cid').textContent =
-    `"${document.getElementById('cert-id').value || 'motsa_XXXXXX'}"`;
-});
+/* ── Verify ─────────────────────────────────────────────────── */
 
 async function verifyDoc() {
-  if (!profile) return;
-  const btn    = document.getElementById('verify-btn');
-  const certId = document.getElementById('cert-id').value.trim();
-  if (!certId)       { showToast('Enter a certificate ID first.');    return; }
-  if (!computedHash) { showToast('Upload a PDF first.');              return; }
+  if (!profile || !computedHash) return;
+  const btn = document.getElementById('verify-btn');
 
   btn.classList.add('loading'); btn.disabled = true;
   hideAll();
 
   const { result, cert } = await verifyCertificate({
-    verifierOrgId: profile.organization_id,
-    verifiedBy:    profile.id,
-    certificateCode: certId,
-    documentHash:  computedHash,
+    verifierOrgId:   profile.organization_id,
+    verifiedBy:      profile.id,
+    certificateCode: null,
+    documentHash:    computedHash,
   });
 
   btn.classList.remove('loading'); btn.disabled = false;
   document.getElementById('idle-state').style.display = 'none';
 
-  renderResult(result, cert, certId);
+  renderResult(result, cert);
 }
 
-function renderResult(result, cert, certId) {
+function renderResult(result, cert) {
+  const certCode = cert?.certificate_code || '—';
+
   if (result === 'verified') {
-    document.getElementById('v-issuer').textContent  = cert?.organizations?.name || cert?.issuer_org_id || '—';
+    document.getElementById('v-issuer').textContent  = cert?.organizations?.name || '—';
     document.getElementById('v-holder').textContent  = cert?.holder_name  || '—';
     document.getElementById('v-type').textContent    = typeLabels[cert?.document_type] || cert?.document_type || '—';
     document.getElementById('v-issued').textContent  = cert?.issued_at    || '—';
     document.getElementById('v-expires').textContent = cert?.expires_at   || 'No expiry';
     document.getElementById('v-hash').innerHTML =
-      `<strong>certificate_id</strong> ${certId}<br>` +
+      `<strong>certificate_id</strong> ${certCode}<br>` +
       `<strong>sha256</strong> ${computedHash}`;
     document.getElementById('result-ok').classList.add('show');
 
   } else if (result === 'modified') {
     document.getElementById('v-hash-modified').innerHTML =
-      `<strong>received sha256 </strong>${computedHash}<br>` +
-      `<strong>certified sha256</strong>${cert?.document_hash || '—'}`;
+      `<strong>received sha256</strong> ${computedHash}<br>` +
+      `<strong>certified sha256</strong> ${cert?.document_hash || '—'}`;
     document.getElementById('result-modified').classList.add('show');
 
   } else if (result === 'revoked') {
     document.getElementById('v-hash-revoked').innerHTML =
-      `<strong>certificate_id</strong> ${certId}<br>` +
+      `<strong>certificate_id</strong> ${certCode}<br>` +
       `<strong>issued to</strong> ${cert?.holder_name || '—'}`;
     document.getElementById('result-revoked').classList.add('show');
 
   } else if (result === 'expired') {
     document.getElementById('v-hash-expired').innerHTML =
-      `<strong>certificate_id</strong> ${certId}<br>` +
+      `<strong>certificate_id</strong> ${certCode}<br>` +
       `<strong>expired on</strong> ${cert?.expires_at || '—'}`;
     document.getElementById('result-expired').classList.add('show');
 
   } else {
     document.getElementById('v-hash-unknown').innerHTML =
-      `<strong>submitted id</strong> ${certId}<br>` +
       `<strong>sha256</strong> ${computedHash}<br>` +
       `<strong>status</strong> not found in registry`;
     document.getElementById('result-unknown').classList.add('show');
@@ -261,32 +292,33 @@ function hideAll() {
     .forEach(id => document.getElementById(id).classList.remove('show'));
 }
 
-/* Demo buttons (no Supabase call, no logging) */
+/* ── Demo buttons ────────────────────────────────────────────── */
 function loadDemo(type) {
   hideAll();
   document.getElementById('idle-state').style.display = 'none';
-  computedHash = computedHash || 'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657';
+  computedHash = 'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657';
 
   if (type === 'ok') {
     renderResult('verified', {
-      organizations: { name: 'Université Paris 1 Panthéon-Sorbonne' },
-      holder_name:   'Ruben Brami',
-      document_type: 'certificat_scolarite',
-      issued_at:     '2026-06-02',
-      document_hash: computedHash,
-    }, 'motsa_A3C91F');
-
+      organizations:    { name: 'Université Paris 1 Panthéon-Sorbonne' },
+      holder_name:      'Ruben Brami',
+      document_type:    'certificat_scolarite',
+      issued_at:        '2026-06-02',
+      certificate_code: 'motsa_A3C91F',
+      document_hash:    computedHash,
+    });
   } else if (type === 'modified') {
     computedHash = 'fe491f9394ed4e7c42069d77a2321e3fd237593ccb4d81c627da2d1f76a6e261';
     renderResult('modified', {
-      document_hash: 'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657'
-    }, 'motsa_A3C91F');
-
+      document_hash:    'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657',
+      certificate_code: 'motsa_A3C91F',
+    });
   } else {
-    renderResult('unknown', null, 'motsa_XXXXXX');
+    renderResult('unknown', null);
   }
 }
 
+/* ── Helpers ─────────────────────────────────────────────────── */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
