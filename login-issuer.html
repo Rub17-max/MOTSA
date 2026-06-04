@@ -217,14 +217,14 @@ async function doLogin() {
   const profile = await getProfile();
 
   if (!profile) {
-    await sb().auth.signOut();
+    await sb().auth.signOut({ scope: 'local' });
     showError('Could not load profile. Please try again.');
     btn.classList.remove('loading'); btn.disabled = false;
     return;
   }
 
   if (profile.account_type !== 'issuer') {
-    await sb().auth.signOut();
+    await sb().auth.signOut({ scope: 'local' });
     btn.classList.remove('loading'); btn.disabled = false;
     showError('This email belongs to a Verifier account. Please use the Verifier portal or sign in with an Issuer account.');
     return;

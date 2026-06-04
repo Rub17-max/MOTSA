@@ -56,7 +56,7 @@ async function requireAuth(expectedType) {
 
 // Called on login pages.
 // If already logged in WITH THE CORRECT type → redirect to portal.
-// If logged in with the WRONG type → sign out silently so user can log in as the right type.
+// If logged in with the WRONG type → clear session silently, stay on the page.
 // Never redirects from index.html.
 async function redirectIfLoggedIn(expectedType) {
   const page = window.location.pathname.split('/').pop();
@@ -70,8 +70,8 @@ async function redirectIfLoggedIn(expectedType) {
       ? 'certif.html'
       : 'verify.html';
   } else {
-    // Logged in as wrong type → sign out silently so they can log in as the other type
-    await sb().auth.signOut();
+    // Wrong type: clear the session locally without triggering any redirect
+    await sb().auth.signOut({ scope: 'local' });
   }
 }
 
