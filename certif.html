@@ -35,13 +35,13 @@
       <aside class="card panel">
         <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">New certificate</h2>
 
-        <label class="upload-zone" for="pdf-input" id="upload-label">
-          <div class="upload-icon">📄</div>
-          <strong>Drop the official PDF here</strong>
-          <span class="upload-hint">Diploma, certificate, transcript — stays in your browser</span>
+        <div class="upload-zone" id="upload-label" onclick="document.getElementById('pdf-input').click()">
+          <div class="upload-icon" id="upload-icon">📄</div>
+          <strong id="upload-title">Drop the official PDF here</strong>
+          <span class="upload-hint" id="upload-hint">Diploma, certificate, transcript — stays in your browser</span>
           <span class="upload-filename" id="upload-filename"></span>
-        </label>
-        <input id="pdf-input" type="file" accept="application/pdf" onchange="onFileSelect(this)">
+        </div>
+        <input id="pdf-input" type="file" accept="application/pdf">
 
         <div class="field">
           <label for="issuer-display">Issuing institution</label>
@@ -170,19 +170,50 @@ function updatePreview() {
   document.getElementById('p-date').textContent   = `"${document.getElementById('issued-at').value}"`;
 }
 
-function onFileSelect(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const zone = document.getElementById('upload-label');
-  zone.classList.add('has-file');
-  zone.querySelector('.upload-icon').textContent = '✅';
-  zone.querySelector('strong').textContent = 'PDF ready';
+/* ── File handling — div drop zone, no label conflicts ── */
+const _dropZone  = document.getElementById('upload-label');
+const _fileInput = document.getElementById('pdf-input');
+
+_dropZone.addEventListener('dragover', e => {
+  e.preventDefault(); e.stopPropagation();
+  _dropZone.classList.add('has-file');
+  document.getElementById('upload-title').textContent = 'Drop to certify';
+});
+_dropZone.addEventListener('dragleave', e => {
+  e.preventDefault(); e.stopPropagation();
+  if (!computedHash) _dropZone.classList.remove('has-file');
+  document.getElementById('upload-title').textContent = 'Drop the official PDF here';
+});
+_dropZone.addEventListener('drop', e => {
+  e.preventDefault(); e.stopPropagation();
+  const file = e.dataTransfer?.files?.[0];
+  if (file && file.type === 'application/pdf') {
+    processUpload(file);
+  } else {
+    showToast('Please drop a PDF file.');
+    if (!computedHash) _dropZone.classList.remove('has-file');
+  }
+});
+_fileInput.addEventListener('change', () => {
+  if (_fileInput.files[0]) processUpload(_fileInput.files[0]);
+});
+
+function processUpload(file) {
+  _dropZone.classList.add('has-file');
+  document.getElementById('upload-icon').textContent = '⏳';
+  document.getElementById('upload-title').textContent = 'Computing hash…';
+  document.getElementById('upload-hint').style.display = 'none';
   document.getElementById('upload-filename').textContent = file.name;
+  document.getElementById('upload-filename').style.display = 'block';
   sha256(file).then(hash => {
     computedHash = hash;
+    document.getElementById('upload-icon').textContent = '✅';
+    document.getElementById('upload-title').textContent = 'PDF ready';
     document.getElementById('p-hash').textContent = `"${hash.slice(0, 32)}…"`;
   });
 }
+
+function onFileSelect(input) {} // kept for safety, logic moved to processUpload
 
 async function certify() {
   if (!profile) return;
