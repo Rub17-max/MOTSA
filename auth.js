@@ -54,16 +54,25 @@ async function requireAuth(expectedType) {
   return profile;
 }
 
-// Redirect already-logged-in users away from login pages.
-// Never redirects from index.html — user must choose their portal explicitly.
-async function redirectIfLoggedIn() {
+// Called on login pages.
+// If already logged in WITH THE CORRECT type → redirect to portal.
+// If logged in with the WRONG type → sign out silently so user can log in as the right type.
+// Never redirects from index.html.
+async function redirectIfLoggedIn(expectedType) {
   const page = window.location.pathname.split('/').pop();
   if (!page || page === '' || page === 'index.html') return;
   const profile = await getProfile();
   if (!profile) return;
-  window.location.href = profile.account_type === 'issuer'
-    ? 'certif.html'
-    : 'verify.html';
+
+  if (!expectedType || profile.account_type === expectedType) {
+    // Already logged in as the right type → go to their portal
+    window.location.href = profile.account_type === 'issuer'
+      ? 'certif.html'
+      : 'verify.html';
+  } else {
+    // Logged in as wrong type → sign out silently so they can log in as the other type
+    await sb().auth.signOut();
+  }
 }
 
 // ── Sign up ──────────────────────────────────────────────────
