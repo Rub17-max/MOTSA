@@ -324,15 +324,33 @@ async function fetchMyCertificates() {
 // ── Verification operations (verifier only) ───────────────────
 
 async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, documentHash }) {
-  const { data: cert, error: fetchErr } = await sb()
-    .from('certificates')
-    .select('*, organizations(name)')
-    .eq('certificate_code', certificateCode)
-    .single();
+  // Strategy: look up by hash first (no ID needed), fall back to certificate_code if provided.
+  let cert = null;
+
+  // 1. Try to find by document hash directly — the primary verification method
+  if (documentHash) {
+    const { data } = await sb()
+      .from('certificates')
+      .select('id, certificate_code, issuer_org_id, holder_name, holder_email, document_type, document_hash, hash_algorithm, issued_at, expires_at, status, created_at, organizations(name)')
+      .eq('document_hash', documentHash)
+      .eq('status', 'active')
+      .maybeSingle();
+    cert = data;
+  }
+
+  // 2. If not found by hash and a code was provided, try by certificate_code
+  if (!cert && certificateCode) {
+    const { data } = await sb()
+      .from('certificates')
+      .select('id, certificate_code, issuer_org_id, holder_name, holder_email, document_type, document_hash, hash_algorithm, issued_at, expires_at, status, created_at, organizations(name)')
+      .eq('certificate_code', certificateCode)
+      .maybeSingle();
+    cert = data;
+  }
 
   let result, certId = null, issuerName = null, holderName = null, docType = null;
 
-  if (fetchErr || !cert) {
+  if (!cert) {
     result = 'unknown';
   } else if (cert.status === 'revoked') {
     result = 'revoked'; certId = cert.id;
@@ -341,9 +359,11 @@ async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, d
     result = 'expired'; certId = cert.id;
     issuerName = cert.organizations?.name; holderName = cert.holder_name; docType = cert.document_type;
   } else if (cert.document_hash === documentHash) {
+    // Hash matched directly → verified
     result = 'verified'; certId = cert.id;
     issuerName = cert.organizations?.name; holderName = cert.holder_name; docType = cert.document_type;
   } else {
+    // Found by certificate_code but hash doesn't match → modified
     result = 'modified'; certId = cert.id;
     issuerName = cert.organizations?.name; holderName = cert.holder_name; docType = cert.document_type;
   }
@@ -352,7 +372,7 @@ async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, d
     certificate_id:             certId,
     verifier_org_id:            verifierOrgId,
     verified_by:                verifiedBy,
-    submitted_certificate_code: certificateCode,
+    submitted_certificate_code: certificateCode || cert?.certificate_code || null,
     submitted_hash:             documentHash,
     result,
     issuer_name:   issuerName,
