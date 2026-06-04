@@ -54,8 +54,11 @@ async function requireAuth(expectedType) {
   return profile;
 }
 
-// Redirect already-logged-in users away from login pages
+// Redirect already-logged-in users away from login pages.
+// Never redirects from index.html — user must choose their portal explicitly.
 async function redirectIfLoggedIn() {
+  const page = window.location.pathname.split('/').pop();
+  if (!page || page === '' || page === 'index.html') return;
   const profile = await getProfile();
   if (!profile) return;
   window.location.href = profile.account_type === 'issuer'
