@@ -1,83 +1,151 @@
-// ─── MOTSA Auth — shared across all pages ───────────────────
-// Replace SUPABASE_URL and SUPABASE_ANON_KEY with your project values.
-// Supabase Dashboard → Settings → API
+// ─── MOTSA Auth v3 — dual profile support ───────────────────
+// One Supabase auth account can hold BOTH an issuer and a verifier profile.
+// The active profile is determined by which portal the user logs in through.
 
 const SUPABASE_URL      = 'https://cggtyaklofxywlmaatam.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZ3R5YWtsb2Z4eXdsbWFhdGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxODM3NzAsImV4cCI6MjA5NDc1OTc3MH0.4ZsRWxn63hSheLCNfEvJXa2xRBkbJM2XJL8ownBiyg8';
 
-// ── Supabase client (CDN UMD) ──
-// Loaded via <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js">
-// Available as window.supabase after that script loads.
+// ── Supabase client ──────────────────────────────────────────
 let _sb = null;
 function sb() {
   if (!_sb) _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   return _sb;
 }
 
-// ── Session helpers ──────────────────────────────────────────
+// ── Active profile stored in sessionStorage ──────────────────
+// Key: 'motsa_active_type' → 'issuer' | 'verifier'
+// This persists for the browser tab session only.
+
+function getActiveType() {
+  return sessionStorage.getItem('motsa_active_type');
+}
+function setActiveType(type) {
+  sessionStorage.setItem('motsa_active_type', type);
+}
+function clearActiveType() {
+  sessionStorage.removeItem('motsa_active_type');
+}
+
+// ── Session ──────────────────────────────────────────────────
 
 async function getSession() {
   const { data } = await sb().auth.getSession();
   return data.session;
 }
 
+// Returns the profile matching the active account type
 async function getProfile() {
   const session = await getSession();
   if (!session) return null;
-  const { data } = await sb()
+
+  const activeType = getActiveType();
+
+  const query = sb()
     .from('profiles')
     .select('*, organizations(name, slug, account_type, org_type)')
-    .eq('id', session.user.id)
-    .single();
+    .eq('id', session.user.id);
+
+  // If we have an active type set, fetch that specific profile
+  if (activeType) {
+    query.eq('account_type', activeType);
+  }
+
+  const { data } = await query.limit(1).single();
   return data;
+}
+
+// Returns ALL profiles for the current user
+async function getAllProfiles() {
+  const session = await getSession();
+  if (!session) return [];
+  const { data } = await sb()
+    .from('profiles')
+    .select('*, organizations(name, slug)')
+    .eq('id', session.user.id);
+  return data || [];
 }
 
 // ── Guards ───────────────────────────────────────────────────
 
-// Redirect unauthenticated users. Call at top of protected pages.
 async function requireAuth(expectedType) {
-  const profile = await getProfile();
-  if (!profile) {
-    // Not logged in → redirect to appropriate login
+  const session = await getSession();
+  if (!session) {
     window.location.href = expectedType === 'issuer'
       ? 'login-issuer.html'
       : 'login-verifier.html';
     return null;
   }
-  if (profile.account_type !== expectedType) {
-    // Wrong account type → redirect to correct portal
-    window.location.href = profile.account_type === 'issuer'
+
+  // Check user has a profile of the expected type
+  const { data: profile } = await sb()
+    .from('profiles')
+    .select('*, organizations(name, slug, account_type, org_type)')
+    .eq('id', session.user.id)
+    .eq('account_type', expectedType)
+    .single();
+
+  if (!profile) {
+    // User is logged in but has no profile of this type
+    // → redirect to their own portal
+    const activeType = getActiveType();
+    window.location.href = activeType === 'issuer'
       ? 'certif.html'
-      : 'verify.html';
+      : activeType === 'verifier'
+      ? 'verify.html'
+      : 'index.html';
     return null;
   }
+
+  // Set active type for this session
+  setActiveType(expectedType);
   return profile;
 }
 
-// Called on login pages.
-// If already logged in WITH THE CORRECT type → redirect to portal.
-// If logged in with the WRONG type → clear session silently, stay on the page.
-// Never redirects from index.html.
+// Called on login pages only
 async function redirectIfLoggedIn(expectedType) {
   const page = window.location.pathname.split('/').pop();
   if (!page || page === '' || page === 'index.html') return;
-  const profile = await getProfile();
-  if (!profile) return;
 
-  if (!expectedType || profile.account_type === expectedType) {
-    // Already logged in as the right type → go to their portal
-    window.location.href = profile.account_type === 'issuer'
+  const session = await getSession();
+  if (!session) return;
+
+  // Check if user has a profile of the expected type
+  const { data: profile } = await sb()
+    .from('profiles')
+    .select('id, account_type')
+    .eq('id', session.user.id)
+    .eq('account_type', expectedType)
+    .maybeSingle();
+
+  if (profile) {
+    // Has a matching profile → redirect to their portal
+    setActiveType(expectedType);
+    window.location.href = expectedType === 'issuer'
       ? 'certif.html'
       : 'verify.html';
-  } else {
-    // Wrong type: clear the session locally without triggering any redirect
-    await sb().auth.signOut({ scope: 'local' });
   }
+  // If no matching profile → stay on login page, let them register or use other account
 }
 
 // ── Sign up ──────────────────────────────────────────────────
 
 async function signUp({ email, password, fullName, organizationId, accountType }) {
+  const session = await getSession();
+
+  // Case 1: already logged in → just add a second profile
+  if (session) {
+    const { data, error } = await sb().rpc('add_profile_type', {
+      p_account_type: accountType,
+      p_org_id:       organizationId,
+      p_full_name:    fullName,
+    });
+    if (error) return { data: null, error };
+    if (data?.error) return { data: null, error: { message: data.error } };
+    setActiveType(accountType);
+    return { data, error: null };
+  }
+
+  // Case 2: not logged in → create new auth account
   const { data, error } = await sb().auth.signUp({
     email,
     password,
@@ -95,21 +163,49 @@ async function signUp({ email, password, fullName, organizationId, accountType }
 
 // ── Sign in ──────────────────────────────────────────────────
 
-async function signIn({ email, password }) {
-  const { data, error } = await sb().auth.signInWithPassword({ email, password });
-  return { data, error };
+// Signs in and activates the profile for the given portal type.
+// Returns { profile, error }
+async function signInAs(email, password, accountType) {
+  // Step 1: authenticate
+  const { data: authData, error: authError } = await sb().auth.signInWithPassword({ email, password });
+  if (authError) return { profile: null, error: authError };
+
+  // Step 2: check user has a profile of this type
+  const { data: profile, error: profileError } = await sb()
+    .from('profiles')
+    .select('*, organizations(name, slug, account_type, org_type)')
+    .eq('id', authData.user.id)
+    .eq('account_type', accountType)
+    .single();
+
+  if (profileError || !profile) {
+    // Sign out locally — user is authed but wrong type for this portal
+    await sb().auth.signOut({ scope: 'local' });
+    clearActiveType();
+    return {
+      profile: null,
+      error: {
+        message: accountType === 'verifier'
+          ? 'No Verifier profile found for this email. Use the Issuer portal or create a Verifier account.'
+          : 'No Issuer profile found for this email. Use the Verifier portal or create an Issuer account.'
+      }
+    };
+  }
+
+  // Step 3: set active type
+  setActiveType(accountType);
+  return { profile, error: null };
 }
 
 // ── Sign out ─────────────────────────────────────────────────
 
 async function signOut() {
+  clearActiveType();
   await sb().auth.signOut();
-  // Redirect to home after logout
   window.location.href = 'index.html';
 }
 
 // ── Nav user chip ────────────────────────────────────────────
-// Call mountUserChip() on any protected page to show the user menu.
 
 async function mountUserChip() {
   const profile = await getProfile();
@@ -121,9 +217,20 @@ async function mountUserChip() {
   const initials = (profile.full_name || profile.email || 'U')
     .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-  const orgName = profile.organizations?.name || '—';
-  const type    = profile.account_type; // 'issuer' | 'verifier'
+  const orgName   = profile.organizations?.name || '—';
+  const type      = profile.account_type;
   const typeLabel = type === 'issuer' ? 'Issuer' : 'Verifier';
+
+  // Check if user also has the other profile type (to show switcher)
+  const allProfiles = await getAllProfiles();
+  const hasOtherType = allProfiles.length > 1;
+  const otherType = type === 'issuer' ? 'verifier' : 'issuer';
+  const otherLabel = type === 'issuer' ? 'Switch to Verifier' : 'Switch to Issuer';
+  const otherUrl  = type === 'issuer' ? 'verify.html' : 'certif.html';
+
+  const switcherHtml = hasOtherType
+    ? `<a onclick="switchProfile('${otherType}')" style="color:var(--blue)">⇄ ${otherLabel}</a>`
+    : `<a href="${type === 'issuer' ? 'login-verifier.html' : 'login-issuer.html'}" style="color:var(--muted)">+ Add ${otherType} profile</a>`;
 
   container.innerHTML = `
     <div class="user-chip">
@@ -136,16 +243,39 @@ async function mountUserChip() {
           <span class="type-pill ${type}">${typeLabel}</span>
         </div>
         <div style="padding:6px">
-          <a href="#" style="font-size:12px;color:var(--muted);padding:8px 10px">${orgName}</a>
+          <a href="#" style="font-size:12px;color:var(--muted);padding:8px 10px;display:block">${orgName}</a>
+          ${switcherHtml}
           <a onclick="signOut()" class="logout">Sign out</a>
         </div>
       </div>
     </div>`;
 }
 
+// Switch between issuer/verifier profile without re-authenticating
+async function switchProfile(targetType) {
+  const session = await getSession();
+  if (!session) return;
+
+  const { data: profile } = await sb()
+    .from('profiles')
+    .select('id, account_type')
+    .eq('id', session.user.id)
+    .eq('account_type', targetType)
+    .single();
+
+  if (!profile) {
+    window.location.href = targetType === 'issuer'
+      ? 'login-issuer.html'
+      : 'login-verifier.html';
+    return;
+  }
+
+  setActiveType(targetType);
+  window.location.href = targetType === 'issuer' ? 'certif.html' : 'verify.html';
+}
+
 // ── Fetch helpers ─────────────────────────────────────────────
 
-// Fetch organisations filtered by account type (for signup dropdown)
 async function fetchOrganizations(accountType) {
   const { data, error } = await sb()
     .from('organizations')
@@ -193,8 +323,7 @@ async function fetchMyCertificates() {
 
 // ── Verification operations (verifier only) ───────────────────
 
-async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, documentHash, ipAddress, userAgent }) {
-  // 1. Look up the certificate
+async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, documentHash }) {
   const { data: cert, error: fetchErr } = await sb()
     .from('certificates')
     .select('*, organizations(name)')
@@ -219,7 +348,6 @@ async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, d
     issuerName = cert.organizations?.name; holderName = cert.holder_name; docType = cert.document_type;
   }
 
-  // 2. Log the event
   await sb().from('verification_events').insert({
     certificate_id:             certId,
     verifier_org_id:            verifierOrgId,
@@ -227,11 +355,10 @@ async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, d
     submitted_certificate_code: certificateCode,
     submitted_hash:             documentHash,
     result,
-    issuer_name:  issuerName,
-    holder_name:  holderName,
+    issuer_name:   issuerName,
+    holder_name:   holderName,
     document_type: docType,
-    ip_address:   ipAddress  || null,
-    user_agent:   userAgent  || navigator.userAgent,
+    user_agent:    navigator.userAgent,
   });
 
   return { result, cert: cert || null };

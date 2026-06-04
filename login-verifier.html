@@ -205,33 +205,13 @@ async function doLogin() {
   btn.classList.add('loading'); btn.disabled = true;
   clearMessages();
 
-  // Sign in first
-  const { data: authData, error } = await signIn({ email, password });
+  const { profile, error } = await signInAs(email, password, 'verifier');
   if (error) {
     showError(error.message || 'Sign in failed. Check your credentials.');
     btn.classList.remove('loading'); btn.disabled = false;
     return;
   }
 
-  // Immediately check account type BEFORE any navigation can happen
-  const profile = await getProfile();
-
-  if (!profile) {
-    await sb().auth.signOut({ scope: 'local' });
-    showError('Could not load profile. Please try again.');
-    btn.classList.remove('loading'); btn.disabled = false;
-    return;
-  }
-
-  if (profile.account_type !== 'verifier') {
-    // Sign out and HARD STOP — no navigation whatsoever
-    await sb().auth.signOut({ scope: 'local' });
-    btn.classList.remove('loading'); btn.disabled = false;
-    showError('This email belongs to an Issuer account. Please use the Issuer portal or sign in with a Verifier account.');
-    return; // explicit return before any location.href
-  }
-
-  // Only reach here if genuinely a verifier
   window.location.href = 'verify.html';
 }
 
