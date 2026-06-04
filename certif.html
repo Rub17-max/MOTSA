@@ -61,6 +61,11 @@
         </div>
 
         <div class="field">
+          <label for="student-id">Student number <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+          <input id="student-id" type="text" placeholder="e.g. 21304872" autocomplete="off">
+        </div>
+
+        <div class="field">
           <label for="doc-type">Document type</label>
           <select id="doc-type">
             <option value="certificat_scolarite">Certificate of enrollment</option>
@@ -92,6 +97,7 @@
           &nbsp;&nbsp;<span class="key">"holder"</span>:         <span class="val" id="p-holder">"—"</span>,<br>
           &nbsp;&nbsp;<span class="key">"document_type"</span>:  <span class="val" id="p-type">"—"</span>,<br>
           &nbsp;&nbsp;<span class="key">"issued_at"</span>:      <span class="val" id="p-date">"—"</span>,<br>
+          &nbsp;&nbsp;<span class="key">"student_id"</span>:     <span class="val" id="p-student">"—"</span>,<br>
           &nbsp;&nbsp;<span class="key">"document_hash"</span>:  <span class="val" id="p-hash"><span style="color:#5470a0">— upload a PDF to compute —</span></span><br>
           }
         </div>
@@ -159,15 +165,17 @@ document.getElementById('issued-at').value = new Date().toISOString().slice(0, 1
   await mountUserChip();
 
   // Live preview
-  ['holder','doc-type','issued-at'].forEach(id =>
+  ['holder','doc-type','issued-at','student-id'].forEach(id =>
     document.getElementById(id).addEventListener('input', updatePreview));
   updatePreview();
 })();
 
 function updatePreview() {
-  document.getElementById('p-holder').textContent = `"${document.getElementById('holder').value || '—'}"`;
-  document.getElementById('p-type').textContent   = `"${document.getElementById('doc-type').value}"`;
-  document.getElementById('p-date').textContent   = `"${document.getElementById('issued-at').value}"`;
+  document.getElementById('p-holder').textContent  = `"${document.getElementById('holder').value || '—'}"`;
+  document.getElementById('p-type').textContent    = `"${document.getElementById('doc-type').value}"`;
+  document.getElementById('p-date').textContent    = `"${document.getElementById('issued-at').value}"`;
+  const sid = document.getElementById('student-id').value.trim();
+  document.getElementById('p-student').textContent = sid ? `"${sid}"` : '"—"';
 }
 
 /* ── File handling — div drop zone, no label conflicts ── */
@@ -242,6 +250,9 @@ async function certify() {
     documentType: document.getElementById('doc-type').value,
     documentHash: hash,
     issuedAt:     document.getElementById('issued-at').value,
+    metadata:     document.getElementById('student-id').value.trim()
+                    ? { student_id: document.getElementById('student-id').value.trim() }
+                    : null,
   });
 
   btn.classList.remove('loading'); btn.disabled = false;
@@ -258,6 +269,7 @@ async function certify() {
     `<strong>issuer</strong> ${profile.organizations?.name}<br>` +
     `<strong>holder</strong> ${holder}<br>` +
     `<strong>issued_at</strong> ${data.issued_at}<br>` +
+    (document.getElementById('student-id').value.trim() ? `<strong>student_id</strong> ${document.getElementById('student-id').value.trim()}<br>` : '') +
     `<strong>sha256</strong> ${hash}<br>` +
     `<strong>verification_url</strong> https://verify.motsa.com/${data.certificate_code}`;
   document.getElementById('result-ok').classList.add('show');

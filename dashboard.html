@@ -62,12 +62,13 @@
 
     <!-- Certs table -->
     <div class="data-table" id="docs-table">
-      <div class="table-head">
+      <div class="table-head" style="grid-template-columns:1.4fr 1fr .9fr .8fr .6fr .5fr">
         <span>Document</span>
         <span>Holder</span>
         <span>Issued</span>
         <span>Certificate ID</span>
         <span>Status</span>
+        <span></span>
       </div>
       <div id="table-body">
         <div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Loading…</div>
@@ -161,22 +162,53 @@ const typeLabels = {
   certs.forEach(cert => {
     const row = document.createElement('div');
     row.className = 'table-row';
+    row.style.gridTemplateColumns = '1.4fr 1fr .9fr .8fr .6fr .5fr';
     const dateStr = cert.issued_at
       ? new Date(cert.issued_at).toLocaleDateString('en-GB') : '—';
-    const statusClass = cert.status === 'active' ? 'certified' : 'pending';
+    const isActive = cert.status === 'active';
+    const statusClass = isActive ? 'certified' : 'pending';
+    const studentId = cert.metadata?.student_id ? `<span style="font-size:11px;color:var(--muted);display:block">${cert.metadata.student_id}</span>` : '';
     row.innerHTML = `
       <strong>${typeLabels[cert.document_type] || cert.document_type || '—'}</strong>
-      <span>${cert.holder_name || '—'}</span>
+      <span>${cert.holder_name || '—'}${studentId}</span>
       <span>${dateStr}</span>
       <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${cert.certificate_code}</span>
-      <span><span class="pill-status ${statusClass}">${cert.status}</span></span>`;
-    row.style.cursor = 'pointer';
-    row.addEventListener('click', () => {
-      window.location.href = `verify.html?id=${cert.certificate_code}`;
-    });
+      <span><span class="pill-status ${statusClass}">${cert.status}</span></span>
+      <span>${isActive
+        ? `<button onclick="revokeCert(event,'${cert.id}','${cert.certificate_code}')"
+             style="background:var(--redBg);border:1px solid var(--redBd);color:var(--red);
+                    border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;
+                    cursor:pointer;white-space:nowrap;font-family:inherit">
+             Revoke
+           </button>`
+        : '<span style="font-size:11px;color:var(--muted)">Revoked</span>'
+      }</span>`;
     body.appendChild(row);
   });
 })();
+
+async function revokeCert(e, certId, certCode) {
+  e.stopPropagation();
+  if (!confirm(`Revoke certificate ${certCode}?\n\nThis cannot be undone. The holder will no longer be able to use this certificate.`)) return;
+
+  const btn = e.target;
+  btn.textContent = 'Revoking…';
+  btn.disabled = true;
+
+  const { error } = await sb()
+    .from('certificates')
+    .update({ status: 'revoked' })
+    .eq('id', certId);
+
+  if (error) {
+    alert('Error: ' + error.message);
+    btn.textContent = 'Revoke';
+    btn.disabled = false;
+    return;
+  }
+
+  loadDashboard();
+}
 </script>
 </body>
 </html>
