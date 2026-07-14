@@ -32,9 +32,12 @@ que pour les utilisateurs connectés — aucune policy anon nécessaire dessus.
 Toutes les adresses du site pointent vers **contact@motsa.tech** (l'ancien hello@motsa.com
 était sur le mauvais domaine). Créer la boîte ou une redirection sur le domaine motsa.tech.
 
-### 4. legal.html — champs [À COMPLÉTER]
-SIREN, dénomination, adresse, directeur de publication, ville du tribunal,
-durées de conservation, région Supabase. Repérables par les pastilles orange sur la page.
+### 4. legal.html — presque complet
+Les mentions légales sont générées depuis les statuts (MOTSA S.A.S. au capital de 1 000 €,
+14 rue Soyer 92200 Neuilly-sur-Seine, Président Ruben Brami, RCS Nanterre en cours).
+Restent 4 pastilles orange : SIREN et n° TVA (dès réception du Kbis), région du projet
+Supabase à confirmer, durées de conservation à valider (36/24 mois proposés).
+La dénomination + capital figure au pied de chaque page (obligation de l'article 3 des statuts).
 
 ### 5. Quota de l'offre Découverte
 Le bandeau du dashboard émetteur affiche X/20 certificats/mois (indicatif, côté client).
@@ -74,3 +77,8 @@ mis à jour à la main ou via le webhook Stripe `checkout.session.completed`.
 Émetteur payant / vérification publique gratuite. Cibles prioritaires : organismes de
 formation (Qualiopi), écoles privées, certificateurs. Universités publiques : pilote
 gratuit 12 mois sous convention (offre « Secteur public » de la page tarifs).
+
+## Design v2.1
+Géométrie « SaaS » : rayons réduits (cartes 10px, boutons/champs 6-8px, badges 5px),
+plus de boutons pilule, emojis retirés (drapeau, coches typographiques). Restent ronds
+volontairement : avatar utilisateur, point du kicker, spinner, points de statut.
