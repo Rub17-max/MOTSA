@@ -82,3 +82,11 @@ gratuit 12 mois sous convention (offre « Secteur public » de la page tarifs).
 Géométrie « SaaS » : rayons réduits (cartes 10px, boutons/champs 6-8px, badges 5px),
 plus de boutons pilule, emojis retirés (drapeau, coches typographiques). Restent ronds
 volontairement : avatar utilisateur, point du kicker, spinner, points de statut.
+
+## v2.2 — Retrait des blocs développeurs
+Les encarts techniques (POST /api/v1/…, Bearer, JSON) ont été retirés de verify.html
+et certif.html au profit d'un récapitulatif lisible et d'un encart « émission en volume » :
+l'automatisation de l'émission est portée par la tarification (import en lot dès École,
+émission automatisée connectée aux outils sur Institution). Le vocabulaire « API » a
+disparu des pages publiques ; l'offre reste vendable aux acteurs techniques via la carte
+« Vérification automatisée » de la page tarifs (contact commercial).

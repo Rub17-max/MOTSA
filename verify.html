@@ -126,17 +126,14 @@
       </section>
     </div>
 
-    <!-- Référence API -->
-    <div style="margin-top:48px">
-      <div class="kicker">Pour les développeurs — API de vérification (offre Institution)</div>
-      <div class="api-block" style="margin-top:12px">
-        <button class="copy-btn" onclick="copyBlock(this)">Copier</button>
-        <span class="method">POST</span> <span class="path">/api/v1/verify</span><br>
-        <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
-        {<br>
-        &nbsp;&nbsp;<span class="key">"document_hash"</span>: <span class="val" id="api-hash"><span style="color:#5470a0">— calculée au dépôt du fichier —</span></span><br>
-        }
+    <!-- Émission en volume -->
+    <div style="margin-top:48px;background:white;border:1px solid var(--line);border-radius:var(--r);padding:26px 28px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow-sm)">
+      <div class="icn-box"><svg class="icn" viewBox="0 0 24 24"><path d="M4 17V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10"/><line x1="2" y1="21" x2="22" y2="21"/><polyline points="9 11 12 8 15 11"/><line x1="12" y1="8" x2="12" y2="16"/></svg></div>
+      <div style="flex:1;min-width:260px">
+        <h3 style="font-size:17px;margin-bottom:4px">Vous émettez des documents en volume ?</h3>
+        <p style="font-size:13.5px;color:var(--muted);line-height:1.6">Nos offres prennent en charge l'automatisation de l'émission : import en lot dès l'offre École, émission entièrement automatisée et connectée à vos outils avec l'offre Institution.</p>
       </div>
+      <a class="btn primary" style="font-size:13.5px" href="tarifs.html">Voir les offres</a>
     </div>
   </section>
 </main>
@@ -256,7 +253,6 @@ function processFile(file) {
     document.getElementById('drop-icon').innerHTML =
       '<svg class="icn lg" style="margin:0 auto;color:var(--green)" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
     document.getElementById('drop-title').textContent = 'PDF prêt à être vérifié';
-    document.getElementById('api-hash').textContent = `"${hash.slice(0, 32)}…"`;
     document.getElementById('verify-btn').disabled = false;
   });
 }
@@ -351,12 +347,6 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
-}
-function copyBlock(btn) {
-  const text = btn.closest('.api-block').innerText.replace('Copier\n','').trim();
-  navigator.clipboard.writeText(text);
-  btn.textContent = 'Copié !';
-  setTimeout(() => btn.textContent = 'Copier', 2000);
 }
 </script>
 </body>

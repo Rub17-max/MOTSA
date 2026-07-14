@@ -90,18 +90,19 @@
 
       <!-- ── Résultat ──────────────────────────────────── -->
       <section>
-        <div class="api-block" id="api-preview">
-          <button class="copy-btn" onclick="copyBlock(this)">Copier</button>
-          <span class="method">POST</span> <span class="path">/api/v1/certificates</span><br>
-          <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
-          {<br>
-          &nbsp;&nbsp;<span class="key">"issuer_id"</span>:      <span class="val" id="p-issuer">"—"</span>,<br>
-          &nbsp;&nbsp;<span class="key">"holder"</span>:         <span class="val" id="p-holder">"—"</span>,<br>
-          &nbsp;&nbsp;<span class="key">"document_type"</span>:  <span class="val" id="p-type">"—"</span>,<br>
-          &nbsp;&nbsp;<span class="key">"issued_at"</span>:      <span class="val" id="p-date">"—"</span>,<br>
-          &nbsp;&nbsp;<span class="key">"student_id"</span>:     <span class="val" id="p-student">"—"</span>,<br>
-          &nbsp;&nbsp;<span class="key">"document_hash"</span>:  <span class="val" id="p-hash"><span style="color:#5470a0">— déposez un PDF pour la calculer —</span></span><br>
-          }
+        <div style="background:white;border:1px solid var(--line);border-radius:var(--r);padding:26px 28px;box-shadow:var(--shadow-sm)" id="cert-preview">
+          <div class="kicker" style="margin-bottom:18px">Récapitulatif avant certification</div>
+          <div class="detail-row"><span>Établissement</span><strong id="p-issuer">—</strong></div>
+          <div class="detail-row"><span>Titulaire</span><strong id="p-holder">—</strong></div>
+          <div class="detail-row"><span>Type de document</span><strong id="p-type">—</strong></div>
+          <div class="detail-row"><span>Date d'émission</span><strong id="p-date">—</strong></div>
+          <div class="detail-row"><span>N° étudiant</span><strong id="p-student">—</strong></div>
+          <div class="detail-row"><span>Empreinte du PDF</span><strong id="p-hash" style="font-family:'DM Mono',monospace;font-size:11.5px;color:var(--muted)">déposez un PDF pour la calculer</strong></div>
+        </div>
+
+        <div style="margin-top:14px;background:var(--s2);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 18px;font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start">
+          <svg class="icn sm" style="color:var(--blue);margin-top:2px" viewBox="0 0 24 24"><path d="M4 17V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10"/><line x1="2" y1="21" x2="22" y2="21"/><polyline points="9 11 12 8 15 11"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+          <span>Besoin d'émettre en volume ? L'émission peut être automatisée selon votre offre — import en lot (École) ou émission automatique connectée à vos outils (Institution). <a href="tarifs.html" style="color:var(--blue);font-weight:500">Voir les offres</a></span>
         </div>
 
         <div class="result-panel ok" id="result-ok">
@@ -158,9 +159,8 @@ document.getElementById('issued-at').value = new Date().toISOString().slice(0, 1
   if (!profile) return;
 
   const orgName = profile.organizations?.name || profile.organization_id;
-  const orgSlug = profile.organizations?.slug  || '—';
   document.getElementById('issuer-display').value = orgName;
-  document.getElementById('p-issuer').textContent  = `"${orgSlug}"`;
+  document.getElementById('p-issuer').textContent  = orgName;
   document.getElementById('page-title').textContent = `Certifier un document — ${orgName}`;
 
   await mountUserChip();
@@ -170,12 +170,20 @@ document.getElementById('issued-at').value = new Date().toISOString().slice(0, 1
   updatePreview();
 })();
 
+const typeLabels = {
+  certificat_scolarite: 'Certificat de scolarité',
+  diplome:              'Diplôme',
+  releve_notes:         'Relevé de notes',
+  attestation:          'Attestation',
+};
+
 function updatePreview() {
-  document.getElementById('p-holder').textContent  = `"${document.getElementById('holder').value || '—'}"`;
-  document.getElementById('p-type').textContent    = `"${document.getElementById('doc-type').value}"`;
-  document.getElementById('p-date').textContent    = `"${document.getElementById('issued-at').value}"`;
+  document.getElementById('p-holder').textContent  = document.getElementById('holder').value || '—';
+  document.getElementById('p-type').textContent    = typeLabels[document.getElementById('doc-type').value] || '—';
+  const d = document.getElementById('issued-at').value;
+  document.getElementById('p-date').textContent    = d ? new Date(d).toLocaleDateString('fr-FR') : '—';
   const sid = document.getElementById('student-id').value.trim();
-  document.getElementById('p-student').textContent = sid ? `"${sid}"` : '"—"';
+  document.getElementById('p-student').textContent = sid || '—';
 }
 
 /* ── Fichier : clic + glisser-déposer ── */
@@ -221,7 +229,7 @@ function processUpload(file) {
     document.getElementById('upload-icon').innerHTML =
       '<svg class="icn lg" style="margin:0 auto;color:var(--green)" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
     document.getElementById('upload-title').textContent = 'PDF prêt à être certifié';
-    document.getElementById('p-hash').textContent = `"${hash.slice(0, 32)}…"`;
+    document.getElementById('p-hash').textContent = hash.slice(0, 24) + '…';
   });
 }
 
@@ -263,7 +271,7 @@ async function certify() {
 
   lastCertId = data.certificate_code;
   const verifyUrl = `${window.location.origin}/verify.html?c=${data.certificate_code}`;
-  document.getElementById('p-hash').textContent = `"${hash.slice(0, 32)}…"`;
+  document.getElementById('p-hash').textContent = hash.slice(0, 24) + '…';
   document.getElementById('result-hash').innerHTML =
     `<strong>id_certificat</strong> ${data.certificate_code}<br>` +
     `<strong>émetteur</strong> ${profile.organizations?.name}<br>` +
@@ -297,12 +305,6 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
-}
-function copyBlock(btn) {
-  const text = btn.closest('.api-block').innerText.replace('Copier\n','').trim();
-  navigator.clipboard.writeText(text);
-  btn.textContent = 'Copié !';
-  setTimeout(() => btn.textContent = 'Copier', 2000);
 }
 </script>
 </body>
