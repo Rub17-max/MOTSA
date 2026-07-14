@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Verify — MOTSA</title>
+  <title>Vérifier un document — MOTSA</title>
+  <meta name="description" content="Vérifiez gratuitement l'authenticité d'un document certifié MOTSA. Déposez le PDF : résultat immédiat — Authentique, Modifié ou Inconnu. Sans compte.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,112 +15,126 @@
     MOTSA
   </a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a class="active keep" href="verify.html">Verify</a>
-    <a href="dashboard-verifier.html">History</a>
-    <div id="nav-user"></div>
+    <a href="index.html">Accueil</a>
+    <a class="active keep" href="verify.html">Vérifier</a>
+    <a href="tarifs.html">Tarifs</a>
+    <div id="nav-user"><a href="login-verifier.html">Espace Pro</a></div>
   </div>
 </nav>
 
 <main class="wrap">
   <section class="section" style="border-top:0;padding-top:56px">
-    <div class="kicker">Verify interface — HR / Recruiter</div>
-    <h1 id="page-title" style="max-width:800px">Verify a document</h1>
+    <div class="kicker">Vérification publique — gratuite, sans compte</div>
+    <h1 id="page-title" style="max-width:800px">Vérifier un document</h1>
     <p class="lead">
-      Drop or upload the PDF you received. The hash is computed locally — the file never leaves your browser.
+      Déposez le PDF que vous avez reçu. Son empreinte est calculée localement, dans votre navigateur — <strong>le fichier n'est jamais transmis</strong>. Résultat immédiat : Authentique, Modifié ou Inconnu.
     </p>
+
+    <div id="qr-notice" style="display:none;background:var(--soft);border:1px solid #c4d8fb;border-radius:var(--r-sm);padding:13px 17px;margin-bottom:20px;font-size:13.5px;color:var(--blue)">
+      Certificat <strong id="qr-code" style="font-family:'DM Mono',monospace"></strong> — déposez le PDF reçu pour contrôler son intégrité.
+    </div>
 
     <div class="split">
 
-      <!-- ── Form ─────────────────────────────────────── -->
+      <!-- ── Formulaire ─────────────────────────────────── -->
       <aside class="card panel">
-        <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">Check document</h2>
+        <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">Contrôler un document</h2>
 
-        <!-- Drop zone — DIV not LABEL to avoid event conflicts -->
-        <div class="upload-zone" id="drop-zone" onclick="document.getElementById('vpdf-input').click()">
-          <div class="upload-icon" id="drop-icon">📄</div>
-          <strong id="drop-title">Drop or click to upload PDF</strong>
-          <span class="upload-hint" id="drop-hint">Hash computed locally — never uploaded</span>
+        <div class="upload-zone" id="drop-zone" onclick="document.getElementById('vpdf-input').click()" role="button" tabindex="0" aria-label="Déposer ou sélectionner un PDF à vérifier">
+          <div class="upload-icon" id="drop-icon" aria-hidden="true">
+            <svg class="icn lg" style="margin:0 auto;color:var(--blue)" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <strong id="drop-title">Déposez ou cliquez pour choisir le PDF</strong>
+          <span class="upload-hint" id="drop-hint">Empreinte calculée localement — jamais transmis</span>
           <span class="upload-filename" id="vupload-filename"></span>
         </div>
         <input id="vpdf-input" type="file" accept="application/pdf">
 
         <button class="btn primary full" id="verify-btn" onclick="verifyDoc()" disabled>
           <span class="spinner"></span>
-          <span class="btn-label">Verify document</span>
+          <span class="btn-label">Vérifier le document</span>
         </button>
 
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn soft" style="flex:1;font-size:13px" onclick="loadDemo('ok')">Demo: authentic</button>
-          <button class="btn"      style="flex:1;font-size:13px" onclick="loadDemo('modified')">Demo: modified</button>
-          <button class="btn"      style="flex:1;font-size:13px" onclick="loadDemo('unknown')">Demo: unknown</button>
+        <p style="font-size:12px;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.06em;font-weight:600">Voir une démonstration</p>
+        <div style="display:flex;gap:8px">
+          <button class="btn soft" style="flex:1;font-size:13px" onclick="loadDemo('ok')">Authentique</button>
+          <button class="btn"      style="flex:1;font-size:13px" onclick="loadDemo('modified')">Modifié</button>
+          <button class="btn"      style="flex:1;font-size:13px" onclick="loadDemo('unknown')">Inconnu</button>
         </div>
+        <p style="font-size:11.5px;color:var(--muted);margin-top:10px">Démonstration sur données fictives (John Doe, Random University).</p>
       </aside>
 
-      <!-- ── Results ───────────────────────────────────── -->
+      <!-- ── Résultats ──────────────────────────────────── -->
       <section>
         <div id="idle-state" style="padding:40px 24px;text-align:center;color:var(--muted);background:white;border:1px solid var(--line);border-radius:var(--r)">
-          <div style="font-size:48px;margin-bottom:16px;line-height:1">🔍</div>
-          <div style="font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px">Ready to verify</div>
-          <div style="font-size:13px">Upload the PDF — MOTSA identifies the certificate automatically from its hash.</div>
+          <svg class="icn lg" style="margin:0 auto 16px;color:var(--muted)" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+          <div style="font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px">Prêt à vérifier</div>
+          <div style="font-size:13px">Déposez le PDF — MOTSA identifie le certificat automatiquement à partir de son empreinte.</div>
         </div>
 
-        <!-- VERIFIED -->
+        <!-- AUTHENTIQUE -->
         <div class="result-panel ok" id="result-ok">
-          <span class="status-badge">Verified</span>
-          <h2>Document authentic</h2>
-          <p>This PDF matches the version certified by the official issuer. It has not been modified since issuance.</p>
-          <div class="detail-row"><span>Issuer</span><strong id="v-issuer">—</strong></div>
-          <div class="detail-row"><span>Holder</span><strong id="v-holder">—</strong></div>
-          <div class="detail-row"><span>Document type</span><strong id="v-type">—</strong></div>
-          <div class="detail-row"><span>Issued on</span><strong id="v-issued">—</strong></div>
-          <div class="detail-row"><span>Expires on</span><strong id="v-expires">—</strong></div>
+          <span class="status-badge">Authentique</span>
+          <h2>Document authentique</h2>
+          <p>Ce PDF est strictement identique à la version certifiée par l'émetteur officiel. Il n'a pas été modifié depuis son émission.</p>
+          <div class="detail-row"><span>Émetteur</span><strong id="v-issuer">—</strong></div>
+          <div class="detail-row"><span>Titulaire</span><strong id="v-holder">—</strong></div>
+          <div class="detail-row"><span>Type de document</span><strong id="v-type">—</strong></div>
+          <div class="detail-row"><span>Émis le</span><strong id="v-issued">—</strong></div>
+          <div class="detail-row"><span>Expire le</span><strong id="v-expires">—</strong></div>
           <div class="hash-block" id="v-hash"></div>
         </div>
 
-        <!-- MODIFIED -->
+        <!-- MODIFIÉ -->
         <div class="result-panel err" id="result-modified">
-          <span class="status-badge">Modified</span>
-          <h2>Document has been altered</h2>
-          <p>The hash of the uploaded PDF does not match any certified version. This document may have been tampered with — do not accept it.</p>
+          <span class="status-badge">Modifié</span>
+          <h2>Le document a été altéré</h2>
+          <p>L'empreinte du PDF reçu ne correspond pas à la version certifiée. Ce document a pu être falsifié — ne l'acceptez pas et rapprochez-vous de l'émetteur.</p>
           <div class="hash-block" id="v-hash-modified"></div>
         </div>
 
-        <!-- REVOKED -->
+        <!-- RÉVOQUÉ -->
         <div class="result-panel err" id="result-revoked">
-          <span class="status-badge">Revoked</span>
-          <h2>Certificate has been revoked</h2>
-          <p>The issuing institution has revoked this certificate. Contact them directly for more information.</p>
+          <span class="status-badge">Révoqué</span>
+          <h2>Certificat révoqué</h2>
+          <p>L'établissement émetteur a révoqué ce certificat. Contactez-le directement pour en connaître la raison.</p>
           <div class="hash-block" id="v-hash-revoked"></div>
         </div>
 
-        <!-- EXPIRED -->
+        <!-- EXPIRÉ -->
         <div class="result-panel warn" id="result-expired">
-          <span class="status-badge">Expired</span>
-          <h2>Certificate has expired</h2>
-          <p>This certificate was valid at issuance but has since expired. The document itself has not been modified.</p>
+          <span class="status-badge">Expiré</span>
+          <h2>Certificat expiré</h2>
+          <p>Ce certificat était valide à l'émission mais a expiré. Le document lui-même n'a pas été modifié.</p>
           <div class="hash-block" id="v-hash-expired"></div>
         </div>
 
-        <!-- UNKNOWN -->
+        <!-- INCONNU -->
         <div class="result-panel warn" id="result-unknown">
-          <span class="status-badge">Unknown</span>
-          <h2>Certificate not found</h2>
-          <p>No MOTSA certificate matches this document. It has not been certified with MOTSA, or the file has been modified.</p>
+          <span class="status-badge">Inconnu</span>
+          <h2>Certificat introuvable</h2>
+          <p>Aucun certificat MOTSA ne correspond à ce document : il n'a pas été certifié via MOTSA, ou le fichier a été modifié. Demandez au titulaire le fichier d'origine ou son identifiant de certificat.</p>
           <div class="hash-block" id="v-hash-unknown"></div>
+        </div>
+
+        <!-- CTA Pro -->
+        <div style="margin-top:16px;background:white;border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 18px;font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:center;flex-wrap:wrap" id="pro-cta">
+          <svg class="icn sm" style="color:var(--blue)" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+          Vous vérifiez régulièrement ? L'offre Pro ajoute l'historique d'équipe et la vérification par lot.
+          <a href="tarifs.html" style="color:var(--blue);font-weight:500;margin-left:auto">Voir l'offre Pro →</a>
         </div>
       </section>
     </div>
 
-    <!-- API reference -->
+    <!-- Référence API -->
     <div style="margin-top:48px">
-      <div class="kicker">API call</div>
+      <div class="kicker">Pour les développeurs — API de vérification (offre Institution)</div>
       <div class="api-block" style="margin-top:12px">
-        <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+        <button class="copy-btn" onclick="copyBlock(this)">Copier</button>
         <span class="method">POST</span> <span class="path">/api/v1/verify</span><br>
         <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
         {<br>
-        &nbsp;&nbsp;<span class="key">"document_hash"</span>: <span class="val" id="api-hash"><span style="color:#5470a0">— computed on upload —</span></span><br>
+        &nbsp;&nbsp;<span class="key">"document_hash"</span>: <span class="val" id="api-hash"><span style="color:#5470a0">— calculée au dépôt du fichier —</span></span><br>
         }
       </div>
     </div>
@@ -129,16 +144,18 @@
 <footer class="footer">
   <span>© 2026 MOTSA</span>
   <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="dashboard-verifier.html">History</a>
+    <a href="index.html">Accueil</a>
+    <a href="tarifs.html">Tarifs</a>
+    <a href="legal.html">Mentions légales</a>
   </div>
-  <span>Clear results: verified, modified, or unknown.</span>
+  <span>Résultat net : authentique, modifié ou inconnu.</span>
 </footer>
 
 <div class="mobile-tabs">
-  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
-  <a class="active" href="verify.html"><span class="tab-icon">✓</span>Verify</a>
-  <a href="dashboard-verifier.html"><span class="tab-icon">📋</span>History</a>
+  <a href="index.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Accueil</a>
+  <a class="active" href="verify.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Vérifier</a>
+  <a href="tarifs.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Tarifs</a>
+  <a href="login-issuer.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Émettre</a>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -146,104 +163,120 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="auth.js"></script>
 <script>
+/* Page PUBLIQUE : la vérification ne requiert aucun compte.
+   Si un vérificateur Pro est connecté, ses contrôles sont journalisés
+   et le lien Historique apparaît dans la navigation. */
+
 let profile = null;
 let computedHash = null;
+let certCodeFromUrl = null;
 
 const typeLabels = {
-  certificat_scolarite: 'Certificate of enrollment',
-  diplome:              'Diploma',
-  releve_notes:         'Transcript',
+  certificat_scolarite: 'Certificat de scolarité',
+  diplome:              'Diplôme',
+  releve_notes:         'Relevé de notes',
   attestation:          'Attestation',
 };
 
 (async () => {
-  profile = await requireAuth('verifier');
-  if (!profile) return;
-  document.getElementById('page-title').textContent =
-    `Verify a document — ${profile.organizations?.name || ''}`;
-  await mountUserChip();
+  // Lien QR : verify.html?c=motsa_XXXX
+  const params = new URLSearchParams(window.location.search);
+  certCodeFromUrl = params.get('c') || params.get('code') || null;
+  if (certCodeFromUrl) {
+    document.getElementById('qr-code').textContent = certCodeFromUrl;
+    document.getElementById('qr-notice').style.display = 'block';
+  }
+
+  // Session optionnelle — jamais bloquante
+  try {
+    const session = await getSession();
+    if (session) {
+      const { data: p } = await sb()
+        .from('profiles')
+        .select('*, organizations(name, slug, account_type, org_type)')
+        .eq('id', session.user.id)
+        .eq('account_type', 'verifier')
+        .maybeSingle();
+      if (p) {
+        profile = p;
+        setActiveType('verifier');
+        document.getElementById('nav-user').innerHTML = '';
+        await mountUserChip();
+        const nav = document.querySelector('.nav-links');
+        const hist = document.createElement('a');
+        hist.href = 'dashboard-verifier.html';
+        hist.textContent = 'Historique';
+        nav.insertBefore(hist, nav.querySelector('#nav-user'));
+      }
+    }
+  } catch (e) { /* mode public */ }
 })();
 
-/* ── File handling ───────────────────────────────────────────
-   Handles both click-to-select AND drag & drop.
-   Uses a DIV drop zone (not a label) to avoid browser
-   conflicts between drag events and the file input. */
-
-const dropZone = document.getElementById('drop-zone');
+/* ── Gestion du fichier (clic + glisser-déposer) ── */
+const dropZone  = document.getElementById('drop-zone');
 const fileInput = document.getElementById('vpdf-input');
 
-// Click handled by onclick on the div → triggers input.click()
-
-// Drag & drop
 dropZone.addEventListener('dragover', e => {
-  e.preventDefault();
-  e.stopPropagation();
+  e.preventDefault(); e.stopPropagation();
   dropZone.classList.add('has-file');
-  document.getElementById('drop-title').textContent = 'Drop to verify';
+  document.getElementById('drop-title').textContent = 'Relâchez pour vérifier';
 });
-
 dropZone.addEventListener('dragleave', e => {
-  e.preventDefault();
-  e.stopPropagation();
+  e.preventDefault(); e.stopPropagation();
   if (!computedHash) dropZone.classList.remove('has-file');
-  document.getElementById('drop-title').textContent = 'Drop or click to upload PDF';
+  document.getElementById('drop-title').textContent = 'Déposez ou cliquez pour choisir le PDF';
 });
-
 dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  e.stopPropagation();
+  e.preventDefault(); e.stopPropagation();
   const file = e.dataTransfer?.files?.[0];
-  if (file && file.type === 'application/pdf') {
-    processFile(file);
-  } else {
-    showToast('Please drop a PDF file.');
+  if (file && file.type === 'application/pdf') processFile(file);
+  else {
+    showToast('Merci de déposer un fichier PDF.');
     if (!computedHash) dropZone.classList.remove('has-file');
   }
 });
-
-// File input change (click to select)
+dropZone.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
 fileInput.addEventListener('change', () => {
-  const file = fileInput.files[0];
-  if (file) processFile(file);
+  if (fileInput.files[0]) processFile(fileInput.files[0]);
 });
 
 function processFile(file) {
   dropZone.classList.add('has-file');
-  document.getElementById('drop-icon').textContent = '⏳';
-  document.getElementById('drop-title').textContent = 'Computing hash…';
+  document.getElementById('drop-icon').innerHTML =
+    '<svg class="icn lg" style="margin:0 auto;color:var(--green)" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>';
+  document.getElementById('drop-title').textContent = 'Calcul de l\'empreinte…';
   document.getElementById('drop-hint').style.display = 'none';
   document.getElementById('vupload-filename').textContent = file.name;
   document.getElementById('vupload-filename').style.display = 'block';
 
   sha256(file).then(hash => {
     computedHash = hash;
-    document.getElementById('drop-icon').textContent = '✅';
-    document.getElementById('drop-title').textContent = 'PDF ready';
+    document.getElementById('drop-icon').innerHTML =
+      '<svg class="icn lg" style="margin:0 auto;color:var(--green)" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    document.getElementById('drop-title').textContent = 'PDF prêt à être vérifié';
     document.getElementById('api-hash').textContent = `"${hash.slice(0, 32)}…"`;
-    // Enable the verify button
     document.getElementById('verify-btn').disabled = false;
   });
 }
 
-/* ── Verify ─────────────────────────────────────────────────── */
-
+/* ── Vérification ── */
 async function verifyDoc() {
-  if (!profile || !computedHash) return;
+  if (!computedHash) return;
   const btn = document.getElementById('verify-btn');
-
   btn.classList.add('loading'); btn.disabled = true;
   hideAll();
 
   const { result, cert } = await verifyCertificate({
-    verifierOrgId:   profile.organization_id,
-    verifiedBy:      profile.id,
-    certificateCode: null,
+    verifierOrgId:   profile?.organization_id || null,
+    verifiedBy:      profile?.id || null,
+    certificateCode: certCodeFromUrl,
     documentHash:    computedHash,
   });
 
   btn.classList.remove('loading'); btn.disabled = false;
   document.getElementById('idle-state').style.display = 'none';
-
   renderResult(result, cert);
 }
 
@@ -255,34 +288,29 @@ function renderResult(result, cert) {
     document.getElementById('v-holder').textContent  = cert?.holder_name  || '—';
     document.getElementById('v-type').textContent    = typeLabels[cert?.document_type] || cert?.document_type || '—';
     document.getElementById('v-issued').textContent  = cert?.issued_at    || '—';
-    document.getElementById('v-expires').textContent = cert?.expires_at   || 'No expiry';
+    document.getElementById('v-expires').textContent = cert?.expires_at   || 'Sans expiration';
     document.getElementById('v-hash').innerHTML =
-      `<strong>certificate_id</strong> ${certCode}<br>` +
-      `<strong>sha256</strong> ${computedHash}`;
+      `<strong>id_certificat</strong> ${certCode}<br><strong>sha256</strong> ${computedHash}`;
     document.getElementById('result-ok').classList.add('show');
 
   } else if (result === 'modified') {
     document.getElementById('v-hash-modified').innerHTML =
-      `<strong>received sha256</strong> ${computedHash}<br>` +
-      `<strong>certified sha256</strong> ${cert?.document_hash || '—'}`;
+      `<strong>empreinte reçue</strong> ${computedHash}<br><strong>empreinte certifiée</strong> ${cert?.document_hash || '—'}`;
     document.getElementById('result-modified').classList.add('show');
 
   } else if (result === 'revoked') {
     document.getElementById('v-hash-revoked').innerHTML =
-      `<strong>certificate_id</strong> ${certCode}<br>` +
-      `<strong>issued to</strong> ${cert?.holder_name || '—'}`;
+      `<strong>id_certificat</strong> ${certCode}<br><strong>délivré à</strong> ${cert?.holder_name || '—'}`;
     document.getElementById('result-revoked').classList.add('show');
 
   } else if (result === 'expired') {
     document.getElementById('v-hash-expired').innerHTML =
-      `<strong>certificate_id</strong> ${certCode}<br>` +
-      `<strong>expired on</strong> ${cert?.expires_at || '—'}`;
+      `<strong>id_certificat</strong> ${certCode}<br><strong>expiré le</strong> ${cert?.expires_at || '—'}`;
     document.getElementById('result-expired').classList.add('show');
 
   } else {
     document.getElementById('v-hash-unknown').innerHTML =
-      `<strong>sha256</strong> ${computedHash}<br>` +
-      `<strong>status</strong> not found in registry`;
+      `<strong>sha256</strong> ${computedHash}<br><strong>statut</strong> absent du registre`;
     document.getElementById('result-unknown').classList.add('show');
   }
 }
@@ -292,7 +320,7 @@ function hideAll() {
     .forEach(id => document.getElementById(id).classList.remove('show'));
 }
 
-/* ── Demo buttons ────────────────────────────────────────────── */
+/* ── Démonstration — données strictement fictives ── */
 function loadDemo(type) {
   hideAll();
   document.getElementById('idle-state').style.display = 'none';
@@ -300,35 +328,35 @@ function loadDemo(type) {
 
   if (type === 'ok') {
     renderResult('verified', {
-      organizations:    { name: 'Université Paris 1 Panthéon-Sorbonne' },
-      holder_name:      'Ruben Brami',
-      document_type:    'certificat_scolarite',
+      organizations:    { name: 'Random University' },
+      holder_name:      'John Doe',
+      document_type:    'attestation',
       issued_at:        '2026-06-02',
-      certificate_code: 'motsa_A3C91F',
+      certificate_code: 'motsa_7F3A91C24B8E60D1',
       document_hash:    computedHash,
     });
   } else if (type === 'modified') {
     computedHash = 'fe491f9394ed4e7c42069d77a2321e3fd237593ccb4d81c627da2d1f76a6e261';
     renderResult('modified', {
       document_hash:    'b5407345cb306af57d41fee25d65124847069ff67c5fb200a2b2dea3f10be657',
-      certificate_code: 'motsa_A3C91F',
+      certificate_code: 'motsa_7F3A91C24B8E60D1',
     });
   } else {
     renderResult('unknown', null);
   }
 }
 
-/* ── Helpers ─────────────────────────────────────────────────── */
+/* ── Utilitaires ── */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 function copyBlock(btn) {
-  const text = btn.closest('.api-block').innerText.replace('Copy\n','').trim();
+  const text = btn.closest('.api-block').innerText.replace('Copier\n','').trim();
   navigator.clipboard.writeText(text);
-  btn.textContent = 'Copied!';
-  setTimeout(() => btn.textContent = 'Copy', 2000);
+  btn.textContent = 'Copié !';
+  setTimeout(() => btn.textContent = 'Copier', 2000);
 }
 </script>
 </body>

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>MOTSA — Document Certification API</title>
-  <meta name="description" content="MOTSA connects trusted issuers with verifiers. Universities certify document hashes. HR teams verify PDF integrity in seconds.">
+  <title>MOTSA — Certification de documents pour écoles et organismes de formation</title>
+  <meta name="description" content="Émettez des attestations, diplômes et certificats vérifiables en 10 secondes. Le recruteur vérifie seul, gratuitement — votre scolarité ne répond plus aux demandes une par une.">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="styles.css">
@@ -17,10 +17,11 @@
     MOTSA
   </a>
   <div class="nav-links">
-    <a class="active keep" href="index.html">Home</a>
-    <a class="keep" href="login-issuer.html">Issuers</a>
-    <a class="keep" href="login-verifier.html">Verifiers</a>
-    <a class="btn-nav keep" href="login-verifier.html">Verify a document</a>
+    <a class="active" href="index.html">Accueil</a>
+    <a href="tarifs.html">Tarifs</a>
+    <a href="securite.html">Sécurité</a>
+    <a href="login-issuer.html">Espace émetteur</a>
+    <a class="btn-nav keep" href="verify.html">Vérifier un document</a>
   </div>
 </nav>
 
@@ -29,113 +30,237 @@
   <!-- ─── Hero ─────────────────────────────────────────────── -->
   <section class="hero">
     <div>
-      <div class="kicker">API-first document trust</div>
-      <h1>Certify documents.<br><em>Verify them instantly.</em></h1>
+      <div class="kicker">Certification émise par l'établissement</div>
+      <h1>Vos documents officiels,<br><em>vérifiables en 10 secondes.</em></h1>
       <p class="lead">
-        MOTSA connects trusted issuers — universities, schools, official bodies — with anyone who needs to verify a document's authenticity. One API call to certify. One API call to verify.
+        MOTSA permet aux écoles, organismes de formation et certificateurs d'émettre des attestations, diplômes et relevés dont l'authenticité se vérifie en ligne, gratuitement, sans compte. Le recruteur vérifie seul — votre scolarité ne répond plus aux demandes une par une.
       </p>
       <div class="btn-group">
-        <a class="btn primary" href="login-issuer.html">Issuer portal →</a>
-        <a class="btn soft"    href="login-verifier.html">Verifier portal →</a>
+        <a class="btn primary" href="verify.html">Vérifier un document
+          <svg class="icn sm" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
+        </a>
+        <a class="btn soft" href="tarifs.html">Découvrir les offres émetteur</a>
       </div>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:16px">
+        Vérification publique et gratuite, sans inscription. Essai émetteur gratuit — sans carte bancaire.
+      </p>
     </div>
 
-    <div class="hero-proof">
-      <div class="badge-verified">✓</div>
-      <div style="font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px">Document verified</div>
-      <p style="color:var(--muted);font-size:14px;margin-bottom:20px;margin-top:0">Unmodified since official issuance — 02/06/2026</p>
-      <div class="proof-row"><span>Issuer</span><strong>Université Paris 1 Panthéon-Sorbonne</strong></div>
-      <div class="proof-row"><span>Holder</span><strong>Ruben Brami</strong></div>
-      <div class="proof-row"><span>Document</span><strong>Certificate of enrollment</strong></div>
-      <div class="proof-row"><span>Integrity</span><strong style="color:var(--green)">Hash match ✓</strong></div>
+    <div class="hero-proof" aria-label="Exemple de certificat vérifié (données fictives)">
+      <div class="badge-verified" aria-hidden="true">
+        <svg class="icn" style="stroke:white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px">Document authentique</div>
+      <p style="color:var(--muted);font-size:14px;margin:0 0 20px">Non modifié depuis son émission officielle — 02/06/2026</p>
+      <div class="proof-row"><span>Émetteur</span><strong>Random University</strong></div>
+      <div class="proof-row"><span>Titulaire</span><strong>John Doe</strong></div>
+      <div class="proof-row"><span>Document</span><strong>Attestation de réussite</strong></div>
+      <div class="proof-row"><span>Intégrité</span><strong style="color:var(--green)">Empreinte conforme ✓</strong></div>
       <div class="proof-row">
-        <span>Certificate ID</span>
-        <strong style="font-family:'DM Mono',monospace;font-size:12px">motsa_A3C91F</strong>
+        <span>ID certificat</span>
+        <strong style="font-family:'DM Mono',monospace;font-size:12px">motsa_7F3A91C24B8E60D1</strong>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:14px;text-align:right">Exemple illustratif — données fictives</p>
+    </div>
+  </section>
+
+  <!-- ─── Le problème ──────────────────────────────────────── -->
+  <section class="section">
+    <div class="kicker">Pourquoi MOTSA</div>
+    <h2 style="margin-bottom:14px">Chaque attestation émise devient<br>une demande de vérification en moins.</h2>
+    <p class="lead" style="margin-top:0">
+      Un service de scolarité traite chaque mois des dizaines de demandes de vérification — recruteurs, cabinets de background check, administrations. Et un PDF s'altère en deux minutes avec n'importe quel éditeur.
+    </p>
+    <div class="compare">
+      <div class="side before">
+        <h4>Sans certification</h4>
+        <ul style="list-style:none">
+          <li><svg class="icn sm" style="color:var(--muted);margin-top:3px" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Chaque vérification = un e-mail à la scolarité, traité à la main sous plusieurs jours.</li>
+          <li><svg class="icn sm" style="color:var(--muted);margin-top:3px" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Une attestation PDF se falsifie en quelques minutes, sans trace.</li>
+          <li><svg class="icn sm" style="color:var(--muted);margin-top:3px" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg> Aucune visibilité sur qui vérifie vos documents, ni quand.</li>
+        </ul>
+      </div>
+      <div class="side after">
+        <h4>Avec MOTSA</h4>
+        <ul style="list-style:none">
+          <li><svg class="icn sm" style="color:var(--green);margin-top:3px" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Le destinataire vérifie seul, en ligne, en 10 secondes — sans vous solliciter.</li>
+          <li><svg class="icn sm" style="color:var(--green);margin-top:3px" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Toute modification du fichier est détectée instantanément : résultat « Modifié ».</li>
+          <li><svg class="icn sm" style="color:var(--green);margin-top:3px" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Chaque vérification est tracée dans votre tableau de bord.</li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- ─── Two portals ──────────────────────────────────────── -->
+  <!-- ─── Pour qui ─────────────────────────────────────────── -->
   <section class="section">
-    <div class="kicker">Two separate portals</div>
-    <h2 style="margin-bottom:40px">One platform, two roles.</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-
-      <!-- Issuer -->
-      <div style="background:white;border:1px solid var(--line);border-radius:var(--r);padding:36px;box-shadow:var(--shadow-sm)">
-        <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font:600 11px 'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;background:var(--soft);border:1px solid #c4d8fb;color:var(--blue);margin-bottom:20px">
-          ✎ Issuer
-        </div>
-        <h3 style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:10px">Universities &amp; schools</h3>
-        <p style="color:var(--muted);font-size:14px;line-height:1.65;margin-bottom:24px">
-          Certify diplomas, transcripts, and enrollment certificates. The PDF hash is computed locally — the file never leaves your browser. Each certificate gets a permanent ID and verification URL.
-        </p>
-        <ul style="list-style:none;margin-bottom:28px">
-          <li style="font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:10px"><span style="color:var(--green)">✓</span> Issue &amp; manage certificates</li>
-          <li style="font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:10px"><span style="color:var(--green)">✓</span> View verification history on your docs</li>
-          <li style="font-size:13px;color:var(--text2);padding:7px 0;display:flex;gap:10px"><span style="color:var(--green)">✓</span> Revoke certificates if needed</li>
-        </ul>
-        <a class="btn primary full" href="login-issuer.html">Sign in as Issuer →</a>
+    <div class="kicker">Pour qui</div>
+    <h2 style="margin-bottom:14px">Pensé pour les documents que<br>personne d'autre ne certifie.</h2>
+    <p class="lead" style="margin-top:0">
+      Les diplômes nationaux ont leur registre d'État. Tout le reste — attestations, certificats d'établissement, titres privés, relevés — repose sur la confiance. C'est là que MOTSA intervient.
+    </p>
+    <div class="seg-grid">
+      <div class="seg">
+        <div class="icn-box"><svg class="icn" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <h3>Organismes de formation</h3>
+        <p>Vos attestations de fin de formation engagent votre crédibilité — et celle de vos financeurs. Émettez-les certifiées, en lot, depuis un simple import.</p>
+        <div><span class="seg-doc">Attestations</span><span class="seg-doc">Certificats de réalisation</span></div>
       </div>
-
-      <!-- Verifier -->
-      <div style="background:#0c1a3a;border:1px solid rgba(255,255,255,.08);border-radius:var(--r);padding:36px;box-shadow:var(--shadow-sm)">
-        <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font:600 11px 'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.3);color:#93c5fd;margin-bottom:20px">
-          ✓ Verifier
-        </div>
-        <h3 style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:10px;color:white">HR teams &amp; recruiters</h3>
-        <p style="color:#8da4c8;font-size:14px;line-height:1.65;margin-bottom:24px">
-          Verify candidate documents in seconds. Upload the received PDF and enter the certificate ID — MOTSA instantly tells you whether the document is authentic, modified, or unknown.
-        </p>
-        <ul style="list-style:none;margin-bottom:28px">
-          <li style="font-size:13px;color:#8da4c8;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:10px"><span style="color:#4ade80">✓</span> Verify any MOTSA-certified document</li>
-          <li style="font-size:13px;color:#8da4c8;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.07);display:flex;gap:10px"><span style="color:#4ade80">✓</span> Three clear outcomes: verified, modified, unknown</li>
-          <li style="font-size:13px;color:#8da4c8;padding:7px 0;display:flex;gap:10px"><span style="color:#4ade80">✓</span> Full audit log of your team's verifications</li>
-        </ul>
-        <a class="btn full" href="login-verifier.html" style="background:#2563eb;border-color:#2563eb;color:white">Sign in as Verifier →</a>
+      <div class="seg">
+        <div class="icn-box"><svg class="icn" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+        <h3>Écoles &amp; enseignement supérieur</h3>
+        <p>Diplômes d'établissement, certificats de scolarité, relevés de notes : libérez votre scolarité des demandes de vérification récurrentes.</p>
+        <div><span class="seg-doc">Diplômes d'établissement</span><span class="seg-doc">Relevés</span><span class="seg-doc">Scolarité</span></div>
       </div>
-
+      <div class="seg">
+        <div class="icn-box"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M9 12.5 7 22l5-3 5 3-2-9.5"/></svg></div>
+        <h3>Certificateurs &amp; fédérations</h3>
+        <p>Certifications métiers, habilitations, titres professionnels : un registre d'émission unique, révocable, opposable aux tiers.</p>
+        <div><span class="seg-doc">Certifications</span><span class="seg-doc">Habilitations</span></div>
+      </div>
+    </div>
+    <div style="margin-top:22px;background:white;border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <svg class="icn" style="color:var(--blue)" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <span style="font-size:14px;color:var(--text2)"><strong>Recruteur, RH, administration ?</strong> La vérification est gratuite, sans compte.</span>
+      <a class="btn soft" style="margin-left:auto;font-size:13px;padding:9px 16px" href="verify.html">Vérifier un document</a>
     </div>
   </section>
 
-  <!-- ─── How it works ─────────────────────────────────────── -->
+  <!-- ─── Comment ça marche ────────────────────────────────── -->
   <section class="section">
-    <div class="kicker">How it works</div>
-    <h2 style="margin-bottom:40px">Two API calls. Absolute trust.</h2>
+    <div class="kicker">Comment ça marche</div>
+    <h2 style="margin-bottom:40px">Trois étapes. Aucun fichier transmis.</h2>
     <div class="grid3">
       <div class="tile">
-        <div class="tile-num">01 — Certify</div>
-        <h3>Issuer API</h3>
-        <p>The university sends document metadata and the SHA-256 hash of the PDF. MOTSA returns a certificate ID and a permanent verification URL.</p>
+        <div class="tile-num">01 — Émettre</div>
+        <h3>Vous certifiez le PDF</h3>
+        <p>Déposez le document dans votre espace émetteur. Son empreinte numérique (SHA-256) est calculée <strong>dans votre navigateur</strong> — le fichier ne quitte jamais votre poste. MOTSA enregistre l'empreinte et délivre un certificat avec QR code et lien de vérification.</p>
       </div>
       <div class="tile">
-        <div class="tile-num">02 — Verify</div>
-        <h3>Verification API</h3>
-        <p>The HR team uploads the received PDF. MOTSA recomputes the hash locally and compares it to the certified version — nothing is ever uploaded.</p>
+        <div class="tile-num">02 — Partager</div>
+        <h3>Le titulaire transmet son document</h3>
+        <p>Le diplômé ou stagiaire joint son PDF comme d'habitude — candidature, dossier, administration. Le QR code et l'identifiant MOTSA accompagnent le document.</p>
       </div>
       <div class="tile">
-        <div class="tile-num">03 — Result</div>
-        <h3>Clear outcome</h3>
-        <p>No vague scores. The result is <strong>Verified</strong>, <strong>Modified</strong>, or <strong>Unknown</strong> — with full issuer and holder details.</p>
+        <div class="tile-num">03 — Vérifier</div>
+        <h3>Le destinataire contrôle seul</h3>
+        <p>Le recruteur dépose le PDF reçu sur la page de vérification publique. Résultat net, sans score flou : <strong>Authentique</strong>, <strong>Modifié</strong> ou <strong>Inconnu</strong> — avec l'émetteur et le titulaire affichés.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ─── Confiance ────────────────────────────────────────── -->
+  <section class="section">
+    <div class="kicker">Confidentialité &amp; conformité</div>
+    <h2 style="margin-bottom:40px">Un produit de confiance se doit d'être irréprochable.</h2>
+    <div class="trust-strip">
+      <div>
+        <svg class="icn" style="color:var(--blue);margin-top:2px" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <div><h4>Le fichier ne quitte jamais votre navigateur</h4><p>Seule l'empreinte SHA-256 est enregistrée. Le contenu du document n'est jamais transmis ni stocké.</p></div>
+      </div>
+      <div>
+        <svg class="icn" style="color:var(--blue);margin-top:2px" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div><h4>RGPD par conception</h4><p>Données minimales (nom du titulaire, type de document, empreinte), hébergées dans l'Union européenne.</p></div>
+      </div>
+      <div>
+        <svg class="icn" style="color:var(--blue);margin-top:2px" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <div><h4>Résultat net, jamais de score</h4><p>Authentique, Modifié ou Inconnu. Une empreinte correspond ou ne correspond pas — pas de zone grise.</p></div>
+      </div>
+      <div>
+        <svg class="icn" style="color:var(--blue);margin-top:2px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+        <div><h4>Révocation à tout moment</h4><p>L'émetteur garde la main : un certificat révoqué apparaît immédiatement comme tel à la vérification.</p></div>
+      </div>
+    </div>
+    <div style="margin-top:18px;text-align:right">
+      <a href="securite.html" style="font-size:13.5px;color:var(--blue);font-weight:500">Notre approche sécurité en détail →</a>
+    </div>
+  </section>
+
+  <!-- ─── Tarifs teaser ────────────────────────────────────── -->
+  <section class="section">
+    <div class="kicker">Tarifs</div>
+    <h2 style="margin-bottom:14px">Gratuit pour vérifier.<br>Simple pour émettre.</h2>
+    <p class="lead" style="margin-top:0">
+      La vérification est gratuite pour tous, sans limite — c'est ce qui donne sa valeur à votre certificat. Les émetteurs choisissent une offre selon leur volume, à partir de 0 € pour essayer.
+    </p>
+    <div class="btn-group">
+      <a class="btn primary" href="tarifs.html">Voir les tarifs
+        <svg class="icn sm" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
+      </a>
+      <a class="btn" href="mailto:contact@motsa.tech?subject=Demande%20de%20d%C3%A9monstration%20MOTSA">Demander une démonstration</a>
+    </div>
+  </section>
+
+  <!-- ─── FAQ ──────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="kicker">Questions fréquentes</div>
+    <h2 style="margin-bottom:40px">Ce qu'on nous demande souvent.</h2>
+    <div class="faq">
+      <details>
+        <summary>Quelle différence avec le registre d'État des diplômes nationaux ?</summary>
+        <div class="faq-body">Le registre public d'État couvre les diplômes nationaux délivrés par les établissements habilités. MOTSA certifie tout le reste : attestations de formation, certificats d'établissement, titres privés, relevés de notes, habilitations — les documents du quotidien, émis en volume, qu'aucun registre officiel ne couvre.</div>
+      </details>
+      <details>
+        <summary>Qu'est-ce qu'une empreinte SHA-256 ?</summary>
+        <div class="faq-body">C'est la signature numérique unique d'un fichier : une suite de 64 caractères calculée à partir de son contenu exact. Si un seul octet du PDF change — une note, une date, un nom — l'empreinte change du tout au tout. Comparer les empreintes permet donc de prouver qu'un document est strictement identique à celui émis, sans jamais transmettre le fichier.</div>
+      </details>
+      <details>
+        <summary>Quelles données stockez-vous ?</summary>
+        <div class="faq-body">Le strict nécessaire : l'empreinte du document, le nom du titulaire, le type de document, la date d'émission et l'émetteur. Jamais le fichier lui-même, jamais son contenu. Détails dans notre <a href="legal.html#confidentialite" style="color:var(--blue)">politique de confidentialité</a>.</div>
+      </details>
+      <details>
+        <summary>Que se passe-t-il si nous arrêtons l'abonnement ?</summary>
+        <div class="faq-body">Les certificats déjà émis restent vérifiables : la promesse faite à vos diplômés est tenue. Vous ne pouvez simplement plus en émettre de nouveaux au-delà de l'offre gratuite.</div>
+      </details>
+      <details>
+        <summary>Faut-il intégrer MOTSA à notre système d'information ?</summary>
+        <div class="faq-body">Non. L'émission se fait depuis un navigateur, document par document ou par lot. Aucun projet informatique, aucune installation. Une API est disponible sur l'offre Institution pour les établissements qui souhaitent automatiser.</div>
+      </details>
     </div>
   </section>
 
 </main>
 
-<footer class="footer">
-  <span>© 2026 MOTSA</span>
-  <div class="footer-links">
-    <a href="login-issuer.html">Issuer portal</a>
-    <a href="login-verifier.html">Verifier portal</a>
+<footer class="footer-big">
+  <div class="cols">
+    <div>
+      <a class="logo" href="index.html" style="margin-bottom:12px">
+        <img src="assets/icon-512.png" alt="MOTSA">
+        MOTSA
+      </a>
+      <p style="font-size:13px;color:var(--muted);max-width:260px;line-height:1.6">
+        Certification et vérification de documents officiels, émises par l'établissement. Le fichier ne quitte jamais votre navigateur.
+      </p>
+    </div>
+    <div>
+      <h5>Produit</h5>
+      <a href="verify.html">Vérifier un document</a>
+      <a href="tarifs.html">Tarifs</a>
+      <a href="securite.html">Sécurité</a>
+    </div>
+    <div>
+      <h5>Espaces clients</h5>
+      <a href="login-issuer.html">Espace émetteur</a>
+      <a href="login-verifier.html">Espace vérificateur Pro</a>
+    </div>
+    <div>
+      <h5>Contact &amp; légal</h5>
+      <a href="mailto:contact@motsa.tech">contact@motsa.tech</a>
+      <a href="legal.html">Mentions légales</a>
+      <a href="legal.html#confidentialite">Confidentialité</a>
+      <a href="legal.html#cgu">CGU</a>
+    </div>
   </div>
-  <span>Issuer-certified document integrity.</span>
+  <div class="base">
+    <span>© 2026 MOTSA — Intégrité documentaire certifiée par l'émetteur.</span>
+    <span>Fait en France 🇫🇷</span>
+  </div>
 </footer>
 
 <div class="mobile-tabs">
-  <a class="active" href="index.html"><span class="tab-icon">⌂</span>Home</a>
-  <a href="login-issuer.html"><span class="tab-icon">✎</span>Issuer</a>
-  <a href="login-verifier.html"><span class="tab-icon">✓</span>Verify</a>
+  <a class="active" href="index.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Accueil</a>
+  <a href="verify.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Vérifier</a>
+  <a href="tarifs.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Tarifs</a>
+  <a href="login-issuer.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Émettre</a>
 </div>
 
 </body>

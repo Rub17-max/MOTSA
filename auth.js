@@ -219,18 +219,18 @@ async function mountUserChip() {
 
   const orgName   = profile.organizations?.name || '—';
   const type      = profile.account_type;
-  const typeLabel = type === 'issuer' ? 'Issuer' : 'Verifier';
+  const typeLabel = type === 'issuer' ? 'Émetteur' : 'Vérificateur';
 
   // Check if user also has the other profile type (to show switcher)
   const allProfiles = await getAllProfiles();
   const hasOtherType = allProfiles.length > 1;
   const otherType = type === 'issuer' ? 'verifier' : 'issuer';
-  const otherLabel = type === 'issuer' ? 'Switch to Verifier' : 'Switch to Issuer';
+  const otherLabel = type === 'issuer' ? 'Basculer en vérificateur' : 'Basculer en émetteur';
   const otherUrl  = type === 'issuer' ? 'verify.html' : 'certif.html';
 
   const switcherHtml = hasOtherType
     ? `<a onclick="switchProfile('${otherType}')" style="color:var(--blue)">⇄ ${otherLabel}</a>`
-    : `<a href="${type === 'issuer' ? 'login-verifier.html' : 'login-issuer.html'}" style="color:var(--muted)">+ Add ${otherType} profile</a>`;
+    : `<a href="${type === 'issuer' ? 'login-verifier.html' : 'login-issuer.html'}" style="color:var(--muted)">+ Ajouter un profil ${otherType === 'issuer' ? 'émetteur' : 'vérificateur'}</a>`;
 
   container.innerHTML = `
     <div class="user-chip">
@@ -245,7 +245,7 @@ async function mountUserChip() {
         <div style="padding:6px">
           <a href="#" style="font-size:12px;color:var(--muted);padding:8px 10px;display:block">${orgName}</a>
           ${switcherHtml}
-          <a onclick="signOut()" class="logout">Sign out</a>
+          <a onclick="signOut()" class="logout">Se déconnecter</a>
         </div>
       </div>
     </div>`;
@@ -274,6 +274,14 @@ async function switchProfile(targetType) {
   window.location.href = targetType === 'issuer' ? 'certif.html' : 'verify.html';
 }
 
+// ── Password reset (manquant en v3 : le lien « mot de passe oublié » échouait) ──
+
+async function sendPasswordReset(email, redirectPage) {
+  const redirectTo = window.location.origin + '/' + (redirectPage || 'login-issuer.html');
+  const { error } = await sb().auth.resetPasswordForEmail(email, { redirectTo });
+  return { error };
+}
+
 // ── Fetch helpers ─────────────────────────────────────────────
 
 async function fetchOrganizations(accountType) {
@@ -289,7 +297,8 @@ async function fetchOrganizations(accountType) {
 
 async function createCertificate({ issuerOrgId, createdBy, holderName, holderEmail,
                                     documentType, documentHash, issuedAt, expiresAt, metadata }) {
-  const code = 'motsa_' + [...crypto.getRandomValues(new Uint8Array(3))]
+  // 8 octets aléatoires = 16 caractères hex : espace de clés non énumérable
+  const code = 'motsa_' + [...crypto.getRandomValues(new Uint8Array(8))]
     .map(x => x.toString(16).padStart(2,'0')).join('').toUpperCase();
 
   const { data, error } = await sb()
@@ -368,18 +377,26 @@ async function verifyCertificate({ verifierOrgId, verifiedBy, certificateCode, d
     issuerName = cert.organizations?.name; holderName = cert.holder_name; docType = cert.document_type;
   }
 
-  await sb().from('verification_events').insert({
-    certificate_id:             certId,
-    verifier_org_id:            verifierOrgId,
-    verified_by:                verifiedBy,
-    submitted_certificate_code: certificateCode || cert?.certificate_code || null,
-    submitted_hash:             documentHash,
-    result,
-    issuer_name:   issuerName,
-    holder_name:   holderName,
-    document_type: docType,
-    user_agent:    navigator.userAgent,
-  });
+  // Journalisation : uniquement pour les vérificateurs connectés.
+  // La vérification publique (sans compte) ne bloque jamais sur l'audit log.
+  if (verifiedBy) {
+    try {
+      await sb().from('verification_events').insert({
+        certificate_id:             certId,
+        verifier_org_id:            verifierOrgId,
+        verified_by:                verifiedBy,
+        submitted_certificate_code: certificateCode || cert?.certificate_code || null,
+        submitted_hash:             documentHash,
+        result,
+        issuer_name:   issuerName,
+        holder_name:   holderName,
+        document_type: docType,
+        user_agent:    navigator.userAgent,
+      });
+    } catch (e) {
+      console.warn('Audit log non enregistré :', e?.message);
+    }
+  }
 
   return { result, cert: cert || null };
 }

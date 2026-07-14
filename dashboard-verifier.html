@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Verification History — MOTSA</title>
+  <title>Historique des vérifications — MOTSA</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,59 +14,59 @@
     MOTSA
   </a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="verify.html">Verify</a>
-    <a class="active keep" href="dashboard-verifier.html">History</a>
+    <a href="index.html">Accueil</a>
+    <a href="verify.html">Vérifier</a>
+    <a class="active keep" href="dashboard-verifier.html">Historique</a>
     <div id="nav-user"></div>
   </div>
 </nav>
 
 <main class="wrap">
   <section class="section" style="border-top:0;padding-top:56px">
-    <div class="kicker">Verifier dashboard</div>
+    <div class="kicker">Espace vérificateur Pro</div>
     <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:36px">
       <div>
-        <h1 id="dash-title" style="font-size:clamp(28px,4vw,48px);margin-bottom:6px">Verification history</h1>
-        <p id="dash-subtitle" style="color:var(--muted);font-size:14px">Loading…</p>
+        <h1 id="dash-title" style="font-size:clamp(28px,4vw,48px);margin-bottom:6px">Historique des vérifications</h1>
+        <p id="dash-subtitle" style="color:var(--muted);font-size:14px">Chargement…</p>
       </div>
-      <a class="btn primary" href="verify.html">+ Verify a document</a>
+      <a class="btn primary" href="verify.html">+ Vérifier un document</a>
     </div>
 
-    <!-- Stats -->
+    <!-- Statistiques -->
     <div class="stat-grid">
       <div class="stat-card">
         <h3 id="stat-total">—</h3>
-        <p>Total verifications</p>
+        <p>Vérifications totales</p>
       </div>
       <div class="stat-card" style="border-left:3px solid var(--green)">
         <h3 id="stat-verified" style="color:var(--green)">—</h3>
-        <p>Verified (authentic)</p>
+        <p>Authentiques</p>
       </div>
       <div class="stat-card" style="border-left:3px solid var(--red)">
         <h3 id="stat-modified" style="color:var(--red)">—</h3>
-        <p>Modified / Unknown</p>
+        <p>Modifiés / inconnus</p>
       </div>
     </div>
 
-    <!-- History table -->
+    <!-- Historique -->
     <div class="data-table" id="history-table">
       <div class="table-head" style="grid-template-columns:1fr 1fr 1fr 1fr .8fr">
-        <span>Certificate ID</span>
-        <span>Holder</span>
-        <span>Issuer</span>
+        <span>ID certificat</span>
+        <span>Titulaire</span>
+        <span>Émetteur</span>
         <span>Date</span>
-        <span>Result</span>
+        <span>Résultat</span>
       </div>
       <div id="history-body">
-        <div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Loading…</div>
+        <div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Chargement…</div>
       </div>
     </div>
 
     <div id="empty-state" style="display:none;text-align:center;padding:48px 24px;color:var(--muted)">
-      <div style="font-size:36px;margin-bottom:14px">🔍</div>
-      <div style="font-weight:500;color:var(--text2);margin-bottom:6px">No verifications yet</div>
-      <div style="font-size:13px;margin-bottom:20px">Every document you verify will be logged here.</div>
-      <a class="btn primary" href="verify.html">Verify your first document</a>
+      <svg class="icn lg" style="margin:0 auto 14px;color:var(--muted)" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <div style="font-weight:500;color:var(--text2);margin-bottom:6px">Aucune vérification pour le moment</div>
+      <div style="font-size:13px;margin-bottom:20px">Chaque document vérifié par votre équipe sera consigné ici.</div>
+      <a class="btn primary" href="verify.html">Vérifier mon premier document</a>
     </div>
   </section>
 </main>
@@ -74,16 +74,17 @@
 <footer class="footer">
   <span>© 2026 MOTSA</span>
   <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="verify.html">Verify</a>
+    <a href="index.html">Accueil</a>
+    <a href="verify.html">Vérifier</a>
+    <a href="tarifs.html">Tarifs</a>
   </div>
-  <span>Verifier history dashboard.</span>
+  <span>Journal d'audit des vérifications.</span>
 </footer>
 
 <div class="mobile-tabs">
-  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
-  <a href="verify.html"><span class="tab-icon">✓</span>Verify</a>
-  <a class="active" href="dashboard-verifier.html"><span class="tab-icon">📋</span>History</a>
+  <a href="index.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Accueil</a>
+  <a href="verify.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Vérifier</a>
+  <a class="active" href="dashboard-verifier.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg>Historique</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -97,11 +98,11 @@ const resultColors = {
   unknown:  'var(--orange)',
 };
 const resultLabels = {
-  verified: '✓ Verified',
-  modified: '✗ Modified',
-  revoked:  '✗ Revoked',
-  expired:  '⚠ Expired',
-  unknown:  '? Unknown',
+  verified: '✓ Authentique',
+  modified: '✗ Modifié',
+  revoked:  '✗ Révoqué',
+  expired:  '⚠ Expiré',
+  unknown:  '? Inconnu',
 };
 
 (async () => {
@@ -109,18 +110,17 @@ const resultLabels = {
   if (!profile) return;
   await mountUserChip();
 
-  const orgName = profile.organizations?.name || '—';
-  document.getElementById('dash-subtitle').textContent = `${orgName}`;
+  document.getElementById('dash-subtitle').textContent =
+    profile.organizations?.name || '—';
 
   const { data: events, error } = await fetchMyVerifications();
 
   if (error) {
     document.getElementById('history-body').innerHTML =
-      `<div style="padding:24px;color:var(--red);font-size:13px">Error: ${error.message}</div>`;
+      `<div style="padding:24px;color:var(--red);font-size:13px">Erreur : ${error.message}</div>`;
     return;
   }
 
-  // Stats
   const verified = events.filter(e => e.result === 'verified').length;
   const bad      = events.filter(e => ['modified','revoked','expired','unknown'].includes(e.result)).length;
   document.getElementById('stat-total').textContent    = events.length;
@@ -140,7 +140,7 @@ const resultLabels = {
     row.className = 'table-row';
     row.style.cssText = 'grid-template-columns:1fr 1fr 1fr 1fr .8fr';
     const dateStr = ev.created_at
-      ? new Date(ev.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+      ? new Date(ev.created_at).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' })
       : '—';
     const color = resultColors[ev.result] || 'var(--muted)';
     const label = resultLabels[ev.result] || ev.result;

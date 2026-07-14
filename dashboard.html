@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Dashboard — MOTSA Issuer</title>
+  <title>Tableau de bord — Espace émetteur MOTSA</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,72 +14,70 @@
     MOTSA
   </a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="certif.html">Certify</a>
-    <a class="active keep" href="dashboard.html">Dashboard</a>
+    <a href="index.html">Accueil</a>
+    <a href="certif.html">Certifier</a>
+    <a class="active keep" href="dashboard.html">Tableau de bord</a>
     <div id="nav-user"></div>
   </div>
 </nav>
 
 <main class="wrap">
   <section class="section" style="border-top:0;padding-top:56px">
-    <div class="kicker">Issuer dashboard</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:36px">
+    <div class="kicker">Espace émetteur</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:28px">
       <div>
         <h1 id="dash-title" style="font-size:clamp(28px,4vw,48px);margin-bottom:6px">Documents</h1>
-        <p id="dash-subtitle" style="color:var(--muted);font-size:14px">Loading…</p>
+        <p id="dash-subtitle" style="color:var(--muted);font-size:14px">Chargement…</p>
       </div>
-      <a class="btn primary" href="certif.html">+ Certify new document</a>
+      <a class="btn primary" href="certif.html">+ Certifier un document</a>
     </div>
 
-    <!-- Stats -->
+    <!-- Quota / offre -->
+    <div class="quota-banner" id="quota-banner" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:2px;min-width:190px">
+        <span style="font-size:13px;font-weight:600" id="quota-plan">Offre Découverte</span>
+        <span style="font-size:12px;color:var(--muted)" id="quota-label">— / 20 certificats ce mois-ci</span>
+      </div>
+      <div class="quota-bar"><div class="quota-fill" id="quota-fill" style="width:0%"></div></div>
+      <a class="btn soft" style="font-size:13px;padding:8px 16px" href="tarifs.html">Passer à l'offre supérieure</a>
+    </div>
+
+    <!-- Statistiques -->
     <div class="stat-grid">
       <div class="stat-card">
         <h3 id="stat-total">—</h3>
-        <p>Certificates issued</p>
+        <p>Certificats émis</p>
       </div>
       <div class="stat-card">
         <h3 id="stat-verif">—</h3>
-        <p>Verifications on your docs</p>
+        <p>Vérifications sur vos documents</p>
       </div>
       <div class="stat-card">
         <h3 id="stat-active">—</h3>
-        <p>Active certificates</p>
+        <p>Certificats actifs</p>
       </div>
     </div>
 
-    <!-- API status -->
-    <div style="background:white;border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 20px;display:flex;gap:24px;align-items:center;margin-bottom:28px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="width:8px;height:8px;border-radius:99px;background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.15);display:inline-block"></span>
-        <span style="font-size:13px;font-weight:500">API operational</span>
-      </div>
-      <div style="color:var(--muted);font-size:13px">POST /api/v1/certificates <span style="color:var(--green)">✓</span></div>
-      <div style="color:var(--muted);font-size:13px;margin-left:auto">
-        <span id="last-checked">—</span>
-      </div>
-    </div>
-
-    <!-- Certs table -->
+    <!-- Table des certificats -->
     <div class="data-table" id="docs-table">
       <div class="table-head" style="grid-template-columns:1.4fr 1fr .9fr .8fr .6fr .5fr">
         <span>Document</span>
-        <span>Holder</span>
-        <span>Issued</span>
-        <span>Certificate ID</span>
-        <span>Status</span>
+        <span>Titulaire</span>
+        <span>Émis le</span>
+        <span>ID certificat</span>
+        <span>Statut</span>
         <span></span>
       </div>
       <div id="table-body">
-        <div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Loading…</div>
+        <div style="padding:40px;text-align:center;color:var(--muted);font-size:13px">Chargement…</div>
       </div>
     </div>
 
     <div id="empty-state" style="display:none;text-align:center;padding:48px 24px;color:var(--muted)">
-      <div style="font-size:36px;margin-bottom:14px">📋</div>
-      <div style="font-weight:500;color:var(--text2);margin-bottom:6px">No certificates yet</div>
-      <div style="font-size:13px;margin-bottom:20px">Documents you certify will appear here.</div>
-      <a class="btn primary" href="certif.html">Certify your first document</a>
+      <svg class="icn lg" style="margin:0 auto 14px;color:var(--muted)" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <div style="font-weight:500;color:var(--text2);margin-bottom:6px">Aucun certificat pour le moment</div>
+      <div style="font-size:13px;margin-bottom:20px">Les documents que vous certifiez apparaîtront ici.</div>
+      <a class="btn primary" href="certif.html">Certifier mon premier document</a>
     </div>
   </section>
 </main>
@@ -87,112 +85,129 @@
 <footer class="footer">
   <span>© 2026 MOTSA</span>
   <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="certif.html">Certify</a>
+    <a href="index.html">Accueil</a>
+    <a href="certif.html">Certifier</a>
+    <a href="tarifs.html">Tarifs</a>
   </div>
-  <span>Issuer dashboard.</span>
+  <span>Tableau de bord émetteur.</span>
 </footer>
 
 <div class="mobile-tabs">
-  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
-  <a href="certif.html"><span class="tab-icon">✎</span>Certify</a>
-  <a class="active" href="dashboard.html"><span class="tab-icon">▦</span>Dash</a>
+  <a href="index.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Accueil</a>
+  <a href="certif.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Certifier</a>
+  <a class="active" href="dashboard.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Tableau</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="auth.js"></script>
 <script>
 const typeLabels = {
-  certificat_scolarite: 'Certificate of enrollment',
-  diplome:              'Diploma',
-  releve_notes:         'Transcript',
+  certificat_scolarite: 'Certificat de scolarité',
+  diplome:              'Diplôme',
+  releve_notes:         'Relevé de notes',
   attestation:          'Attestation',
 };
 
-(async () => {
+// Quota de l'offre Découverte (affichage indicatif côté client ;
+// l'application stricte du quota se fait côté base — voir NOTES-DEPLOIEMENT.md)
+const QUOTA_DECOUVERTE = 20;
+
+async function loadDashboard() {
   const profile = await requireAuth('issuer');
   if (!profile) return;
 
   await mountUserChip();
 
   const orgName = profile.organizations?.name || '—';
-  const orgSlug = profile.organizations?.slug  || '—';
-  document.getElementById('dash-title').textContent    = 'Documents';
-  document.getElementById('dash-subtitle').textContent =
-    `${orgName} — issuer_id: ${orgSlug}`;
-  document.getElementById('last-checked').textContent  =
-    'Last updated: ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  document.getElementById('dash-subtitle').textContent = orgName;
 
   const { data: certs, error } = await fetchMyCertificates();
 
   if (error) {
     document.getElementById('table-body').innerHTML =
-      `<div style="padding:24px;color:var(--red);font-size:13px">Error loading certificates: ${error.message}</div>`;
+      `<div style="padding:24px;color:var(--red);font-size:13px">Erreur de chargement : ${error.message}</div>`;
     return;
   }
 
-  // Stats
-  const active   = certs.filter(c => c.status === 'active').length;
-  document.getElementById('stat-total').textContent  = certs.length.toLocaleString();
-  document.getElementById('stat-active').textContent = active.toLocaleString();
-  document.getElementById('stat-verif').textContent  = '—'; // loaded from verification_events below
+  // Statistiques
+  const active = certs.filter(c => c.status === 'active').length;
+  document.getElementById('stat-total').textContent  = certs.length.toLocaleString('fr-FR');
+  document.getElementById('stat-active').textContent = active.toLocaleString('fr-FR');
 
-  // Load verification count for this org's certs
+  // Quota mensuel (offre Découverte)
+  const debutMois = new Date(); debutMois.setDate(1); debutMois.setHours(0,0,0,0);
+  const emisCeMois = certs.filter(c => c.created_at && new Date(c.created_at) >= debutMois).length;
+  const banner = document.getElementById('quota-banner');
+  banner.style.display = 'flex';
+  document.getElementById('quota-label').textContent =
+    `${emisCeMois} / ${QUOTA_DECOUVERTE} certificats ce mois-ci`;
+  const pct = Math.min(100, Math.round(emisCeMois / QUOTA_DECOUVERTE * 100));
+  document.getElementById('quota-fill').style.width = pct + '%';
+  if (pct >= 80) banner.classList.add('warn');
+
+  // Nombre de vérifications (count exact — l'ancien code lisait data.length
+  // sur une requête head:true, qui renvoie toujours null)
   const certIds = certs.map(c => c.id).filter(Boolean);
   if (certIds.length > 0) {
-    const { data: verifData } = await sb()
+    const { count } = await sb()
       .from('verification_events')
       .select('id', { count: 'exact', head: true })
       .in('certificate_id', certIds);
-    // supabase returns count in the header; use length fallback
-    document.getElementById('stat-verif').textContent = (verifData?.length ?? '—').toLocaleString();
+    document.getElementById('stat-verif').textContent =
+      (count ?? 0).toLocaleString('fr-FR');
   } else {
     document.getElementById('stat-verif').textContent = '0';
   }
 
-  // Render table
+  // Table
+  const body = document.getElementById('table-body');
   if (certs.length === 0) {
     document.getElementById('docs-table').style.display = 'none';
     document.getElementById('empty-state').style.display = 'block';
     return;
   }
+  document.getElementById('docs-table').style.display = '';
+  document.getElementById('empty-state').style.display = 'none';
 
-  const body = document.getElementById('table-body');
   body.innerHTML = '';
   certs.forEach(cert => {
     const row = document.createElement('div');
     row.className = 'table-row';
     row.style.gridTemplateColumns = '1.4fr 1fr .9fr .8fr .6fr .5fr';
     const dateStr = cert.issued_at
-      ? new Date(cert.issued_at).toLocaleDateString('en-GB') : '—';
+      ? new Date(cert.issued_at).toLocaleDateString('fr-FR') : '—';
     const isActive = cert.status === 'active';
     const statusClass = isActive ? 'certified' : 'pending';
-    const studentId = cert.metadata?.student_id ? `<span style="font-size:11px;color:var(--muted);display:block">${cert.metadata.student_id}</span>` : '';
+    const statusLabel = isActive ? 'actif' : (cert.status === 'revoked' ? 'révoqué' : cert.status);
+    const studentId = cert.metadata?.student_id
+      ? `<span style="font-size:11px;color:var(--muted);display:block">${cert.metadata.student_id}</span>` : '';
     row.innerHTML = `
       <strong>${typeLabels[cert.document_type] || cert.document_type || '—'}</strong>
       <span>${cert.holder_name || '—'}${studentId}</span>
       <span>${dateStr}</span>
       <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${cert.certificate_code}</span>
-      <span><span class="pill-status ${statusClass}">${cert.status}</span></span>
+      <span><span class="pill-status ${statusClass}">${statusLabel}</span></span>
       <span>${isActive
         ? `<button onclick="revokeCert(event,'${cert.id}','${cert.certificate_code}')"
              style="background:var(--redBg);border:1px solid var(--redBd);color:var(--red);
                     border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;
                     cursor:pointer;white-space:nowrap;font-family:inherit">
-             Revoke
+             Révoquer
            </button>`
-        : '<span style="font-size:11px;color:var(--muted)">Revoked</span>'
+        : '<span style="font-size:11px;color:var(--muted)">Révoqué</span>'
       }</span>`;
     body.appendChild(row);
   });
-})();
+}
+
+loadDashboard();
 
 async function revokeCert(e, certId, certCode) {
   e.stopPropagation();
-  if (!confirm(`Revoke certificate ${certCode}?\n\nThis cannot be undone. The holder will no longer be able to use this certificate.`)) return;
+  if (!confirm(`Révoquer le certificat ${certCode} ?\n\nCette action est définitive : le document apparaîtra comme « Révoqué » à toute vérification.`)) return;
 
   const btn = e.target;
-  btn.textContent = 'Revoking…';
+  btn.textContent = 'Révocation…';
   btn.disabled = true;
 
   const { error } = await sb()
@@ -201,12 +216,11 @@ async function revokeCert(e, certId, certCode) {
     .eq('id', certId);
 
   if (error) {
-    alert('Error: ' + error.message);
-    btn.textContent = 'Revoke';
+    alert('Erreur : ' + error.message);
+    btn.textContent = 'Révoquer';
     btn.disabled = false;
     return;
   }
-
   loadDashboard();
 }
 </script>

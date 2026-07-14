@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Certify — MOTSA</title>
+  <title>Certifier un document — MOTSA</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,82 +14,84 @@
     MOTSA
   </a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a class="active keep" href="certif.html">Certify</a>
-    <a href="dashboard.html">Dashboard</a>
+    <a href="index.html">Accueil</a>
+    <a class="active keep" href="certif.html">Certifier</a>
+    <a href="dashboard.html">Tableau de bord</a>
     <div id="nav-user"></div>
   </div>
 </nav>
 
 <main class="wrap">
   <section class="section" style="border-top:0;padding-top:56px">
-    <div class="kicker">Certify interface — Issuer</div>
-    <h1 id="page-title" style="max-width:800px">Certify a document</h1>
+    <div class="kicker">Espace émetteur</div>
+    <h1 id="page-title" style="max-width:800px">Certifier un document</h1>
     <p class="lead" id="page-subtitle">
-      The PDF hash is computed locally in your browser — the file is never uploaded. MOTSA stores only the hash and metadata.
+      L'empreinte du PDF est calculée localement dans votre navigateur — le fichier n'est jamais transmis. MOTSA n'enregistre que l'empreinte et les métadonnées.
     </p>
 
     <div class="split">
 
-      <!-- ── Form ─────────────────────────────────────── -->
+      <!-- ── Formulaire ─────────────────────────────────── -->
       <aside class="card panel">
-        <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">New certificate</h2>
+        <h2 style="font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px">Nouveau certificat</h2>
 
-        <div class="upload-zone" id="upload-label" onclick="document.getElementById('pdf-input').click()">
-          <div class="upload-icon" id="upload-icon">📄</div>
-          <strong id="upload-title">Drop the official PDF here</strong>
-          <span class="upload-hint" id="upload-hint">Diploma, certificate, transcript — stays in your browser</span>
+        <div class="upload-zone" id="upload-label" onclick="document.getElementById('pdf-input').click()" role="button" tabindex="0" aria-label="Déposer ou sélectionner le PDF officiel">
+          <div class="upload-icon" id="upload-icon" aria-hidden="true">
+            <svg class="icn lg" style="margin:0 auto;color:var(--blue)" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <strong id="upload-title">Déposez le PDF officiel ici</strong>
+          <span class="upload-hint" id="upload-hint">Diplôme, attestation, relevé — reste dans votre navigateur</span>
           <span class="upload-filename" id="upload-filename"></span>
         </div>
         <input id="pdf-input" type="file" accept="application/pdf">
 
         <div class="field">
-          <label for="issuer-display">Issuing institution</label>
+          <label for="issuer-display">Établissement émetteur</label>
           <input id="issuer-display" type="text" disabled
             style="background:var(--soft);color:var(--blue);font-weight:500;border-color:#c4d8fb"
-            value="Loading…">
+            value="Chargement…">
         </div>
 
         <div class="field">
-          <label for="holder">Holder's full name</label>
-          <input id="holder" type="text" placeholder="First and last name">
+          <label for="holder">Nom complet du titulaire</label>
+          <input id="holder" type="text" placeholder="Prénom et nom">
         </div>
 
         <div class="field">
-          <label for="holder-email">Holder's email <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-          <input id="holder-email" type="email" placeholder="holder@example.com">
+          <label for="holder-email">E-mail du titulaire <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label>
+          <input id="holder-email" type="email" placeholder="titulaire@exemple.fr">
         </div>
 
         <div class="field">
-          <label for="student-id">Student number <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
-          <input id="student-id" type="text" placeholder="e.g. 21304872" autocomplete="off">
+          <label for="student-id">Numéro étudiant <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label>
+          <input id="student-id" type="text" placeholder="ex. 21304872" autocomplete="off">
         </div>
 
         <div class="field">
-          <label for="doc-type">Document type</label>
+          <label for="doc-type">Type de document</label>
           <select id="doc-type">
-            <option value="certificat_scolarite">Certificate of enrollment</option>
-            <option value="diplome">Diploma</option>
-            <option value="releve_notes">Transcript</option>
             <option value="attestation">Attestation</option>
+            <option value="certificat_scolarite">Certificat de scolarité</option>
+            <option value="diplome">Diplôme</option>
+            <option value="releve_notes">Relevé de notes</option>
           </select>
         </div>
 
         <div class="field">
-          <label for="issued-at">Date of issuance</label>
+          <label for="issued-at">Date d'émission</label>
           <input id="issued-at" type="date">
         </div>
 
         <button class="btn primary full" id="certify-btn" onclick="certify()">
           <span class="spinner"></span>
-          <span class="btn-label">Certify with MOTSA</span>
+          <span class="btn-label">Certifier avec MOTSA</span>
         </button>
       </aside>
 
-      <!-- ── Output ────────────────────────────────────── -->
+      <!-- ── Résultat ──────────────────────────────────── -->
       <section>
         <div class="api-block" id="api-preview">
-          <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+          <button class="copy-btn" onclick="copyBlock(this)">Copier</button>
           <span class="method">POST</span> <span class="path">/api/v1/certificates</span><br>
           <span class="dim">Authorization: Bearer &lt;API_KEY&gt;</span><br><br>
           {<br>
@@ -98,25 +100,26 @@
           &nbsp;&nbsp;<span class="key">"document_type"</span>:  <span class="val" id="p-type">"—"</span>,<br>
           &nbsp;&nbsp;<span class="key">"issued_at"</span>:      <span class="val" id="p-date">"—"</span>,<br>
           &nbsp;&nbsp;<span class="key">"student_id"</span>:     <span class="val" id="p-student">"—"</span>,<br>
-          &nbsp;&nbsp;<span class="key">"document_hash"</span>:  <span class="val" id="p-hash"><span style="color:#5470a0">— upload a PDF to compute —</span></span><br>
+          &nbsp;&nbsp;<span class="key">"document_hash"</span>:  <span class="val" id="p-hash"><span style="color:#5470a0">— déposez un PDF pour la calculer —</span></span><br>
           }
         </div>
 
         <div class="result-panel ok" id="result-ok">
-          <span class="status-badge">Certified</span>
-          <h2>Certificate created</h2>
-          <p>Stored in MOTSA's registry. Share the certificate ID with the holder so they can include it in applications.</p>
+          <span class="status-badge">Certifié</span>
+          <h2>Certificat créé</h2>
+          <p>Enregistré au registre MOTSA. Transmettez le lien de vérification au titulaire : il peut l'ajouter à ses candidatures, et tout destinataire peut contrôler le document sans compte.</p>
           <div class="hash-block" id="result-hash"></div>
           <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn soft" onclick="copyId()" style="font-size:13px;padding:9px 16px">Copy certificate ID</button>
-            <a class="btn" href="dashboard.html" style="font-size:13px;padding:9px 16px">View in dashboard →</a>
+            <button class="btn soft" onclick="copyId()" style="font-size:13px;padding:9px 16px">Copier l'ID du certificat</button>
+            <button class="btn soft" onclick="copyVerifyUrl()" style="font-size:13px;padding:9px 16px">Copier le lien de vérification</button>
+            <a class="btn" href="dashboard.html" style="font-size:13px;padding:9px 16px">Voir le tableau de bord →</a>
           </div>
         </div>
 
         <div class="result-panel err" id="result-err">
-          <span class="status-badge">Error</span>
-          <h2>Certification failed</h2>
-          <p id="result-err-msg">An unexpected error occurred.</p>
+          <span class="status-badge">Erreur</span>
+          <h2>Certification impossible</h2>
+          <p id="result-err-msg">Une erreur inattendue est survenue.</p>
         </div>
       </section>
     </div>
@@ -126,16 +129,17 @@
 <footer class="footer">
   <span>© 2026 MOTSA</span>
   <div class="footer-links">
-    <a href="index.html">Home</a>
-    <a href="dashboard.html">Dashboard</a>
+    <a href="index.html">Accueil</a>
+    <a href="dashboard.html">Tableau de bord</a>
+    <a href="tarifs.html">Tarifs</a>
   </div>
-  <span>Issuer certification portal.</span>
+  <span>Portail de certification émetteur.</span>
 </footer>
 
 <div class="mobile-tabs">
-  <a href="index.html"><span class="tab-icon">⌂</span>Home</a>
-  <a class="active" href="certif.html"><span class="tab-icon">✎</span>Certify</a>
-  <a href="dashboard.html"><span class="tab-icon">▦</span>Dash</a>
+  <a href="index.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Accueil</a>
+  <a class="active" href="certif.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Certifier</a>
+  <a href="dashboard.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Tableau</a>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -153,18 +157,14 @@ document.getElementById('issued-at').value = new Date().toISOString().slice(0, 1
   profile = await requireAuth('issuer');
   if (!profile) return;
 
-  // Fill org display
   const orgName = profile.organizations?.name || profile.organization_id;
   const orgSlug = profile.organizations?.slug  || '—';
   document.getElementById('issuer-display').value = orgName;
   document.getElementById('p-issuer').textContent  = `"${orgSlug}"`;
-  document.getElementById('page-title').textContent =
-    `Certify a document — ${orgName}`;
+  document.getElementById('page-title').textContent = `Certifier un document — ${orgName}`;
 
-  // Mount user chip
   await mountUserChip();
 
-  // Live preview
   ['holder','doc-type','issued-at','student-id'].forEach(id =>
     document.getElementById(id).addEventListener('input', updatePreview));
   updatePreview();
@@ -178,29 +178,31 @@ function updatePreview() {
   document.getElementById('p-student').textContent = sid ? `"${sid}"` : '"—"';
 }
 
-/* ── File handling — div drop zone, no label conflicts ── */
+/* ── Fichier : clic + glisser-déposer ── */
 const _dropZone  = document.getElementById('upload-label');
 const _fileInput = document.getElementById('pdf-input');
 
 _dropZone.addEventListener('dragover', e => {
   e.preventDefault(); e.stopPropagation();
   _dropZone.classList.add('has-file');
-  document.getElementById('upload-title').textContent = 'Drop to certify';
+  document.getElementById('upload-title').textContent = 'Relâchez pour certifier';
 });
 _dropZone.addEventListener('dragleave', e => {
   e.preventDefault(); e.stopPropagation();
   if (!computedHash) _dropZone.classList.remove('has-file');
-  document.getElementById('upload-title').textContent = 'Drop the official PDF here';
+  document.getElementById('upload-title').textContent = 'Déposez le PDF officiel ici';
 });
 _dropZone.addEventListener('drop', e => {
   e.preventDefault(); e.stopPropagation();
   const file = e.dataTransfer?.files?.[0];
-  if (file && file.type === 'application/pdf') {
-    processUpload(file);
-  } else {
-    showToast('Please drop a PDF file.');
+  if (file && file.type === 'application/pdf') processUpload(file);
+  else {
+    showToast('Merci de déposer un fichier PDF.');
     if (!computedHash) _dropZone.classList.remove('has-file');
   }
+});
+_dropZone.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); _fileInput.click(); }
 });
 _fileInput.addEventListener('change', () => {
   if (_fileInput.files[0]) processUpload(_fileInput.files[0]);
@@ -208,39 +210,36 @@ _fileInput.addEventListener('change', () => {
 
 function processUpload(file) {
   _dropZone.classList.add('has-file');
-  document.getElementById('upload-icon').textContent = '⏳';
-  document.getElementById('upload-title').textContent = 'Computing hash…';
+  document.getElementById('upload-icon').innerHTML =
+    '<svg class="icn lg" style="margin:0 auto;color:var(--green)" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>';
+  document.getElementById('upload-title').textContent = 'Calcul de l\'empreinte…';
   document.getElementById('upload-hint').style.display = 'none';
   document.getElementById('upload-filename').textContent = file.name;
   document.getElementById('upload-filename').style.display = 'block';
   sha256(file).then(hash => {
     computedHash = hash;
-    document.getElementById('upload-icon').textContent = '✅';
-    document.getElementById('upload-title').textContent = 'PDF ready';
+    document.getElementById('upload-icon').innerHTML =
+      '<svg class="icn lg" style="margin:0 auto;color:var(--green)" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    document.getElementById('upload-title').textContent = 'PDF prêt à être certifié';
     document.getElementById('p-hash').textContent = `"${hash.slice(0, 32)}…"`;
   });
 }
-
-function onFileSelect(input) {} // kept for safety, logic moved to processUpload
 
 async function certify() {
   if (!profile) return;
   const btn = document.getElementById('certify-btn');
   const holder = document.getElementById('holder').value.trim();
-  if (!holder) { showError('Holder name is required.'); return; }
+  if (!holder) { showError('Le nom du titulaire est requis.'); return; }
+  if (!computedHash && !document.getElementById('pdf-input').files[0]) {
+    showError('Déposez le PDF officiel à certifier.'); return;
+  }
 
   btn.classList.add('loading'); btn.disabled = true;
   clearResults();
 
-  // Hash
   const file = document.getElementById('pdf-input').files[0];
   let hash = computedHash;
   if (!hash && file) hash = await sha256(file);
-  if (!hash) {
-    // Demo mode: random hash
-    hash = [...crypto.getRandomValues(new Uint8Array(32))]
-      .map(x => x.toString(16).padStart(2,'0')).join('');
-  }
 
   const { data, error } = await createCertificate({
     issuerOrgId:  profile.organization_id,
@@ -258,20 +257,21 @@ async function certify() {
   btn.classList.remove('loading'); btn.disabled = false;
 
   if (error) {
-    showError(error.message || 'Could not create certificate. Check your permissions.');
+    showError(error.message || 'Création du certificat impossible. Vérifiez vos droits.');
     return;
   }
 
   lastCertId = data.certificate_code;
+  const verifyUrl = `${window.location.origin}/verify.html?c=${data.certificate_code}`;
   document.getElementById('p-hash').textContent = `"${hash.slice(0, 32)}…"`;
   document.getElementById('result-hash').innerHTML =
-    `<strong>certificate_id</strong> ${data.certificate_code}<br>` +
-    `<strong>issuer</strong> ${profile.organizations?.name}<br>` +
-    `<strong>holder</strong> ${holder}<br>` +
-    `<strong>issued_at</strong> ${data.issued_at}<br>` +
-    (document.getElementById('student-id').value.trim() ? `<strong>student_id</strong> ${document.getElementById('student-id').value.trim()}<br>` : '') +
+    `<strong>id_certificat</strong> ${data.certificate_code}<br>` +
+    `<strong>émetteur</strong> ${profile.organizations?.name}<br>` +
+    `<strong>titulaire</strong> ${holder}<br>` +
+    `<strong>émis le</strong> ${data.issued_at}<br>` +
+    (document.getElementById('student-id').value.trim() ? `<strong>n° étudiant</strong> ${document.getElementById('student-id').value.trim()}<br>` : '') +
     `<strong>sha256</strong> ${hash}<br>` +
-    `<strong>verification_url</strong> https://verify.motsa.com/${data.certificate_code}`;
+    `<strong>lien de vérification</strong> ${verifyUrl}`;
   document.getElementById('result-ok').classList.add('show');
 }
 
@@ -286,7 +286,12 @@ function clearResults() {
 function copyId() {
   if (!lastCertId) return;
   navigator.clipboard.writeText(lastCertId);
-  showToast('Certificate ID copied!');
+  showToast('ID du certificat copié !');
+}
+function copyVerifyUrl() {
+  if (!lastCertId) return;
+  navigator.clipboard.writeText(`${window.location.origin}/verify.html?c=${lastCertId}`);
+  showToast('Lien de vérification copié !');
 }
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -294,10 +299,10 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 function copyBlock(btn) {
-  const text = btn.closest('.api-block').innerText.replace('Copy\n','').trim();
+  const text = btn.closest('.api-block').innerText.replace('Copier\n','').trim();
   navigator.clipboard.writeText(text);
-  btn.textContent = 'Copied!';
-  setTimeout(() => btn.textContent = 'Copy', 2000);
+  btn.textContent = 'Copié !';
+  setTimeout(() => btn.textContent = 'Copier', 2000);
 }
 </script>
 </body>
