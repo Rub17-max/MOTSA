@@ -11,6 +11,8 @@
 </head>
 <body>
 
+<div class="scroll-progress" id="scroll-progress"></div>
+
 <nav class="nav">
   <a class="logo" href="index.html">
     <img src="assets/icon-512.png" alt="MOTSA">
@@ -29,7 +31,7 @@
 
   <!-- ─── Hero ─────────────────────────────────────────────── -->
   <section class="hero">
-    <div>
+    <div class="reveal in-view">
       <div class="kicker">Certification émise par l'établissement</div>
       <h1>Vos documents officiels,<br><em>vérifiables en 10 secondes.</em></h1>
       <p class="lead">
@@ -46,7 +48,9 @@
       </p>
     </div>
 
-    <div class="hero-proof spot" aria-label="Exemple de certificat vérifié (données fictives)">
+    <div class="hero-proof spot reveal in-view" aria-label="Exemple de certificat vérifié (données fictives)" style="transition-delay:120ms">
+      <div class="aurora aurora-1" aria-hidden="true"></div>
+      <div class="aurora aurora-2" aria-hidden="true"></div>
       <div class="badge-verified" aria-hidden="true">
         <svg class="icn" style="stroke:white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>

@@ -6,7 +6,7 @@
 (function () {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── Halo qui suit le curseur sur les éléments .spot ──
+  // ── Halo qui suit le curseur sur les éléments .spot (cartes) ──
   if (!reduceMotion) {
     document.querySelectorAll('.spot').forEach(el => {
       el.addEventListener('mousemove', e => {
@@ -15,10 +15,33 @@
         el.style.setProperty('--my', (e.clientY - r.top) + 'px');
       });
     });
+
+    // ── Halo ambiant sur toute la section .hero ──
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      hero.addEventListener('mousemove', e => {
+        const r = hero.getBoundingClientRect();
+        hero.style.setProperty('--hx', ((e.clientX - r.left) / r.width * 100) + '%');
+        hero.style.setProperty('--hy', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    }
+  }
+
+  // ── Barre de progression de défilement ──
+  const bar = document.getElementById('scroll-progress');
+  if (bar) {
+    const updateProgress = () => {
+      const h = document.documentElement;
+      const scrollable = h.scrollHeight - h.clientHeight;
+      const pct = scrollable > 0 ? (h.scrollTop / scrollable) * 100 : 0;
+      bar.style.width = pct + '%';
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
   }
 
   // ── Révélation progressive au défilement ──
-  const revealTargets = document.querySelectorAll('.reveal, .reveal-stagger');
+  const revealTargets = document.querySelectorAll('.reveal, .reveal-stagger, .section');
   if (reduceMotion || !('IntersectionObserver' in window)) {
     revealTargets.forEach(el => el.classList.add('in-view'));
     return;
