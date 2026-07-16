@@ -7,19 +7,19 @@
 
 /* ── Variables ─────────────────────────────────────────────── */
 :root {
-  /* Surfaces */
-  --bg:        #f4f3ef;
+  /* Surfaces — gris clair froid (plus de teinte beige) */
+  --bg:        #f4f5f7;
   --surface:   #ffffff;
-  --s2:        #fafaf8;
+  --s2:        #fafbfc;
 
   /* Borders */
-  --line:      #e6e5e1;
-  --line2:     #d1d0cb;
+  --line:      #e3e6ea;
+  --line2:     #cfd4da;
 
   /* Text */
-  --text:      #0d0d0b;
-  --text2:     #484844;
-  --muted:     #88887f;
+  --text:      #10131a;
+  --text2:     #474d57;
+  --muted:     #838a95;
 
   /* Brand */
   --blue:      #0f2d6b;
@@ -166,7 +166,7 @@ h1 em, h2 em {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(244,243,239,.92);
+  background: rgba(244,245,247,.92);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
   border-bottom: 1px solid var(--line);
@@ -513,7 +513,7 @@ h1 em, h2 em {
   appearance: none;
 }
 .field select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2388887f' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23838a95' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 13px center;
   padding-right: 34px;
@@ -1007,8 +1007,37 @@ input[type="file"] { display: none; }
 .spot:focus-within::before { opacity: 1; }
 .spot > * { position: relative; z-index: 1; }
 
-/* Variante claire pour les fonds sombres (espace vérificateur) */
+/* Même halo, posé automatiquement sur toutes les surfaces "carte" du
+   système de design — pas besoin d'ajouter .spot à la main partout.
+   Source de vérité commune avec HALO_SELECTOR dans interactions.js. */
+.price-card, .formula-card, .seg, .tile,
+.stat-card, .card.panel, .hero-proof, .auth-form-wrap, #admin-panel {
+  position: relative;
+  overflow: hidden;
+}
+.price-card::before, .formula-card::before, .seg::before, .tile::before,
+.stat-card::before, .card.panel::before, .hero-proof::before,
+.auth-form-wrap::before, #admin-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(37,99,235,.11), transparent 62%);
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.price-card:hover::before, .formula-card:hover::before, .seg:hover::before, .tile:hover::before,
+.stat-card:hover::before, .card.panel:hover::before, .hero-proof:hover::before,
+.auth-form-wrap:hover::before, #admin-panel:hover::before { opacity: 1; }
+.price-card > *, .formula-card > *, .seg > *, .tile > *,
+.stat-card > *, .card.panel > *, .hero-proof > *,
+.auth-form-wrap > *, #admin-panel > * { position: relative; z-index: 1; }
+
+/* Variante claire pour les fonds sombres (espace vérificateur, Coffre-fort) */
 .verifier-side .spot::before,
+.verifier-side .auth-form-wrap::before,
+.formula-card.dark::before,
 .spot.on-dark::before {
   background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.12), transparent 62%);
 }
@@ -1281,8 +1310,16 @@ input[type="file"] { display: none; }
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
   background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
 }
-.trust-strip > div { background: white; padding: 22px 20px; display: flex; gap: 12px; align-items: flex-start; transition: background .2s; }
+.trust-strip > div { background: white; padding: 22px 20px; display: flex; gap: 12px; align-items: flex-start; transition: background .2s; position: relative; overflow: hidden; }
 .trust-strip > div:hover { background: var(--s2); }
+/* Halo au survol appliqué automatiquement, sans avoir à poser .spot dans le HTML */
+.trust-strip > div::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(37,99,235,.09), transparent 62%);
+  opacity: 0; transition: opacity .3s ease; pointer-events: none; z-index: 0;
+}
+.trust-strip > div:hover::before { opacity: 1; }
+.trust-strip > div > * { position: relative; z-index: 1; }
 .trust-strip h4 { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
 .trust-strip p  { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
 

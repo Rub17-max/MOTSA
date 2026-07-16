@@ -6,9 +6,19 @@
 (function () {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ── Halo qui suit le curseur sur les éléments .spot (cartes) ──
+  // ── Halo qui suit le curseur — liste unique de sélecteurs ──────
+  // Un seul point de vérité pour "quelles surfaces réagissent au survol",
+  // plutôt que de compter sur la classe .spot posée à la main dans chaque
+  // page (source des incohérences constatées). Toute carte du système de
+  // design est couverte automatiquement, même sans classe .spot explicite.
+  const HALO_SELECTOR = [
+    '.spot', '.price-card', '.formula-card', '.seg', '.tile',
+    '.trust-strip > div', '.stat-card', '.card.panel', '.hero-proof',
+    '.auth-form-wrap', '#admin-panel',
+  ].join(', ');
+
   if (!reduceMotion) {
-    document.querySelectorAll('.spot').forEach(el => {
+    document.querySelectorAll(HALO_SELECTOR).forEach(el => {
       el.addEventListener('mousemove', e => {
         const r = el.getBoundingClientRect();
         el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
