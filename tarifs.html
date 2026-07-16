@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Tarifs — MOTSA</title>
-  <meta name="description" content="Vérification gratuite pour tous. Offres émetteur à partir de 0 € : Découverte, École, Institution. Coffre-fort de preuves Qualiopi en option. API vérificateur pour le background check.">
+  <meta name="description" content="Vérification gratuite pour tous. Offres émetteur École et Institution. Coffre-fort de preuves Qualiopi en option. API vérificateur pour le background check.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -36,26 +36,13 @@
     <p style="font-size:14px;color:var(--muted);margin-bottom:24px;max-width:640px">
       Le PDF ne quitte jamais votre navigateur : seule son empreinte est enregistrée. Facturé au volume de certificats émis.
     </p>
-    <div class="pricing-grid">
+    <div class="pricing-grid reveal-stagger">
 
-      <div class="price-card">
-        <div class="plan-name">Découverte</div>
-        <div class="plan-price">0 €<small> / mois</small></div>
-        <p class="plan-for">Pour tester MOTSA en conditions réelles, sans carte bancaire.</p>
-        <ul>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>20 certificats par mois</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Vérification publique illimitée</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>QR code et lien sur chaque certificat</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>1 utilisateur</li>
-        </ul>
-        <a class="btn full" href="login-issuer.html">Demander l'accès</a>
-      </div>
-
-      <div class="price-card featured">
+      <div class="price-card featured spot">
         <div class="plan-flag">Le plus choisi</div>
         <div class="plan-name">École</div>
         <div class="plan-price">99 €<small> HT / mois</small></div>
-        <p class="plan-for">Organismes de formation, écoles et centres qui émettent régulièrement.</p>
+        <p class="plan-for">Organismes de formation, écoles et centres qui émettent régulièrement. Premier mois d'essai, sans engagement.</p>
         <ul>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>300 certificats par mois</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Émission en lot (import CSV)</li>
@@ -66,7 +53,7 @@
         <button class="btn primary full" onclick="checkout('ecole')">S'abonner — paiement sécurisé</button>
       </div>
 
-      <div class="price-card">
+      <div class="price-card spot">
         <div class="plan-name">Institution</div>
         <div class="plan-price">349 €<small> HT / mois</small></div>
         <p class="plan-for">Grandes écoles, universités, certificateurs à fort volume.</p>
@@ -81,7 +68,7 @@
         <a class="btn full" style="margin-top:8px;font-size:13px" href="mailto:contact@motsa.tech?subject=Devis%20offre%20Institution%20MOTSA">Recevoir un devis</a>
       </div>
 
-      <div class="price-card">
+      <div class="price-card spot">
         <div class="plan-name">Secteur public</div>
         <div class="plan-price" style="font-size:26px;padding:6px 0">Sur convention</div>
         <p class="plan-for">Universités et établissements publics : pilote gratuit la première année.</p>
@@ -95,7 +82,7 @@
       </div>
     </div>
 
-    <div style="margin-top:16px;background:white;border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--text2)">
+    <div class="reveal" style="margin-top:16px;background:white;border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--text2)">
       <svg class="icn sm" style="color:var(--blue)" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
       Paiement par carte sécurisé via <strong>Stripe</strong> — MOTSA ne voit ni ne stocke vos données bancaires. Facture automatique à chaque échéance. Engagement annuel : 2 mois offerts (nous contacter).
     </div>
@@ -105,8 +92,8 @@
     <p class="lead" style="margin-top:0;margin-bottom:24px">
       Le document lui-même est conservé, chiffré, pour la durée légale exacte — pas une durée choisie au hasard. 5 ans par défaut (conventions, émargements, BPF, certificats de réalisation), 10 ans si vous cochez « cofinancement FSE » à la certification. Purge automatique à l'échéance, DPA fourni systématiquement.
     </p>
-    <div class="pricing-grid" style="grid-template-columns:1fr 1fr;max-width:640px">
-      <div class="price-card featured">
+    <div class="pricing-grid reveal-stagger" style="grid-template-columns:1fr 1fr;max-width:640px">
+      <div class="price-card featured spot">
         <div class="plan-flag">Ajout à votre offre</div>
         <div class="plan-name">Coffre-fort</div>
         <div class="plan-price">+189 €<small> HT / mois</small></div>
@@ -120,7 +107,7 @@
         </ul>
         <button class="btn primary full" onclick="checkout('coffre_fort')">Activer le Coffre-fort</button>
       </div>
-      <div class="price-card">
+      <div class="price-card spot">
         <div class="plan-name">Ce que le Coffre-fort n'est pas</div>
         <div class="plan-price" style="font-size:20px;padding:6px 0">Ni un CRM, ni un ENT</div>
         <p class="plan-for" style="margin-bottom:8px">Trois précisions pour éviter toute confusion :</p>
@@ -137,8 +124,8 @@
     <p class="lead" style="margin-top:0;margin-bottom:24px">
       La vérification à l'unité reste gratuite pour toujours. Pour les équipes qui vérifient en volume — cabinets de recrutement, background check, intérim — l'offre Pro ajoute l'historique d'équipe et l'automatisation.
     </p>
-    <div class="pricing-grid" style="grid-template-columns:1fr 1fr;max-width:640px">
-      <div class="price-card">
+    <div class="pricing-grid reveal-stagger" style="grid-template-columns:1fr 1fr;max-width:640px">
+      <div class="price-card spot">
         <div class="plan-name">Vérificateur Pro</div>
         <div class="plan-price">49 €<small> HT / mois</small></div>
         <p class="plan-for">Équipes RH et cabinets de recrutement.</p>
@@ -149,7 +136,7 @@
         </ul>
         <button class="btn primary full" onclick="checkout('verifier_pro')">S'abonner — paiement sécurisé</button>
       </div>
-      <div class="price-card">
+      <div class="price-card spot">
         <div class="plan-name">Vérification automatisée</div>
         <div class="plan-price" style="font-size:26px;padding:6px 0">Au volume</div>
         <p class="plan-for">Background check, ATS, plateformes — la vérification s'intègre à vos processus.</p>
@@ -164,7 +151,7 @@
 
     <!-- ── FAQ tarifs ── -->
     <h2 style="font-size:24px;margin:56px 0 24px">Questions sur les tarifs</h2>
-    <div class="faq">
+    <div class="faq reveal">
       <details>
         <summary>Le Coffre-fort remplace-t-il notre CRM de formation (Digiforma, Dendreo…) ?</summary>
         <div class="faq-body">Non. Ces outils gèrent votre activité commerciale et pédagogique complète ; le Coffre-fort MOTSA ne fait qu'une chose : conserver le document lui-même, chiffré, pour la durée légale, avec preuve d'intégrité. Il fonctionne en autonomie, sans intégration requise avec votre CRM existant.</div>
@@ -184,6 +171,10 @@
       <details>
         <summary>Y a-t-il des frais d'installation ?</summary>
         <div class="faq-body">Aucun. L'émission fonctionne depuis un navigateur, sans projet informatique. L'accompagnement à la mise en place est inclus dans les offres École et Institution.</div>
+      </details>
+      <details>
+        <summary>Existe-t-il un moyen d'essayer avant de s'abonner ?</summary>
+        <div class="faq-body">Oui : contactez-nous pour un accès de démonstration sur votre propre établissement, sans engagement ni carte bancaire à la prise de contact.</div>
       </details>
     </div>
   </section>
@@ -255,5 +246,6 @@ function checkout(plan) {
   window.location.href = url;
 }
 </script>
+<script src="interactions.js"></script>
 </body>
 </html>

@@ -35,8 +35,8 @@
     <!-- Quota / offre -->
     <div class="quota-banner" id="quota-banner" style="display:none">
       <div style="display:flex;flex-direction:column;gap:2px;min-width:190px">
-        <span style="font-size:13px;font-weight:600" id="quota-plan">Offre Découverte</span>
-        <span style="font-size:12px;color:var(--muted)" id="quota-label">— / 20 certificats ce mois-ci</span>
+        <span style="font-size:13px;font-weight:600" id="quota-plan">Offre École</span>
+        <span style="font-size:12px;color:var(--muted)" id="quota-label">— / 300 certificats ce mois-ci</span>
       </div>
       <div class="quota-bar"><div class="quota-fill" id="quota-fill" style="width:0%"></div></div>
       <a class="btn soft" style="font-size:13px;padding:8px 16px" href="tarifs.html">Passer à l'offre supérieure</a>
@@ -44,19 +44,19 @@
 
     <!-- Statistiques -->
     <div class="stat-grid">
-      <div class="stat-card">
+      <div class="stat-card spot">
         <h3 id="stat-total">—</h3>
         <p>Certificats émis</p>
       </div>
-      <div class="stat-card">
+      <div class="stat-card spot">
         <h3 id="stat-verif">—</h3>
         <p>Vérifications sur vos documents</p>
       </div>
-      <div class="stat-card">
+      <div class="stat-card spot">
         <h3 id="stat-active">—</h3>
         <p>Certificats actifs</p>
       </div>
-      <div class="stat-card">
+      <div class="stat-card spot">
         <h3 id="stat-vault">—</h3>
         <p>Documents au Coffre-fort</p>
       </div>
@@ -124,6 +124,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="auth.js"></script>
+<script src="interactions.js"></script>
 <script>
 const typeLabels = {
   certificat_scolarite:   'Certificat de scolarité',
@@ -133,9 +134,11 @@ const typeLabels = {
   attestation:            'Attestation',
 };
 
-// Quota de l'offre Découverte (affichage indicatif côté client ;
-// l'application stricte du quota se fait côté base — voir NOTES-DEPLOIEMENT.md)
-const QUOTA_DECOUVERTE = 20;
+// Quota indicatif de l'offre École (affichage côté client uniquement ;
+// l'application stricte du quota se fait côté base — voir NOTES-DEPLOIEMENT.md).
+// Découverte gratuite a été retirée : à faire évoluer vers un champ `plan`
+// réel sur `organizations` quand plusieurs formules seront en base.
+const QUOTA_DECOUVERTE = 300;
 
 async function loadDashboard() {
   const profile = await requireAuth('issuer');
@@ -165,7 +168,7 @@ async function loadDashboard() {
   document.getElementById('stat-active').textContent = active.toLocaleString('fr-FR');
   document.getElementById('stat-vault').textContent  = inVault.toLocaleString('fr-FR');
 
-  // Quota mensuel (offre Découverte)
+  // Quota mensuel (offre École, à titre indicatif)
   const debutMois = new Date(); debutMois.setDate(1); debutMois.setHours(0,0,0,0);
   const emisCeMois = certs.filter(c => c.created_at && new Date(c.created_at) >= debutMois).length;
   const banner = document.getElementById('quota-banner');

@@ -34,10 +34,10 @@
       </div>
     </div>
     <div class="auth-feature">
-      <div class="auth-feature-icon"><svg class="icn" style="color:var(--blue)" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h3v3h-3zM20 17v3h-3"/></svg></div>
+      <div class="auth-feature-icon"><svg class="icn" style="color:var(--blue)" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
       <div class="auth-feature-text">
-        <h4>QR code et lien de vérification</h4>
-        <p>Chaque certificat inclut un lien public : le recruteur vérifie seul, en quelques secondes.</p>
+        <h4>Double authentification à la connexion</h4>
+        <p>Mot de passe, puis code à usage unique envoyé par e-mail — même en cas de mot de passe compromis, votre compte reste protégé.</p>
       </div>
     </div>
     <div class="auth-feature">
@@ -57,7 +57,7 @@
 
   <!-- ── Droite : formulaire ─────────────────────────── -->
   <div class="auth-right">
-    <div class="auth-form-wrap">
+    <div class="auth-form-wrap spot">
 
       <div class="auth-badge issuer">Compte émetteur</div>
 
@@ -65,114 +65,131 @@
         Bon retour parmi nous
       </h2>
       <p style="font-size:14px;color:var(--muted);margin-bottom:24px">
-        Connectez-vous, activez un code reçu, ou demandez l'accès pour votre établissement.
+        Connectez-vous ou créez le compte de votre établissement.
       </p>
 
-      <div class="form-tabs" id="form-tabs" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="form-tabs" id="form-tabs" style="grid-template-columns:1fr 1fr">
         <button class="form-tab active" onclick="switchTab('login',this)">Connexion</button>
-        <button class="form-tab"        onclick="switchTab('code',this)">J'ai un code</button>
-        <button class="form-tab"        onclick="switchTab('request',this)">Demander l'accès</button>
+        <button class="form-tab"        onclick="switchTab('register',this)">Créer un compte</button>
         <button class="form-tab"        onclick="switchTab('forgot',this)" id="forgot-tab" style="display:none">Réinitialiser</button>
       </div>
 
       <div class="auth-error"   id="auth-error"></div>
       <div class="auth-success" id="auth-success"></div>
 
-      <!-- ── CONNEXION ── -->
+      <!-- ── CONNEXION — étape 1 : mot de passe ── -->
       <div id="tab-login">
-        <div class="field">
-          <label for="login-email">E-mail professionnel</label>
-          <input id="login-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
+        <div id="login-step-password">
+          <div class="field">
+            <label for="login-email">E-mail professionnel</label>
+            <input id="login-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="login-password">Mot de passe</label>
+            <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
+          </div>
+          <button class="btn primary full" id="login-btn" onclick="doLoginStep1()" style="margin-top:4px">
+            <span class="spinner"></span>
+            <span class="btn-label">Continuer</span>
+          </button>
+          <div style="text-align:right;margin-top:10px">
+            <a href="#" onclick="switchTab('forgot',document.getElementById('forgot-tab'));return false"
+               style="font-size:12.5px;color:var(--blue);font-weight:500">Mot de passe oublié ?</a>
+          </div>
         </div>
-        <div class="field">
-          <label for="login-password">Mot de passe</label>
-          <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password">
-        </div>
-        <button class="btn primary full" id="login-btn" onclick="doLogin()" style="margin-top:4px">
-          <span class="spinner"></span>
-          <span class="btn-label">Se connecter</span>
-        </button>
-        <div style="text-align:right;margin-top:10px">
-          <a href="#" onclick="switchTab('forgot',document.getElementById('forgot-tab'));return false"
-             style="font-size:12.5px;color:var(--blue);font-weight:500">Mot de passe oublié ?</a>
+
+        <!-- ── CONNEXION — étape 2 : code e-mail (2FA) ── -->
+        <div id="login-step-otp" style="display:none">
+          <p class="otp-hint">Code à 6 chiffres envoyé à <strong id="otp-email-display"></strong>. Valable quelques minutes.</p>
+          <div class="field">
+            <label for="otp-code">Code reçu par e-mail</label>
+            <input id="otp-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" class="otp-input" autocomplete="one-time-code">
+          </div>
+          <button class="btn primary full" id="otp-btn" onclick="doLoginStep2()" style="margin-top:4px">
+            <span class="spinner"></span>
+            <span class="btn-label">Valider et se connecter</span>
+          </button>
+          <div style="text-align:center;margin-top:12px">
+            <a href="#" onclick="backToPasswordStep();return false"
+               style="font-size:12.5px;color:var(--muted);font-weight:500">← Revenir à l'étape précédente</a>
+          </div>
         </div>
       </div>
 
-      <!-- ── J'AI UN CODE (fondateur ou invitation) ── -->
-      <div id="tab-code" style="display:none">
-        <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 16px;line-height:1.5">
-          Vous avez reçu un code fondateur (après validation de votre établissement) ou une
-          invitation d'un administrateur de votre organisation ? Créez votre compte ici.
-        </p>
-        <div class="field">
-          <label for="code-value">Code</label>
-          <input id="code-value" type="text" placeholder="REG-XXXXXXXXXX ou INV-XXXXXXXXXX" autocomplete="off" style="font-family:'DM Mono',monospace;text-transform:uppercase">
+      <!-- ── CRÉER UN COMPTE (rédemption de code fondateur / invitation) ── -->
+      <div id="tab-register" style="display:none">
+        <div id="register-with-code">
+          <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 16px;line-height:1.5">
+            Saisissez le code fondateur (reçu après validation de votre établissement) ou l'invitation transmise par votre administrateur.
+          </p>
+          <div class="field">
+            <label for="code-value">Code</label>
+            <input id="code-value" type="text" placeholder="REG-XXXXXXXXXX ou INV-XXXXXXXXXX" autocomplete="off" style="font-family:'DM Mono',monospace;text-transform:uppercase">
+          </div>
+          <div class="field">
+            <label for="code-name">Nom complet</label>
+            <input id="code-name" type="text" placeholder="Prénom Nom" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="code-email">E-mail professionnel</label>
+            <input id="code-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="code-password">Mot de passe <span style="font-weight:400;color:var(--muted)">(12 caractères min.)</span></label>
+            <input id="code-password" type="password" placeholder="••••••••" autocomplete="new-password">
+          </div>
+          <button class="btn primary full" id="code-btn" onclick="doRedeemCode()" style="margin-top:4px">
+            <span class="spinner"></span>
+            <span class="btn-label">Créer mon compte</span>
+          </button>
+          <p style="font-size:11.5px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5">
+            Pas encore de code ?
+            <a href="#" onclick="toggleRequestForm(true);return false" style="color:var(--blue);font-weight:500">Demander l'accès pour votre établissement →</a>
+          </p>
         </div>
-        <div class="field">
-          <label for="code-name">Nom complet</label>
-          <input id="code-name" type="text" placeholder="Prénom Nom" autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="code-email">E-mail professionnel</label>
-          <input id="code-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
-        </div>
-        <div class="field">
-          <label for="code-password">Mot de passe <span style="font-weight:400;color:var(--muted)">(12 caractères min.)</span></label>
-          <input id="code-password" type="password" placeholder="••••••••" autocomplete="new-password">
-        </div>
-        <button class="btn primary full" id="code-btn" onclick="doRedeemCode()" style="margin-top:4px">
-          <span class="spinner"></span>
-          <span class="btn-label">Activer mon compte</span>
-        </button>
-        <p style="font-size:11.5px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5">
-          Un code fondateur n'active que le compte administrateur de l'établissement pour
-          lequel il a été émis ; il ne permet de choisir aucune autre organisation.
-        </p>
-      </div>
 
-      <!-- ── DEMANDER L'ACCÈS (candidature établissement) ── -->
-      <div id="tab-request" style="display:none">
-        <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 16px;line-height:1.5">
-          Votre établissement n'a pas encore de compte MOTSA ? Décrivez-le ci-dessous.
-          Nous vérifions le SIRET et, le cas échéant, le n° Qualiopi/NDA, puis envoyons un
-          code fondateur à l'adresse professionnelle indiquée — sous 48 h ouvrées.
-        </p>
-        <div class="field">
-          <label for="req-org">Nom de l'établissement</label>
-          <input id="req-org" type="text" placeholder="École ou organisme de formation">
+        <!-- ── Sous-formulaire : candidature établissement (masqué par défaut) ── -->
+        <div id="register-request" style="display:none">
+          <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 16px;line-height:1.5">
+            Nous vérifions le SIRET et, le cas échéant, le n° Qualiopi/NDA, puis envoyons un
+            code fondateur à l'adresse professionnelle indiquée — sous 48 h ouvrées.
+          </p>
+          <div class="field">
+            <label for="req-org">Nom de l'établissement</label>
+            <input id="req-org" type="text" placeholder="École ou organisme de formation">
+          </div>
+          <div class="field">
+            <label for="req-siret">SIRET</label>
+            <input id="req-siret" type="text" placeholder="14 chiffres" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="req-nda">N° Qualiopi ou NDA <span style="font-weight:400;color:var(--muted)">(si applicable)</span></label>
+            <input id="req-nda" type="text" placeholder="ex. 11 75 XXXXX 75" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="req-domain">Domaine e-mail officiel</label>
+            <input id="req-domain" type="text" placeholder="etablissement.fr" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="req-name">Votre nom</label>
+            <input id="req-name" type="text" placeholder="Prénom Nom" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="req-email">Votre e-mail professionnel</label>
+            <input id="req-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="req-message">Message <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label>
+            <input id="req-message" type="text" placeholder="Contexte, volume estimé de certificats…">
+          </div>
+          <button class="btn primary full" id="request-btn" onclick="doRequestAccess()" style="margin-top:4px">
+            <span class="spinner"></span>
+            <span class="btn-label">Envoyer la demande</span>
+          </button>
+          <p style="font-size:11.5px;color:var(--muted);margin-top:12px;text-align:center">
+            <a href="#" onclick="toggleRequestForm(false);return false" style="color:var(--blue);font-weight:500">← J'ai déjà un code</a>
+          </p>
         </div>
-        <div class="field">
-          <label for="req-siret">SIRET</label>
-          <input id="req-siret" type="text" placeholder="14 chiffres" autocomplete="off">
-        </div>
-        <div class="field">
-          <label for="req-nda">N° Qualiopi ou n° de déclaration d'activité (NDA) <span style="font-weight:400;color:var(--muted)">(si applicable)</span></label>
-          <input id="req-nda" type="text" placeholder="ex. 11 75 XXXXX 75" autocomplete="off">
-        </div>
-        <div class="field">
-          <label for="req-domain">Domaine e-mail officiel</label>
-          <input id="req-domain" type="text" placeholder="etablissement.fr" autocomplete="off">
-        </div>
-        <div class="field">
-          <label for="req-name">Votre nom</label>
-          <input id="req-name" type="text" placeholder="Prénom Nom" autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="req-email">Votre e-mail professionnel</label>
-          <input id="req-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
-        </div>
-        <div class="field">
-          <label for="req-message">Message <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label>
-          <input id="req-message" type="text" placeholder="Contexte, volume estimé de certificats…">
-        </div>
-        <button class="btn primary full" id="request-btn" onclick="doRequestAccess()" style="margin-top:4px">
-          <span class="spinner"></span>
-          <span class="btn-label">Envoyer la demande</span>
-        </button>
-        <p style="font-size:12px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5">
-          Offre Découverte gratuite — 20 certificats/mois, sans carte bancaire.
-          <a href="tarifs.html" style="color:var(--blue)">Voir les offres</a>
-        </p>
       </div>
 
       <!-- ── MOT DE PASSE OUBLIÉ ── -->
@@ -204,6 +221,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="auth.js"></script>
 <script>
+let pendingEmail = null;
+
 (async () => {
   await redirectIfLoggedIn('issuer');
 })();
@@ -211,19 +230,23 @@
 function switchTab(tab, btn) {
   document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  document.getElementById('tab-login').style.display   = tab === 'login'   ? '' : 'none';
-  document.getElementById('tab-code').style.display    = tab === 'code'    ? '' : 'none';
-  document.getElementById('tab-request').style.display = tab === 'request' ? '' : 'none';
-  document.getElementById('tab-forgot').style.display   = tab === 'forgot'  ? '' : 'none';
-  document.getElementById('forgot-tab').style.display   = tab === 'forgot'  ? '' : 'none';
-  // 3 onglets en permanence + Réinitialiser qui n'apparaît que ponctuellement :
-  // la grille passe à 4 colonnes uniquement quand il est affiché, sinon elle
-  // reste à 3 (sans quoi le 4e bouton retombe seul sur une ligne du dessous).
-  document.getElementById('form-tabs').style.gridTemplateColumns = tab === 'forgot' ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr';
+  document.getElementById('tab-login').style.display    = tab === 'login'    ? '' : 'none';
+  document.getElementById('tab-register').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('tab-forgot').style.display    = tab === 'forgot'   ? '' : 'none';
+  document.getElementById('forgot-tab').style.display    = tab === 'forgot'   ? '' : 'none';
+  document.getElementById('form-tabs').style.gridTemplateColumns = tab === 'forgot' ? '1fr 1fr 1fr' : '1fr 1fr';
+  if (tab === 'login') backToPasswordStep();
   clearMessages();
 }
 
-async function doLogin() {
+function toggleRequestForm(show) {
+  document.getElementById('register-with-code').style.display = show ? 'none' : '';
+  document.getElementById('register-request').style.display   = show ? '' : 'none';
+  clearMessages();
+}
+
+/* ── Connexion, étape 1 : mot de passe ── */
+async function doLoginStep1() {
   const btn = document.getElementById('login-btn');
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
@@ -232,15 +255,54 @@ async function doLogin() {
   btn.classList.add('loading'); btn.disabled = true;
   clearMessages();
 
-  const { profile, error } = await signInAs(email, password, 'issuer');
+  const { error } = await startLoginWithPassword(email, password);
+
+  btn.classList.remove('loading'); btn.disabled = false;
+
   if (error) {
     showError(traduireErreur(error.message) || 'Connexion impossible. Vérifiez vos identifiants.');
-    btn.classList.remove('loading'); btn.disabled = false;
     return;
   }
+
+  pendingEmail = email;
+  document.getElementById('otp-email-display').textContent = email;
+  document.getElementById('login-step-password').style.display = 'none';
+  document.getElementById('login-step-otp').style.display = '';
+  document.getElementById('otp-code').focus();
+}
+
+/* ── Connexion, étape 2 : code e-mail ── */
+async function doLoginStep2() {
+  const btn  = document.getElementById('otp-btn');
+  const code = document.getElementById('otp-code').value.trim();
+  if (!code) { showError('Merci de saisir le code reçu par e-mail.'); return; }
+
+  btn.classList.add('loading'); btn.disabled = true;
+  clearMessages();
+
+  const { error: otpError } = await completeLoginWithOtp(pendingEmail, code);
+  if (otpError) {
+    btn.classList.remove('loading'); btn.disabled = false;
+    showError('Code invalide ou expiré. Redemandez-en un depuis l\'étape précédente si besoin.');
+    return;
+  }
+
+  const { error: profileError } = await finalizeIssuerLogin();
+  btn.classList.remove('loading'); btn.disabled = false;
+
+  if (profileError) { showError(profileError.message); backToPasswordStep(); return; }
+
   window.location.href = 'certif.html';
 }
 
+function backToPasswordStep() {
+  document.getElementById('login-step-otp').style.display = 'none';
+  document.getElementById('login-step-password').style.display = '';
+  document.getElementById('otp-code').value = '';
+  pendingEmail = null;
+}
+
+/* ── Créer un compte : rédemption de code ── */
 async function doRedeemCode() {
   const btn      = document.getElementById('code-btn');
   const code     = document.getElementById('code-value').value.trim().toUpperCase();
@@ -256,17 +318,26 @@ async function doRedeemCode() {
 
   const { data, error } = await redeemAccessCode({ code, fullName, email, password });
 
-  btn.classList.remove('loading'); btn.disabled = false;
-
-  if (error) { showError(traduireErreur(error.message) || 'Code invalide.'); return; }
-
-  if (data?.pending) {
-    showSuccess('Compte créé ! Confirmez votre e-mail via le lien reçu, puis connectez-vous : votre code sera activé automatiquement.');
-    switchTab('login', document.querySelectorAll('.form-tab')[0]);
+  if (error) {
+    btn.classList.remove('loading'); btn.disabled = false;
+    showError(traduireErreur(error.message) || 'Code invalide.');
     return;
   }
 
-  window.location.href = 'certif.html';
+  // Compte activé : on ne garde jamais la session issue directement de
+  // l'inscription — on repasse par la connexion à deux facteurs, cohérent
+  // avec le reste du produit (« authentification forte » y compris à la
+  // création de compte).
+  await sb().auth.signOut({ scope: 'local' });
+  clearActiveType();
+
+  btn.classList.remove('loading'); btn.disabled = false;
+
+  showSuccess(data?.pending
+    ? 'Compte créé ! Confirmez votre e-mail via le lien reçu, puis connectez-vous : votre code sera activé automatiquement.'
+    : 'Compte activé ! Connectez-vous avec votre mot de passe pour recevoir votre code de connexion par e-mail.');
+  switchTab('login', document.querySelectorAll('.form-tab')[0]);
+  document.getElementById('login-email').value = email;
 }
 
 async function doRequestAccess() {
@@ -277,7 +348,7 @@ async function doRequestAccess() {
   const officialDomain = document.getElementById('req-domain').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
   const contactName    = document.getElementById('req-name').value.trim();
   const contactEmail   = document.getElementById('req-email').value.trim();
-  const message        = document.getElementById('req-message').value.trim();
+  const message         = document.getElementById('req-message').value.trim();
 
   if (!orgName || !officialDomain || !contactName || !contactEmail) {
     showError('Merci de remplir au minimum le nom de l\'établissement, le domaine e-mail, votre nom et votre e-mail.');
@@ -297,7 +368,7 @@ async function doRequestAccess() {
 
   if (error) { showError('Envoi impossible pour le moment. Écrivez-nous à contact@motsa.tech.'); return; }
   showSuccess('Demande envoyée ! Nous revenons vers vous sous 48 h ouvrées à l\'adresse indiquée, avec votre code fondateur si votre établissement est validé.');
-  document.querySelectorAll('#tab-request input').forEach(i => i.value = '');
+  document.querySelectorAll('#register-request input').forEach(i => i.value = '');
 }
 
 async function doForgot() {
@@ -324,7 +395,7 @@ function traduireErreur(msg) {
     'User already registered': 'Un compte existe déjà avec cet e-mail.',
   };
   for (const k in map) if (msg.includes(k)) return map[k];
-  if (msg.includes('No Issuer profile') || msg.includes('Aucun compte émetteur')) return msg.includes('code') ? msg : 'Aucun compte émetteur pour cet e-mail. Utilisez l\'espace Pro vérificateur ou activez un code d\'inscription.';
+  if (msg.includes('No Issuer profile') || msg.includes('Aucun compte émetteur')) return msg;
   return msg;
 }
 
@@ -337,13 +408,16 @@ function clearMessages()  {
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.target.tagName === 'BUTTON') return;
-  const visible = ['login','code','request','forgot'].find(t =>
-    document.getElementById('tab-' + t).style.display !== 'none');
-  if (visible === 'forgot') doForgot();
-  else if (visible === 'code') doRedeemCode();
-  else if (visible === 'request') doRequestAccess();
-  else doLogin();
+  if (document.getElementById('tab-forgot').style.display !== 'none') { doForgot(); return; }
+  if (document.getElementById('tab-register').style.display !== 'none') {
+    if (document.getElementById('register-request').style.display !== 'none') doRequestAccess();
+    else doRedeemCode();
+    return;
+  }
+  if (document.getElementById('login-step-otp').style.display !== 'none') doLoginStep2();
+  else doLoginStep1();
 });
 </script>
+<script src="interactions.js"></script>
 </body>
 </html>

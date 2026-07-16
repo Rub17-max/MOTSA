@@ -272,7 +272,61 @@ async function createInvitation(email) {
   return { code: data.code, error: null };
 }
 
-// ── Sign in ──────────────────────────────────────────────────
+// ── Connexion émetteur en deux facteurs (mot de passe + code e-mail) ───────
+// Supabase ne propose pas nativement le facteur "e-mail" pour sa MFA (TOTP/SMS
+// uniquement) : ce flux recompose un vrai second facteur avec les briques
+// publiques de Supabase Auth, sans backend supplémentaire.
+//   1. startLoginWithPassword  → vérifie le mot de passe, révoque aussitôt la
+//      session obtenue, puis déclenche l'envoi d'un code à usage unique par
+//      e-mail (nécessite "Email OTP" activé côté Supabase — voir
+//      NOTES-INSCRIPTION-SECURISEE.md).
+//   2. completeLoginWithOtp    → valide le code saisi, établit la session
+//      définitive.
+//   3. finalizeIssuerLogin     → vérifie qu'un profil émetteur existe bien
+//      pour ce compte, sinon révoque la session (comme signInAs).
+
+async function startLoginWithPassword(email, password) {
+  const { error } = await sb().auth.signInWithPassword({ email, password });
+  if (error) return { error };
+
+  // On ne garde jamais la session issue du seul mot de passe : elle est
+  // révoquée immédiatement pour forcer le passage par le second facteur.
+  await sb().auth.signOut({ scope: 'local' });
+
+  const { error: otpError } = await sb().auth.signInWithOtp({
+    email,
+    options: { shouldCreateUser: false },
+  });
+  return { error: otpError || null };
+}
+
+async function completeLoginWithOtp(email, token) {
+  const { data, error } = await sb().auth.verifyOtp({ email, token, type: 'email' });
+  return { data, error };
+}
+
+async function finalizeIssuerLogin() {
+  const session = await getSession();
+  if (!session) return { profile: null, error: { message: 'Session invalide, recommencez la connexion.' } };
+
+  const { data: profile, error: profileError } = await sb()
+    .from('profiles')
+    .select('*, organizations(name, slug, account_type, org_type, status)')
+    .eq('id', session.user.id)
+    .eq('account_type', 'issuer')
+    .single();
+
+  if (profileError || !profile) {
+    await sb().auth.signOut({ scope: 'local' });
+    clearActiveType();
+    return { profile: null, error: { message: 'Aucun compte émetteur pour cet e-mail. Utilisez l\'espace Pro vérificateur ou activez un code d\'inscription.' } };
+  }
+
+  setActiveType('issuer');
+  return { profile, error: null };
+}
+
+// ── Sign in (usage direct — encore utilisé par l'espace vérificateur) ──────
 
 // Signs in and activates the profile for the given portal type.
 // Returns { profile, error }

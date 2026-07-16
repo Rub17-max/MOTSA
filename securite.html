@@ -73,6 +73,11 @@
       Un compte émetteur ne se crée jamais en choisissant librement un établissement dans une liste. L'établissement candidate (SIRET, n° Qualiopi/NDA le cas échéant, domaine e-mail officiel), MOTSA vérifie ces éléments auprès des registres publics, puis un code d'activation à usage unique est envoyé exclusivement à une adresse du domaine officiel déclaré — jamais à une adresse personnelle. Le premier compte activé devient administrateur de l'établissement et invite ensuite ses collègues ; chaque invitation reste verrouillée sur une adresse du même domaine et expire après 14 jours.
     </p>
 
+    <h2>Double authentification à la connexion</h2>
+    <p>
+      Se connecter à l'espace émetteur demande deux éléments distincts : le mot de passe, puis un code à usage unique envoyé par e-mail à l'adresse du compte. La session obtenue par le seul mot de passe n'est jamais conservée — elle est révoquée avant même l'envoi du code. Concrètement, un mot de passe compromis seul ne suffit pas à accéder au compte : il faut aussi contrôler la boîte e-mail associée.
+    </p>
+
     <h2>Contrôle des accès</h2>
     <p>
       Chaque établissement n'accède qu'à ses propres certificats et documents : cette isolation est appliquée <strong>au niveau de la base de données</strong> (row-level security), pas seulement dans l'interface. Les identifiants de certificats sont générés aléatoirement sur 16 caractères hexadécimaux, ce qui rend leur énumération impraticable. L'authentification et le chiffrement des échanges (TLS) s'appuient sur une infrastructure hébergée dans l'Union européenne.
@@ -117,5 +122,6 @@
   <a class="active" href="securite.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Sécurité</a>
 </div>
 
+<script src="interactions.js"></script>
 </body>
 </html>
