@@ -26,7 +26,7 @@
     <div class="kicker">Espace émetteur</div>
     <h1 id="page-title" style="max-width:800px">Certifier un document</h1>
     <p class="lead" id="page-subtitle">
-      L'empreinte du PDF est calculée localement dans votre navigateur — le fichier n'est jamais transmis. MOTSA n'enregistre que l'empreinte et les métadonnées.
+      L'empreinte du PDF est calculée localement dans votre navigateur. Par défaut, le fichier n'est jamais transmis — cochez « Coffre-fort » ci-dessous si vous devez aussi conserver le document lui-même.
     </p>
 
     <div class="split">
@@ -72,6 +72,7 @@
           <select id="doc-type">
             <option value="attestation">Attestation</option>
             <option value="certificat_scolarite">Certificat de scolarité</option>
+            <option value="certificat_realisation">Certificat de réalisation</option>
             <option value="diplome">Diplôme</option>
             <option value="releve_notes">Relevé de notes</option>
           </select>
@@ -80,6 +81,20 @@
         <div class="field">
           <label for="issued-at">Date d'émission</label>
           <input id="issued-at" type="date">
+        </div>
+
+        <!-- ── Coffre-fort (optionnel, document par document) ── -->
+        <div class="field" style="background:var(--s2);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 16px;margin-top:4px">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-weight:500;cursor:pointer">
+            <input type="checkbox" id="vault-enable" style="margin-top:3px;width:16px;height:16px;flex-shrink:0">
+            <span>Conserver ce document dans le Coffre-fort de preuves Qualiopi<br>
+              <span style="font-weight:400;color:var(--muted);font-size:12.5px">Le PDF est alors transmis et stocké chiffré pour la durée légale (5 ans par défaut). Nécessite l'option Coffre-fort sur votre offre.</span>
+            </span>
+          </label>
+          <label id="fse-row" style="display:none;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;cursor:pointer">
+            <input type="checkbox" id="vault-fse" style="width:15px;height:15px">
+            Formation cofinancée par le FSE (Fonds Social Européen) — conservation 10 ans au lieu de 5
+          </label>
         </div>
 
         <button class="btn primary full" id="certify-btn" onclick="certify()">
@@ -98,6 +113,7 @@
           <div class="detail-row"><span>Date d'émission</span><strong id="p-date">—</strong></div>
           <div class="detail-row"><span>N° étudiant</span><strong id="p-student">—</strong></div>
           <div class="detail-row"><span>Empreinte du PDF</span><strong id="p-hash" style="font-family:'DM Mono',monospace;font-size:11.5px;color:var(--muted)">déposez un PDF pour la calculer</strong></div>
+          <div class="detail-row"><span>Coffre-fort</span><strong id="p-vault" style="color:var(--muted)">Désactivé — empreinte seule</strong></div>
         </div>
 
         <div style="margin-top:14px;background:var(--s2);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 18px;font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start">
@@ -110,6 +126,7 @@
           <h2>Certificat créé</h2>
           <p>Enregistré au registre MOTSA. Transmettez le lien de vérification au titulaire : il peut l'ajouter à ses candidatures, et tout destinataire peut contrôler le document sans compte.</p>
           <div class="hash-block" id="result-hash"></div>
+          <div id="vault-status" style="display:none;margin-top:10px;font-size:12.5px;color:var(--text2)"></div>
           <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn soft" onclick="copyId()" style="font-size:13px;padding:9px 16px">Copier l'ID du certificat</button>
             <button class="btn soft" onclick="copyVerifyUrl()" style="font-size:13px;padding:9px 16px">Copier le lien de vérification</button>
@@ -167,14 +184,16 @@ document.getElementById('issued-at').value = new Date().toISOString().slice(0, 1
 
   ['holder','doc-type','issued-at','student-id'].forEach(id =>
     document.getElementById(id).addEventListener('input', updatePreview));
+  document.getElementById('vault-enable').addEventListener('change', updateVaultUi);
   updatePreview();
 })();
 
 const typeLabels = {
-  certificat_scolarite: 'Certificat de scolarité',
-  diplome:              'Diplôme',
-  releve_notes:         'Relevé de notes',
-  attestation:          'Attestation',
+  certificat_scolarite:  'Certificat de scolarité',
+  certificat_realisation:'Certificat de réalisation',
+  diplome:                'Diplôme',
+  releve_notes:           'Relevé de notes',
+  attestation:            'Attestation',
 };
 
 function updatePreview() {
@@ -185,6 +204,17 @@ function updatePreview() {
   const sid = document.getElementById('student-id').value.trim();
   document.getElementById('p-student').textContent = sid || '—';
 }
+
+function updateVaultUi() {
+  const enabled = document.getElementById('vault-enable').checked;
+  document.getElementById('fse-row').style.display = enabled ? 'flex' : 'none';
+  const fse = enabled && document.getElementById('vault-fse').checked;
+  document.getElementById('p-vault').textContent = enabled
+    ? (fse ? 'Activé — conservation 10 ans (FSE)' : 'Activé — conservation 5 ans')
+    : 'Désactivé — empreinte seule';
+  document.getElementById('p-vault').style.color = enabled ? 'var(--blue)' : 'var(--muted)';
+}
+document.getElementById('vault-fse')?.addEventListener?.('change', updateVaultUi);
 
 /* ── Fichier : clic + glisser-déposer ── */
 const _dropZone  = document.getElementById('upload-label');
@@ -237,15 +267,20 @@ async function certify() {
   if (!profile) return;
   const btn = document.getElementById('certify-btn');
   const holder = document.getElementById('holder').value.trim();
+  const file = document.getElementById('pdf-input').files[0];
   if (!holder) { showError('Le nom du titulaire est requis.'); return; }
-  if (!computedHash && !document.getElementById('pdf-input').files[0]) {
+  if (!computedHash && !file) {
     showError('Déposez le PDF officiel à certifier.'); return;
+  }
+
+  const vaultEnabled = document.getElementById('vault-enable').checked;
+  if (vaultEnabled && !file) {
+    showError('Le Coffre-fort nécessite le fichier PDF — redéposez-le si vous l\'aviez retiré.'); return;
   }
 
   btn.classList.add('loading'); btn.disabled = true;
   clearResults();
 
-  const file = document.getElementById('pdf-input').files[0];
   let hash = computedHash;
   if (!hash && file) hash = await sha256(file);
 
@@ -262,12 +297,29 @@ async function certify() {
                     : null,
   });
 
-  btn.classList.remove('loading'); btn.disabled = false;
-
   if (error) {
+    btn.classList.remove('loading'); btn.disabled = false;
     showError(error.message || 'Création du certificat impossible. Vérifiez vos droits.');
     return;
   }
+
+  // Coffre-fort : upload effectué seulement si explicitement coché.
+  const vaultBox = document.getElementById('vault-status');
+  if (vaultEnabled && file) {
+    const fse = document.getElementById('vault-fse').checked;
+    const { error: vaultError } = await uploadToVault({
+      file,
+      certificateId:   data.id,
+      organizationId:  profile.organization_id,
+      fseCofinanced:   fse,
+    });
+    vaultBox.style.display = 'block';
+    vaultBox.innerHTML = vaultError
+      ? `⚠️ Certificat créé, mais l'ajout au Coffre-fort a échoué : ${vaultError.message}. Réessayez depuis le tableau de bord.`
+      : `✓ Document conservé au Coffre-fort — purge automatique dans ${fse ? '10 ans' : '5 ans'}.`;
+  }
+
+  btn.classList.remove('loading'); btn.disabled = false;
 
   lastCertId = data.certificate_code;
   const verifyUrl = `${window.location.origin}/verify.html?c=${data.certificate_code}`;
@@ -290,6 +342,7 @@ function showError(msg) {
 function clearResults() {
   document.getElementById('result-ok').classList.remove('show');
   document.getElementById('result-err').classList.remove('show');
+  document.getElementById('vault-status').style.display = 'none';
 }
 function copyId() {
   if (!lastCertId) return;

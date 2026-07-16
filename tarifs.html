@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Tarifs — MOTSA</title>
-  <meta name="description" content="Vérification gratuite pour tous. Offres émetteur à partir de 0 € : Découverte, École, Institution, et API vérificateur pour le background check.">
+  <meta name="description" content="Vérification gratuite pour tous. Offres émetteur à partir de 0 € : Découverte, École, Institution. Coffre-fort de preuves Qualiopi en option. API vérificateur pour le background check.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,13 +26,16 @@
 <main class="wrap">
   <section class="section" style="border-top:0;padding-top:56px">
     <div class="kicker">Tarifs</div>
-    <h1 style="max-width:760px">La vérification est gratuite.<br><em>L'émission finance le service.</em></h1>
+    <h1 style="max-width:760px">La vérification est gratuite.<br><em>L'émission et la conservation financent le service.</em></h1>
     <p class="lead">
-      C'est le principe qui rend vos certificats précieux : n'importe qui peut les vérifier, gratuitement, sans compte. Les émetteurs choisissent une offre selon leur volume. Sans engagement, résiliable à tout moment — les certificats déjà émis restent vérifiables à vie.
+      C'est le principe qui rend vos certificats précieux : n'importe qui peut les vérifier, gratuitement, sans compte. Les émetteurs choisissent une offre selon leur volume, et activent le Coffre-fort en option si la pièce elle-même doit rester disponible. Sans engagement, résiliable à tout moment — les certificats déjà émis restent vérifiables à vie.
     </p>
 
-    <!-- ── Offres émetteur ── -->
-    <h2 style="font-size:24px;margin:36px 0 24px">Offres émetteur</h2>
+    <!-- ── Offres émetteur (formule Vérification) ── -->
+    <h2 style="font-size:24px;margin:36px 0 6px">Offres émetteur — formule Vérification</h2>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:24px;max-width:640px">
+      Le PDF ne quitte jamais votre navigateur : seule son empreinte est enregistrée. Facturé au volume de certificats émis.
+    </p>
     <div class="pricing-grid">
 
       <div class="price-card">
@@ -45,7 +48,7 @@
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>QR code et lien sur chaque certificat</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>1 utilisateur</li>
         </ul>
-        <a class="btn full" href="login-issuer.html">Créer un compte gratuit</a>
+        <a class="btn full" href="login-issuer.html">Demander l'accès</a>
       </div>
 
       <div class="price-card featured">
@@ -57,7 +60,7 @@
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>300 certificats par mois</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Émission en lot (import CSV)</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Page de vérification à vos couleurs</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>3 utilisateurs</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>3 utilisateurs, invitations administrées</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Statistiques de vérification</li>
         </ul>
         <button class="btn primary full" onclick="checkout('ecole')">S'abonner — paiement sécurisé</button>
@@ -70,7 +73,7 @@
         <ul>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Certificats illimités</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Émission automatisée, connectée à vos outils</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Utilisateurs illimités, rôles</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Utilisateurs illimités, rôles administrateur/membre</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Support prioritaire</li>
           <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Paiement par virement / mandat administratif</li>
         </ul>
@@ -95,6 +98,38 @@
     <div style="margin-top:16px;background:white;border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--text2)">
       <svg class="icn sm" style="color:var(--blue)" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
       Paiement par carte sécurisé via <strong>Stripe</strong> — MOTSA ne voit ni ne stocke vos données bancaires. Facture automatique à chaque échéance. Engagement annuel : 2 mois offerts (nous contacter).
+    </div>
+
+    <!-- ── Coffre-fort de preuves Qualiopi ── -->
+    <h2 style="font-size:24px;margin:56px 0 6px">Coffre-fort de preuves Qualiopi <span style="font-size:14px;font-weight:500;color:var(--muted)">— option, sur toute offre émetteur</span></h2>
+    <p class="lead" style="margin-top:0;margin-bottom:24px">
+      Le document lui-même est conservé, chiffré, pour la durée légale exacte — pas une durée choisie au hasard. 5 ans par défaut (conventions, émargements, BPF, certificats de réalisation), 10 ans si vous cochez « cofinancement FSE » à la certification. Purge automatique à l'échéance, DPA fourni systématiquement.
+    </p>
+    <div class="pricing-grid" style="grid-template-columns:1fr 1fr;max-width:640px">
+      <div class="price-card featured">
+        <div class="plan-flag">Ajout à votre offre</div>
+        <div class="plan-name">Coffre-fort</div>
+        <div class="plan-price">+189 €<small> HT / mois</small></div>
+        <p class="plan-for">Vient s'ajouter à École ou Institution. Facturé indépendamment du volume de certificats.</p>
+        <ul>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Documents stockés chiffrés au repos</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Durée légale automatique (5 ou 10 ans)</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Purge automatique à l'échéance</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Interface de recherche par titulaire</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>DPA fourni systématiquement à la souscription</li>
+        </ul>
+        <button class="btn primary full" onclick="checkout('coffre_fort')">Activer le Coffre-fort</button>
+      </div>
+      <div class="price-card">
+        <div class="plan-name">Ce que le Coffre-fort n'est pas</div>
+        <div class="plan-price" style="font-size:20px;padding:6px 0">Ni un CRM, ni un ENT</div>
+        <p class="plan-for" style="margin-bottom:8px">Trois précisions pour éviter toute confusion :</p>
+        <ul style="font-size:13px">
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Ce n'est pas un espace personnel pour les diplômés — pour ça, diplome.gouv.fr + Digiposte existent déjà et sont gratuits pour les diplômes nationaux.</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Ce n'est pas une gestion commerciale ou pédagogique — MOTSA ne remplace pas Digiforma ou Dendreo, il complète ce qu'ils ne font pas : la preuve d'intégrité et la durée de conservation légale.</li>
+          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>La durée par défaut (5 ou 10 ans) est une recommandation basée sur les textes applicables — à faire valider par votre expert-comptable ou consultant Qualiopi selon votre situation.</li>
+        </ul>
+      </div>
     </div>
 
     <!-- ── Offre vérificateur ── -->
@@ -131,8 +166,12 @@
     <h2 style="font-size:24px;margin:56px 0 24px">Questions sur les tarifs</h2>
     <div class="faq">
       <details>
-        <summary>Que deviennent nos certificats si nous résilions ?</summary>
-        <div class="faq-body">Ils restent vérifiables sans limite de durée. La promesse faite à vos diplômés ne dépend pas de votre abonnement — vous perdez uniquement la capacité d'émettre au-delà de l'offre Découverte.</div>
+        <summary>Le Coffre-fort remplace-t-il notre CRM de formation (Digiforma, Dendreo…) ?</summary>
+        <div class="faq-body">Non. Ces outils gèrent votre activité commerciale et pédagogique complète ; le Coffre-fort MOTSA ne fait qu'une chose : conserver le document lui-même, chiffré, pour la durée légale, avec preuve d'intégrité. Il fonctionne en autonomie, sans intégration requise avec votre CRM existant.</div>
+      </details>
+      <details>
+        <summary>Que deviennent nos certificats et documents si nous résilions ?</summary>
+        <div class="faq-body">Les certificats (formule Vérification) restent vérifiables sans limite de durée. Les documents du Coffre-fort restent conservés jusqu'à leur échéance légale même après résiliation — vous ne pouvez plus en ajouter de nouveaux, mais ceux déjà déposés ne sont pas supprimés avant terme.</div>
       </details>
       <details>
         <summary>Pouvons-nous payer par virement ou bon de commande ?</summary>
@@ -154,7 +193,7 @@
   <div class="cols">
     <div>
       <a class="logo" href="index.html" style="margin-bottom:12px"><img src="assets/icon-512.png" alt="MOTSA">MOTSA</a>
-      <p style="font-size:13px;color:var(--muted);max-width:260px;line-height:1.6">Certification et vérification de documents officiels, émises par l'établissement.</p>
+      <p style="font-size:13px;color:var(--muted);max-width:260px;line-height:1.6">Certification et coffre-fort de preuves, émis par l'établissement.</p>
     </div>
     <div>
       <h5>Produit</h5>
@@ -194,6 +233,7 @@
    ─────────────────────────────────────────────────────────────
    1. Créez vos produits dans le dashboard Stripe (mode abonnement) :
       École 99 €/mois · Institution 349 €/mois · Vérificateur Pro 49 €/mois
+      Coffre-fort +189 €/mois (produit additionnel, pas un plan seul)
    2. Générez un « Payment Link » pour chacun.
    3. Remplacez les URL ci-dessous. Rien d'autre à modifier.
    Stripe gère la carte, la TVA, la facture et l'e-mail de reçu.
@@ -202,6 +242,7 @@ const STRIPE_PAYMENT_LINKS = {
   ecole:        'https://buy.stripe.com/REMPLACER_LIEN_ECOLE',
   institution:  'https://buy.stripe.com/REMPLACER_LIEN_INSTITUTION',
   verifier_pro: 'https://buy.stripe.com/REMPLACER_LIEN_VERIFICATEUR_PRO',
+  coffre_fort:  'https://buy.stripe.com/REMPLACER_LIEN_COFFRE_FORT',
 };
 
 function checkout(plan) {

@@ -29,8 +29,8 @@
     <div class="auth-feature">
       <div class="auth-feature-icon"><svg class="icn" style="color:var(--blue)" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
       <div class="auth-feature-text">
-        <h4>Certification par empreinte seule</h4>
-        <p>Le PDF ne quitte jamais votre navigateur. Seule son empreinte SHA-256 est enregistrée.</p>
+        <h4>Établissements vérifiés uniquement</h4>
+        <p>Chaque organisation est validée avant qu'un compte émetteur ne soit créé — pas d'inscription libre au nom d'un établissement.</p>
       </div>
     </div>
     <div class="auth-feature">
@@ -65,12 +65,13 @@
         Bon retour parmi nous
       </h2>
       <p style="font-size:14px;color:var(--muted);margin-bottom:24px">
-        Connectez-vous pour certifier et gérer vos documents.
+        Connectez-vous, activez un code reçu, ou demandez l'accès pour votre établissement.
       </p>
 
-      <div class="form-tabs" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="form-tabs" id="form-tabs" style="grid-template-columns:1fr 1fr 1fr">
         <button class="form-tab active" onclick="switchTab('login',this)">Connexion</button>
-        <button class="form-tab"        onclick="switchTab('register',this)">Créer un compte</button>
+        <button class="form-tab"        onclick="switchTab('code',this)">J'ai un code</button>
+        <button class="form-tab"        onclick="switchTab('request',this)">Demander l'accès</button>
         <button class="form-tab"        onclick="switchTab('forgot',this)" id="forgot-tab" style="display:none">Réinitialiser</button>
       </div>
 
@@ -97,34 +98,76 @@
         </div>
       </div>
 
-      <!-- ── INSCRIPTION ── -->
-      <div id="tab-register" style="display:none">
+      <!-- ── J'AI UN CODE (fondateur ou invitation) ── -->
+      <div id="tab-code" style="display:none">
+        <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 16px;line-height:1.5">
+          Vous avez reçu un code fondateur (après validation de votre établissement) ou une
+          invitation d'un administrateur de votre organisation ? Créez votre compte ici.
+        </p>
         <div class="field">
-          <label for="reg-name">Nom complet</label>
-          <input id="reg-name" type="text" placeholder="Prénom Nom" autocomplete="name">
-        </div>
-        <div class="field">
-          <label for="reg-email">E-mail professionnel</label>
-          <input id="reg-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
-        </div>
-        <div class="field">
-          <label for="reg-org">Établissement</label>
-          <select id="reg-org">
-            <option value="">Chargement des établissements…</option>
-          </select>
-        </div>
-        <div id="org-missing" style="display:none;font-size:12.5px;color:var(--text2);background:var(--soft);border:1px solid #c4d8fb;border-radius:6px;padding:10px 13px;margin:-4px 0 14px;line-height:1.5">
-          Votre établissement n'est pas encore référencé. Écrivez-nous à
-          <a href="mailto:contact@motsa.tech?subject=R%C3%A9f%C3%A9rencement%20%C3%A9tablissement%20MOTSA" style="color:var(--blue);font-weight:500">contact@motsa.tech</a> —
-          référencement sous 24 h ouvrées.
+          <label for="code-value">Code</label>
+          <input id="code-value" type="text" placeholder="REG-XXXXXXXXXX ou INV-XXXXXXXXXX" autocomplete="off" style="font-family:'DM Mono',monospace;text-transform:uppercase">
         </div>
         <div class="field">
-          <label for="reg-password">Mot de passe <span style="font-weight:400;color:var(--muted)">(8 caractères min.)</span></label>
-          <input id="reg-password" type="password" placeholder="••••••••" autocomplete="new-password">
+          <label for="code-name">Nom complet</label>
+          <input id="code-name" type="text" placeholder="Prénom Nom" autocomplete="name">
         </div>
-        <button class="btn primary full" id="register-btn" onclick="doRegister()" style="margin-top:4px">
+        <div class="field">
+          <label for="code-email">E-mail professionnel</label>
+          <input id="code-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="code-password">Mot de passe <span style="font-weight:400;color:var(--muted)">(12 caractères min.)</span></label>
+          <input id="code-password" type="password" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <button class="btn primary full" id="code-btn" onclick="doRedeemCode()" style="margin-top:4px">
           <span class="spinner"></span>
-          <span class="btn-label">Créer mon compte émetteur</span>
+          <span class="btn-label">Activer mon compte</span>
+        </button>
+        <p style="font-size:11.5px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5">
+          Un code fondateur n'active que le compte administrateur de l'établissement pour
+          lequel il a été émis ; il ne permet de choisir aucune autre organisation.
+        </p>
+      </div>
+
+      <!-- ── DEMANDER L'ACCÈS (candidature établissement) ── -->
+      <div id="tab-request" style="display:none">
+        <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 16px;line-height:1.5">
+          Votre établissement n'a pas encore de compte MOTSA ? Décrivez-le ci-dessous.
+          Nous vérifions le SIRET et, le cas échéant, le n° Qualiopi/NDA, puis envoyons un
+          code fondateur à l'adresse professionnelle indiquée — sous 48 h ouvrées.
+        </p>
+        <div class="field">
+          <label for="req-org">Nom de l'établissement</label>
+          <input id="req-org" type="text" placeholder="École ou organisme de formation">
+        </div>
+        <div class="field">
+          <label for="req-siret">SIRET</label>
+          <input id="req-siret" type="text" placeholder="14 chiffres" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="req-nda">N° Qualiopi ou n° de déclaration d'activité (NDA) <span style="font-weight:400;color:var(--muted)">(si applicable)</span></label>
+          <input id="req-nda" type="text" placeholder="ex. 11 75 XXXXX 75" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="req-domain">Domaine e-mail officiel</label>
+          <input id="req-domain" type="text" placeholder="etablissement.fr" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="req-name">Votre nom</label>
+          <input id="req-name" type="text" placeholder="Prénom Nom" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="req-email">Votre e-mail professionnel</label>
+          <input id="req-email" type="email" placeholder="vous@etablissement.fr" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="req-message">Message <span style="font-weight:400;color:var(--muted)">(facultatif)</span></label>
+          <input id="req-message" type="text" placeholder="Contexte, volume estimé de certificats…">
+        </div>
+        <button class="btn primary full" id="request-btn" onclick="doRequestAccess()" style="margin-top:4px">
+          <span class="spinner"></span>
+          <span class="btn-label">Envoyer la demande</span>
         </button>
         <p style="font-size:12px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5">
           Offre Découverte gratuite — 20 certificats/mois, sans carte bancaire.
@@ -163,41 +206,20 @@
 <script>
 (async () => {
   await redirectIfLoggedIn('issuer');
-  await loadOrgs();
 })();
-
-/* Les établissements sont chargés depuis la base — plus de liste figée
-   d'entités réelles non clientes dans le code du site. */
-async function loadOrgs() {
-  const select = document.getElementById('reg-org');
-  const { data: orgs, error } = await fetchOrganizations('issuer');
-  select.innerHTML = '<option value="">— Sélectionnez votre établissement —</option>';
-  if (!error && orgs.length) {
-    orgs.forEach(o => {
-      const opt = document.createElement('option');
-      opt.value = o.id;
-      opt.textContent = o.name;
-      select.appendChild(opt);
-    });
-  }
-  const other = document.createElement('option');
-  other.value = '__missing__';
-  other.textContent = 'Mon établissement n\'est pas listé';
-  select.appendChild(other);
-
-  select.addEventListener('change', () => {
-    document.getElementById('org-missing').style.display =
-      select.value === '__missing__' ? 'block' : 'none';
-  });
-}
 
 function switchTab(tab, btn) {
   document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  document.getElementById('tab-login').style.display    = tab === 'login'    ? '' : 'none';
-  document.getElementById('tab-register').style.display = tab === 'register' ? '' : 'none';
-  document.getElementById('tab-forgot').style.display   = tab === 'forgot'   ? '' : 'none';
-  document.getElementById('forgot-tab').style.display   = tab === 'forgot'   ? '' : 'none';
+  document.getElementById('tab-login').style.display   = tab === 'login'   ? '' : 'none';
+  document.getElementById('tab-code').style.display    = tab === 'code'    ? '' : 'none';
+  document.getElementById('tab-request').style.display = tab === 'request' ? '' : 'none';
+  document.getElementById('tab-forgot').style.display   = tab === 'forgot'  ? '' : 'none';
+  document.getElementById('forgot-tab').style.display   = tab === 'forgot'  ? '' : 'none';
+  // 3 onglets en permanence + Réinitialiser qui n'apparaît que ponctuellement :
+  // la grille passe à 4 colonnes uniquement quand il est affiché, sinon elle
+  // reste à 3 (sans quoi le 4e bouton retombe seul sur une ligne du dessous).
+  document.getElementById('form-tabs').style.gridTemplateColumns = tab === 'forgot' ? '1fr 1fr 1fr 1fr' : '1fr 1fr 1fr';
   clearMessages();
 }
 
@@ -219,27 +241,63 @@ async function doLogin() {
   window.location.href = 'certif.html';
 }
 
-async function doRegister() {
-  const btn = document.getElementById('register-btn');
-  const fullName = document.getElementById('reg-name').value.trim();
-  const email    = document.getElementById('reg-email').value.trim();
-  const orgId    = document.getElementById('reg-org').value;
-  const password = document.getElementById('reg-password').value;
+async function doRedeemCode() {
+  const btn      = document.getElementById('code-btn');
+  const code     = document.getElementById('code-value').value.trim().toUpperCase();
+  const fullName = document.getElementById('code-name').value.trim();
+  const email    = document.getElementById('code-email').value.trim();
+  const password = document.getElementById('code-password').value;
 
-  if (!fullName || !email || !orgId || !password) { showError('Merci de remplir tous les champs.'); return; }
-  if (orgId === '__missing__') { showError('Contactez-nous pour référencer votre établissement, puis créez votre compte.'); return; }
-  if (password.length < 8) { showError('Le mot de passe doit contenir au moins 8 caractères.'); return; }
+  if (!code || !fullName || !email || !password) { showError('Merci de remplir tous les champs.'); return; }
+  if (password.length < 12) { showError('Le mot de passe doit contenir au moins 12 caractères.'); return; }
 
   btn.classList.add('loading'); btn.disabled = true;
   clearMessages();
 
-  const { error } = await signUp({ email, password, fullName, organizationId: orgId, accountType: 'issuer' });
+  const { data, error } = await redeemAccessCode({ code, fullName, email, password });
 
   btn.classList.remove('loading'); btn.disabled = false;
 
-  if (error) { showError(traduireErreur(error.message) || 'Inscription impossible.'); return; }
-  showSuccess('Compte créé ! Confirmez votre e-mail, puis connectez-vous.');
-  switchTab('login', document.querySelectorAll('.form-tab')[0]);
+  if (error) { showError(traduireErreur(error.message) || 'Code invalide.'); return; }
+
+  if (data?.pending) {
+    showSuccess('Compte créé ! Confirmez votre e-mail via le lien reçu, puis connectez-vous : votre code sera activé automatiquement.');
+    switchTab('login', document.querySelectorAll('.form-tab')[0]);
+    return;
+  }
+
+  window.location.href = 'certif.html';
+}
+
+async function doRequestAccess() {
+  const btn = document.getElementById('request-btn');
+  const orgName        = document.getElementById('req-org').value.trim();
+  const siret          = document.getElementById('req-siret').value.trim();
+  const qualiopiOrNda  = document.getElementById('req-nda').value.trim();
+  const officialDomain = document.getElementById('req-domain').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+  const contactName    = document.getElementById('req-name').value.trim();
+  const contactEmail   = document.getElementById('req-email').value.trim();
+  const message        = document.getElementById('req-message').value.trim();
+
+  if (!orgName || !officialDomain || !contactName || !contactEmail) {
+    showError('Merci de remplir au minimum le nom de l\'établissement, le domaine e-mail, votre nom et votre e-mail.');
+    return;
+  }
+  if (contactEmail.split('@')[1] && officialDomain && contactEmail.split('@')[1].toLowerCase() !== officialDomain.toLowerCase()) {
+    showError('Votre e-mail doit correspondre au domaine officiel déclaré (évite les candidatures usurpées).');
+    return;
+  }
+
+  btn.classList.add('loading'); btn.disabled = true;
+  clearMessages();
+
+  const { error } = await requestOrgOnboarding({ orgName, siret, qualiopiOrNda, officialDomain, contactName, contactEmail, message });
+
+  btn.classList.remove('loading'); btn.disabled = false;
+
+  if (error) { showError('Envoi impossible pour le moment. Écrivez-nous à contact@motsa.tech.'); return; }
+  showSuccess('Demande envoyée ! Nous revenons vers vous sous 48 h ouvrées à l\'adresse indiquée, avec votre code fondateur si votre établissement est validé.');
+  document.querySelectorAll('#tab-request input').forEach(i => i.value = '');
 }
 
 async function doForgot() {
@@ -266,7 +324,7 @@ function traduireErreur(msg) {
     'User already registered': 'Un compte existe déjà avec cet e-mail.',
   };
   for (const k in map) if (msg.includes(k)) return map[k];
-  if (msg.includes('No Issuer profile')) return 'Aucun compte émetteur pour cet e-mail. Utilisez l\'espace Pro vérificateur ou créez un compte émetteur.';
+  if (msg.includes('No Issuer profile') || msg.includes('Aucun compte émetteur')) return msg.includes('code') ? msg : 'Aucun compte émetteur pour cet e-mail. Utilisez l\'espace Pro vérificateur ou activez un code d\'inscription.';
   return msg;
 }
 
@@ -279,11 +337,12 @@ function clearMessages()  {
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.target.tagName === 'BUTTON') return;
-  const forgotVisible = document.getElementById('tab-forgot').style.display !== 'none';
-  const loginVisible  = document.getElementById('tab-login').style.display  !== 'none';
-  if (forgotVisible) doForgot();
-  else if (loginVisible) doLogin();
-  else doRegister();
+  const visible = ['login','code','request','forgot'].find(t =>
+    document.getElementById('tab-' + t).style.display !== 'none');
+  if (visible === 'forgot') doForgot();
+  else if (visible === 'code') doRedeemCode();
+  else if (visible === 'request') doRequestAccess();
+  else doLogin();
 });
 </script>
 </body>

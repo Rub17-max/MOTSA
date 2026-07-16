@@ -56,16 +56,40 @@
         <h3 id="stat-active">—</h3>
         <p>Certificats actifs</p>
       </div>
+      <div class="stat-card">
+        <h3 id="stat-vault">—</h3>
+        <p>Documents au Coffre-fort</p>
+      </div>
+    </div>
+
+    <!-- Panneau admin : inviter un collègue -->
+    <div class="card panel" id="admin-panel" style="display:none;margin-bottom:28px">
+      <h2 style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;margin-bottom:6px">Inviter un collègue</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">
+        Réservé aux administrateurs. L'invitation n'est valable que pour l'adresse indiquée, sur le domaine de votre établissement, et expire après 14 jours.
+      </p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <div class="field" style="flex:1;min-width:220px;margin-bottom:0">
+          <label for="invite-email">E-mail du collègue</label>
+          <input id="invite-email" type="email" placeholder="collegue@etablissement.fr">
+        </div>
+        <button class="btn primary" id="invite-btn" onclick="doInvite()" style="height:44px;padding:0 20px">
+          <span class="spinner"></span>
+          <span class="btn-label">Générer l'invitation</span>
+        </button>
+      </div>
+      <div id="invite-result" style="display:none;margin-top:12px;font-size:13px;background:var(--soft);border:1px solid #c4d8fb;border-radius:6px;padding:10px 13px"></div>
     </div>
 
     <!-- Table des certificats -->
     <div class="data-table" id="docs-table">
-      <div class="table-head" style="grid-template-columns:1.4fr 1fr .9fr .8fr .6fr .5fr">
+      <div class="table-head" style="grid-template-columns:1.3fr 1fr .8fr .8fr .5fr .5fr .5fr">
         <span>Document</span>
         <span>Titulaire</span>
         <span>Émis le</span>
         <span>ID certificat</span>
         <span>Statut</span>
+        <span>Coffre-fort</span>
         <span></span>
       </div>
       <div id="table-body">
@@ -102,10 +126,11 @@
 <script src="auth.js"></script>
 <script>
 const typeLabels = {
-  certificat_scolarite: 'Certificat de scolarité',
-  diplome:              'Diplôme',
-  releve_notes:         'Relevé de notes',
-  attestation:          'Attestation',
+  certificat_scolarite:   'Certificat de scolarité',
+  certificat_realisation: 'Certificat de réalisation',
+  diplome:                'Diplôme',
+  releve_notes:           'Relevé de notes',
+  attestation:            'Attestation',
 };
 
 // Quota de l'offre Découverte (affichage indicatif côté client ;
@@ -117,6 +142,10 @@ async function loadDashboard() {
   if (!profile) return;
 
   await mountUserChip();
+
+  if (profile.role === 'admin') {
+    document.getElementById('admin-panel').style.display = 'block';
+  }
 
   const orgName = profile.organizations?.name || '—';
   document.getElementById('dash-subtitle').textContent = orgName;
@@ -131,8 +160,10 @@ async function loadDashboard() {
 
   // Statistiques
   const active = certs.filter(c => c.status === 'active').length;
+  const inVault = certs.filter(c => c.vault_documents && c.vault_documents.length > 0).length;
   document.getElementById('stat-total').textContent  = certs.length.toLocaleString('fr-FR');
   document.getElementById('stat-active').textContent = active.toLocaleString('fr-FR');
+  document.getElementById('stat-vault').textContent  = inVault.toLocaleString('fr-FR');
 
   // Quota mensuel (offre Découverte)
   const debutMois = new Date(); debutMois.setDate(1); debutMois.setHours(0,0,0,0);
@@ -145,8 +176,7 @@ async function loadDashboard() {
   document.getElementById('quota-fill').style.width = pct + '%';
   if (pct >= 80) banner.classList.add('warn');
 
-  // Nombre de vérifications (count exact — l'ancien code lisait data.length
-  // sur une requête head:true, qui renvoie toujours null)
+  // Nombre de vérifications (count exact)
   const certIds = certs.map(c => c.id).filter(Boolean);
   if (certIds.length > 0) {
     const { count } = await sb()
@@ -173,7 +203,7 @@ async function loadDashboard() {
   certs.forEach(cert => {
     const row = document.createElement('div');
     row.className = 'table-row';
-    row.style.gridTemplateColumns = '1.4fr 1fr .9fr .8fr .6fr .5fr';
+    row.style.gridTemplateColumns = '1.3fr 1fr .8fr .8fr .5fr .5fr .5fr';
     const dateStr = cert.issued_at
       ? new Date(cert.issued_at).toLocaleDateString('fr-FR') : '—';
     const isActive = cert.status === 'active';
@@ -181,12 +211,17 @@ async function loadDashboard() {
     const statusLabel = isActive ? 'actif' : (cert.status === 'revoked' ? 'révoqué' : cert.status);
     const studentId = cert.metadata?.student_id
       ? `<span style="font-size:11px;color:var(--muted);display:block">${cert.metadata.student_id}</span>` : '';
+    const vault = cert.vault_documents && cert.vault_documents[0];
+    const vaultLabel = vault
+      ? `<span style="font-size:11px;color:var(--blue);font-weight:600">jusqu'au ${new Date(vault.retention_until).toLocaleDateString('fr-FR')}</span>`
+      : `<span style="font-size:11px;color:var(--muted)">—</span>`;
     row.innerHTML = `
       <strong>${typeLabels[cert.document_type] || cert.document_type || '—'}</strong>
       <span>${cert.holder_name || '—'}${studentId}</span>
       <span>${dateStr}</span>
       <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text2)">${cert.certificate_code}</span>
       <span><span class="pill-status ${statusClass}">${statusLabel}</span></span>
+      <span>${vaultLabel}</span>
       <span>${isActive
         ? `<button onclick="revokeCert(event,'${cert.id}','${cert.certificate_code}')"
              style="background:var(--redBg);border:1px solid var(--redBd);color:var(--red);
@@ -222,6 +257,28 @@ async function revokeCert(e, certId, certCode) {
     return;
   }
   loadDashboard();
+}
+
+async function doInvite() {
+  const btn = document.getElementById('invite-btn');
+  const email = document.getElementById('invite-email').value.trim();
+  if (!email) return;
+
+  btn.classList.add('loading'); btn.disabled = true;
+
+  const { code, error } = await createInvitation(email);
+
+  btn.classList.remove('loading'); btn.disabled = false;
+
+  const box = document.getElementById('invite-result');
+  box.style.display = 'block';
+  if (error) {
+    box.textContent = error.message;
+    return;
+  }
+  const link = `${window.location.origin}/login-issuer.html`;
+  box.innerHTML = `Invitation créée. Transmettez ce code à <strong>${email}</strong>, à utiliser sur <a href="login-issuer.html" style="color:var(--blue)">${link}</a>, onglet « J'ai un code » :<br><span style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600">${code}</span>`;
+  document.getElementById('invite-email').value = '';
 }
 </script>
 </body>

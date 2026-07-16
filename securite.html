@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Sécurité &amp; confidentialité — MOTSA</title>
-  <meta name="description" content="Comment MOTSA protège vos documents : empreinte SHA-256 calculée dans le navigateur, aucun fichier transmis, données minimales, hébergement UE.">
+  <meta name="description" content="Comment MOTSA protège vos documents : empreinte SHA-256 calculée dans le navigateur en formule Vérification, stockage chiffré à durée légale en formule Coffre-fort, établissements vérifiés avant tout accès émetteur.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -27,17 +27,21 @@
   <div class="doc-page">
     <div class="kicker">Sécurité</div>
     <h1>La confiance se prouve,<br><em>elle ne se déclare pas.</em></h1>
-    <p class="doc-date">Notre architecture est conçue pour que vous n'ayez pas à nous croire sur parole.</p>
+    <p class="doc-date">Notre architecture est conçue pour que vous n'ayez pas à nous croire sur parole — et elle diffère selon la formule choisie.</p>
 
-    <h2>Le principe : nous ne voyons jamais vos documents</h2>
+    <h2>Deux formules, deux engagements différents</h2>
     <p>
-      MOTSA repose sur une idée simple : pour prouver qu'un document est intact, il n'est pas nécessaire de le posséder. Lors de la certification comme lors de la vérification, le PDF est lu <strong>localement, dans votre navigateur</strong>, où son empreinte SHA-256 est calculée. Seule cette empreinte — 64 caractères qui ne permettent en aucun cas de reconstituer le document — est transmise à nos serveurs et enregistrée.
-    </p>
-    <p>
-      Conséquence directe : une fuite de données chez MOTSA ne pourrait exposer aucun diplôme, aucun relevé, aucun contenu de document. Nous ne les avons pas.
+      MOTSA propose deux formules qui ne traitent pas vos documents de la même façon, et il est important que vous sachiez laquelle s'applique à chaque certificat. En <strong>Vérification</strong>, le contenu du document n'est jamais transmis à MOTSA — seule son empreinte l'est. En <strong>Coffre-fort</strong>, activée explicitement document par document, le fichier lui-même est transmis, chiffré et conservé pour une durée légale déterminée. Les deux sections suivantes détaillent chaque régime séparément.
     </p>
 
-    <h2>Ce que nous enregistrons — et rien d'autre</h2>
+    <h2>Formule Vérification — nous ne voyons jamais le document</h2>
+    <p>
+      Pour prouver qu'un document est intact, il n'est pas nécessaire de le posséder. Lors de la certification comme lors de la vérification, le PDF est lu <strong>localement, dans votre navigateur</strong>, où son empreinte SHA-256 est calculée. Seule cette empreinte — 64 caractères qui ne permettent en aucun cas de reconstituer le document — est transmise à nos serveurs et enregistrée.
+    </p>
+    <p>
+      Conséquence directe : une fuite de données chez MOTSA sur un certificat en formule Vérification ne pourrait exposer aucun diplôme, aucun relevé, aucun contenu de document. Nous ne les avons pas.
+    </p>
+    <p>Ce que nous enregistrons dans cette formule — et rien d'autre :</p>
     <ul>
       <li>L'empreinte SHA-256 du document certifié ;</li>
       <li>Le nom du titulaire, et son e-mail si l'émetteur le renseigne ;</li>
@@ -45,26 +49,43 @@
       <li>L'identité de l'établissement émetteur et de l'agent ayant procédé à l'émission ;</li>
       <li>Pour les comptes vérificateurs Pro : le journal horodaté des contrôles effectués.</li>
     </ul>
-    <p>Le contenu du document n'est jamais transmis, jamais stocké, jamais analysé.</p>
+
+    <h2>Formule Coffre-fort — ce qui change quand vous l'activez</h2>
+    <p>
+      La formule Coffre-fort répond à un besoin différent : ne plus seulement prouver qu'un document est intact, mais garantir qu'il reste <strong>disponible</strong> le jour d'un audit Qualiopi ou d'une perte de fichier local. Elle s'active document par document, jamais par défaut — vous choisissez explicitement, à la certification, de conserver le fichier lui-même.
+    </p>
+    <p>Dans ce cas, et uniquement dans ce cas :</p>
+    <ul>
+      <li>Le PDF est transmis et stocké chiffré au repos, dans un espace isolé par établissement (contrôle d'accès au niveau base de données) ;</li>
+      <li>Une durée de conservation s'applique automatiquement — 5 ans par défaut, 10 ans si la formation est cofinancée par le Fonds Social Européen (case à cocher à la certification) — au terme de laquelle le document est purgé ;</li>
+      <li>Un accord de traitement des données (DPA) est fourni systématiquement, pas seulement sur demande : l'établissement reste responsable de traitement, MOTSA agit comme sous-traitant au sens du RGPD ;</li>
+      <li>Les durées par défaut sont établies à partir des textes applicables aux organismes de formation (délais de conservation des pièces justificatives de financement et des preuves de conformité Qualiopi) ; elles constituent une recommandation, pas une garantie juridique substituable à l'avis de votre expert-comptable ou consultant Qualiopi sur votre situation propre.</li>
+    </ul>
+    <p>Le contenu d'un document en formule Vérification, lui, n'est jamais transmis, jamais stocké, jamais analysé — cette promesse ne change pas.</p>
 
     <h2>Pourquoi le SHA-256</h2>
     <p>
-      SHA-256 est la fonction d'empreinte standardisée (FIPS 180-4) utilisée notamment par les infrastructures bancaires et les autorités de certification. Deux propriétés nous importent : la moindre modification du fichier — un caractère, un octet — produit une empreinte totalement différente ; et il est calculatoirement impossible de fabriquer un document différent produisant la même empreinte. C'est ce qui permet un verdict binaire, sans zone grise : l'empreinte correspond, ou elle ne correspond pas.
+      SHA-256 est la fonction d'empreinte standardisée (FIPS 180-4) utilisée notamment par les infrastructures bancaires et les autorités de certification. Deux propriétés nous importent : la moindre modification du fichier — un caractère, un octet — produit une empreinte totalement différente ; et il est calculatoirement impossible de fabriquer un document différent produisant la même empreinte. C'est ce qui permet un verdict binaire, sans zone grise : l'empreinte correspond, ou elle ne correspond pas. Cette empreinte est calculée systématiquement, y compris pour les documents conservés en Coffre-fort.
+    </p>
+
+    <h2>Établissements vérifiés — pas d'inscription libre</h2>
+    <p>
+      Un compte émetteur ne se crée jamais en choisissant librement un établissement dans une liste. L'établissement candidate (SIRET, n° Qualiopi/NDA le cas échéant, domaine e-mail officiel), MOTSA vérifie ces éléments auprès des registres publics, puis un code d'activation à usage unique est envoyé exclusivement à une adresse du domaine officiel déclaré — jamais à une adresse personnelle. Le premier compte activé devient administrateur de l'établissement et invite ensuite ses collègues ; chaque invitation reste verrouillée sur une adresse du même domaine et expire après 14 jours.
     </p>
 
     <h2>Contrôle des accès</h2>
     <p>
-      Chaque établissement n'accède qu'à ses propres certificats : cette isolation est appliquée <strong>au niveau de la base de données</strong> (row-level security), pas seulement dans l'interface. Les identifiants de certificats sont générés aléatoirement sur 16 caractères hexadécimaux, ce qui rend leur énumération impraticable. L'authentification et le chiffrement des échanges (TLS) s'appuient sur une infrastructure hébergée dans l'Union européenne.
+      Chaque établissement n'accède qu'à ses propres certificats et documents : cette isolation est appliquée <strong>au niveau de la base de données</strong> (row-level security), pas seulement dans l'interface. Les identifiants de certificats sont générés aléatoirement sur 16 caractères hexadécimaux, ce qui rend leur énumération impraticable. L'authentification et le chiffrement des échanges (TLS) s'appuient sur une infrastructure hébergée dans l'Union européenne.
     </p>
 
     <h2>Révocation et durée de vie</h2>
     <p>
-      L'émetteur garde la main à tout moment : un certificat révoqué apparaît immédiatement comme « Révoqué » à toute vérification, avec invitation à contacter l'établissement. Les certificats émis restent vérifiables sans limite de durée, indépendamment de l'abonnement de l'émetteur — la promesse faite aux diplômés ne dépend pas d'une relation commerciale.
+      L'émetteur garde la main à tout moment : un certificat révoqué apparaît immédiatement comme « Révoqué » à toute vérification, avec invitation à contacter l'établissement. Les certificats émis en formule Vérification restent vérifiables sans limite de durée, indépendamment de l'abonnement de l'émetteur. Les documents en formule Coffre-fort restent conservés jusqu'à l'échéance légale même après résiliation de l'abonnement — la purge suit le texte applicable, pas la relation commerciale.
     </p>
 
     <h2>Conformité RGPD</h2>
     <p>
-      Les données traitées sont minimales et strictement nécessaires à la finalité du service (article 5 du RGPD — minimisation). Les personnes concernées disposent de leurs droits d'accès, de rectification et d'effacement, exerçables auprès de l'émetteur ou directement à <a href="mailto:contact@motsa.tech" style="color:var(--blue)">contact@motsa.tech</a>. Un accord de traitement des données (DPA) est fourni aux établissements sur demande. Détails complets dans notre <a href="legal.html#confidentialite" style="color:var(--blue)">politique de confidentialité</a>.
+      Les données traitées sont minimales et strictement nécessaires à la finalité du service (article 5 du RGPD — minimisation). Les personnes concernées disposent de leurs droits d'accès, de rectification et d'effacement, exerçables auprès de l'émetteur ou directement à <a href="mailto:contact@motsa.tech" style="color:var(--blue)">contact@motsa.tech</a>. Un accord de traitement des données (DPA) est fourni aux établissements sur demande en formule Vérification, et systématiquement à la souscription en formule Coffre-fort. Détails complets dans notre <a href="legal.html#confidentialite" style="color:var(--blue)">politique de confidentialité</a>.
     </p>
 
     <h2>Signaler une vulnérabilité</h2>
@@ -86,7 +107,7 @@
     <a href="tarifs.html">Tarifs</a>
     <a href="legal.html">Mentions légales</a>
   </div>
-  <span>Le fichier ne quitte jamais votre navigateur.</span>
+  <span>Le fichier ne quitte votre navigateur que si vous l'activez.</span>
 </footer>
 
 <div class="mobile-tabs">

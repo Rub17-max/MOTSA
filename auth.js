@@ -1,6 +1,12 @@
-// ─── MOTSA Auth v3 — dual profile support ───────────────────
-// One Supabase auth account can hold BOTH an issuer and a verifier profile.
-// The active profile is determined by which portal the user logs in through.
+// ─── MOTSA Auth v4 — inscription sécurisée (code + admin + invitation) ──────
+// Changement majeur vs v3 : il n'existe plus de liste déroulante publique
+// permettant à n'importe quel e-mail de se déclarer d'un établissement
+// existant. Un compte émetteur ne peut naître que de deux façons :
+//   1. Rédemption d'un code fondateur (envoyé manuellement par MOTSA après
+//      vérification de la candidature) → devient administrateur de l'organisation.
+//   2. Rédemption d'une invitation créée par un administrateur de l'organisation,
+//      verrouillée sur une adresse e-mail précise → devient membre.
+// Voir NOTES-INSCRIPTION-SECURISEE.md pour le schéma Supabase correspondant.
 
 const SUPABASE_URL      = 'https://cggtyaklofxywlmaatam.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZ3R5YWtsb2Z4eXdsbWFhdGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxODM3NzAsImV4cCI6MjA5NDc1OTc3MH0.4ZsRWxn63hSheLCNfEvJXa2xRBkbJM2XJL8ownBiyg8';
@@ -42,7 +48,7 @@ async function getProfile() {
 
   const query = sb()
     .from('profiles')
-    .select('*, organizations(name, slug, account_type, org_type)')
+    .select('*, organizations(name, slug, account_type, org_type, status)')
     .eq('id', session.user.id);
 
   // If we have an active type set, fetch that specific profile
@@ -79,7 +85,7 @@ async function requireAuth(expectedType) {
   // Check user has a profile of the expected type
   const { data: profile } = await sb()
     .from('profiles')
-    .select('*, organizations(name, slug, account_type, org_type)')
+    .select('*, organizations(name, slug, account_type, org_type, status)')
     .eq('id', session.user.id)
     .eq('account_type', expectedType)
     .single();
@@ -127,7 +133,10 @@ async function redirectIfLoggedIn(expectedType) {
   // If no matching profile → stay on login page, let them register or use other account
 }
 
-// ── Sign up ──────────────────────────────────────────────────
+// ── Sign up (verifier only — libre-service, sans enjeu d'usurpation) ───────
+// Pour l'émetteur, il n'existe plus de création de compte libre : voir
+// redeemAccessCode() plus bas. signUp() reste utilisé par login-verifier.html,
+// où il n'y a pas de notion d'organisation à usurper de la même façon.
 
 async function signUp({ email, password, fullName, organizationId, accountType }) {
   const session = await getSession();
@@ -161,6 +170,108 @@ async function signUp({ email, password, fullName, organizationId, accountType }
   return { data, error };
 }
 
+// ── Inscription émetteur — candidature d'établissement ─────────────────────
+// Formulaire public, sans authentification requise. Ne crée ni compte ni
+// organisation : dépose une candidature que MOTSA valide manuellement
+// (SIRET, n° Qualiopi/NDA, domaine officiel) avant d'émettre un code fondateur.
+
+async function requestOrgOnboarding({ orgName, siret, qualiopiOrNda, officialDomain, contactName, contactEmail, message }) {
+  const { data, error } = await sb()
+    .from('organization_requests')
+    .insert({
+      org_name:          orgName,
+      siret:             siret || null,
+      qualiopi_or_nda:   qualiopiOrNda || null,
+      official_domain:   officialDomain,
+      contact_name:      contactName,
+      contact_email:     contactEmail,
+      message:           message || null,
+    })
+    .select()
+    .single();
+  return { data, error };
+}
+
+// ── Inscription émetteur — rédemption d'un code (fondateur ou invitation) ──
+// email/password créent le compte d'authentification ; le code détermine
+// ensuite, côté serveur (fonction Postgres redeem_access_code), à quelle
+// organisation il est rattaché et avec quel rôle. Le client ne choisit
+// jamais l'organisation lui-même.
+
+const PENDING_CODE_KEY = 'motsa_pending_access_code';
+const PENDING_NAME_KEY = 'motsa_pending_full_name';
+
+async function redeemAccessCode({ code, fullName, email, password }) {
+  // Étape 1 : créer le compte d'authentification (ou se connecter s'il existe déjà)
+  let session = await getSession();
+
+  if (!session) {
+    const { data, error } = await sb().auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } }, // pas d'organization_id/account_type ici
+    });
+    if (error) return { data: null, error };
+
+    session = data.session;
+
+    if (!session) {
+      // Confirmation e-mail activée sur le projet Supabase : pas de session
+      // immédiate. On mémorise le code pour le rejouer à la première connexion.
+      sessionStorage.setItem(PENDING_CODE_KEY, code);
+      sessionStorage.setItem(PENDING_NAME_KEY, fullName);
+      return { data: { pending: true }, error: null };
+    }
+  }
+
+  // Étape 2 : rédemption côté serveur
+  return await _callRedeem(code, fullName);
+}
+
+async function _callRedeem(code, fullName) {
+  const { data, error } = await sb().rpc('redeem_access_code', {
+    p_code:      code,
+    p_full_name: fullName,
+  });
+  if (error) return { data: null, error };
+  if (data?.error) return { data: null, error: { message: traduireErreurCode(data.error) } };
+  setActiveType('issuer');
+  return { data, error: null };
+}
+
+// À appeler après une connexion réussie (doLogin) : si un code était en
+// attente de confirmation d'e-mail, on tente sa rédemption maintenant.
+async function redeemPendingCodeIfAny() {
+  const code = sessionStorage.getItem(PENDING_CODE_KEY);
+  if (!code) return null;
+  const fullName = sessionStorage.getItem(PENDING_NAME_KEY) || '';
+  const result = await _callRedeem(code, fullName);
+  if (!result.error) {
+    sessionStorage.removeItem(PENDING_CODE_KEY);
+    sessionStorage.removeItem(PENDING_NAME_KEY);
+  }
+  return result;
+}
+
+function traduireErreurCode(code) {
+  const map = {
+    not_authenticated:      'Session expirée, reconnectez-vous puis réessayez.',
+    invalid_or_expired_code:'Ce code est invalide ou a expiré. Vérifiez-le ou contactez la personne qui vous l\'a transmis.',
+    email_mismatch:         'Ce code est réservé à une autre adresse e-mail.',
+  };
+  return map[code] || 'Impossible de valider ce code.';
+}
+
+// ── Invitations — un administrateur invite un collègue ─────────────────────
+// Réservé aux comptes émetteur avec role = 'admin' (vérifié côté serveur).
+
+async function createInvitation(email) {
+  const { data, error } = await sb().rpc('create_invitation', { p_email: email });
+  if (error) return { code: null, error };
+  if (data?.error) return { code: null, error: { message: 'Vous devez être administrateur de votre organisation pour inviter un collègue.' } };
+  return { code: data.code, error: null };
+}
+
 // ── Sign in ──────────────────────────────────────────────────
 
 // Signs in and activates the profile for the given portal type.
@@ -170,10 +281,14 @@ async function signInAs(email, password, accountType) {
   const { data: authData, error: authError } = await sb().auth.signInWithPassword({ email, password });
   if (authError) return { profile: null, error: authError };
 
+  // Si un code d'inscription était en attente de confirmation e-mail, on le
+  // rejoue maintenant que la session est active.
+  await redeemPendingCodeIfAny();
+
   // Step 2: check user has a profile of this type
   const { data: profile, error: profileError } = await sb()
     .from('profiles')
-    .select('*, organizations(name, slug, account_type, org_type)')
+    .select('*, organizations(name, slug, account_type, org_type, status)')
     .eq('id', authData.user.id)
     .eq('account_type', accountType)
     .single();
@@ -187,7 +302,7 @@ async function signInAs(email, password, accountType) {
       error: {
         message: accountType === 'verifier'
           ? 'No Verifier profile found for this email. Use the Issuer portal or create a Verifier account.'
-          : 'No Issuer profile found for this email. Use the Verifier portal or create an Issuer account.'
+          : 'Aucun compte émetteur pour cet e-mail. Si vous venez de recevoir un code, utilisez l\'onglet « J\'ai un code ».'
       }
     };
   }
@@ -220,13 +335,13 @@ async function mountUserChip() {
   const orgName   = profile.organizations?.name || '—';
   const type      = profile.account_type;
   const typeLabel = type === 'issuer' ? 'Émetteur' : 'Vérificateur';
+  const roleLabel = profile.role === 'admin' ? ' · Administrateur' : '';
 
   // Check if user also has the other profile type (to show switcher)
   const allProfiles = await getAllProfiles();
   const hasOtherType = allProfiles.length > 1;
   const otherType = type === 'issuer' ? 'verifier' : 'issuer';
   const otherLabel = type === 'issuer' ? 'Basculer en vérificateur' : 'Basculer en émetteur';
-  const otherUrl  = type === 'issuer' ? 'verify.html' : 'certif.html';
 
   const switcherHtml = hasOtherType
     ? `<a onclick="switchProfile('${otherType}')" style="color:var(--blue)">⇄ ${otherLabel}</a>`
@@ -240,7 +355,7 @@ async function mountUserChip() {
         <div class="user-dropdown-header">
           <div class="name">${profile.full_name || '—'}</div>
           <div class="email">${profile.email || ''}</div>
-          <span class="type-pill ${type}">${typeLabel}</span>
+          <span class="type-pill ${type}">${typeLabel}${roleLabel}</span>
         </div>
         <div style="padding:6px">
           <a href="#" style="font-size:12px;color:var(--muted);padding:8px 10px;display:block">${orgName}</a>
@@ -274,7 +389,7 @@ async function switchProfile(targetType) {
   window.location.href = targetType === 'issuer' ? 'certif.html' : 'verify.html';
 }
 
-// ── Password reset (manquant en v3 : le lien « mot de passe oublié » échouait) ──
+// ── Password reset ──────────────────────────────────────────
 
 async function sendPasswordReset(email, redirectPage) {
   const redirectTo = window.location.origin + '/' + (redirectPage || 'login-issuer.html');
@@ -283,6 +398,9 @@ async function sendPasswordReset(email, redirectPage) {
 }
 
 // ── Fetch helpers ─────────────────────────────────────────────
+// fetchOrganizations n'est plus utilisé par l'inscription publique (plus de
+// liste déroulante ouverte) — conservé pour un futur panneau d'administration
+// interne, où l'accès sera lui-même réservé à l'équipe MOTSA.
 
 async function fetchOrganizations(accountType) {
   const { data, error } = await sb()
@@ -325,9 +443,58 @@ async function createCertificate({ issuerOrgId, createdBy, holderName, holderEma
 async function fetchMyCertificates() {
   const { data, error } = await sb()
     .from('certificates')
-    .select('*, organizations(name)')
+    .select('*, organizations(name), vault_documents(id, retention_until, fse_cofinanced)')
     .order('created_at', { ascending: false });
   return { data: data || [], error };
+}
+
+// ── Coffre-fort de preuves Qualiopi (formule optionnelle) ──────────────────
+// Le fichier n'est transmis à Supabase Storage que si l'émetteur coche
+// explicitement « Conserver dans le coffre-fort » à la certification.
+// La durée de rétention (5 ou 10 ans) est calculée côté serveur par un
+// trigger Postgres — jamais fournie par le client. Voir NOTES-COFFRE-FORT.md.
+
+const VAULT_BUCKET = 'vault-documents';
+
+async function uploadToVault({ file, certificateId, organizationId, fseCofinanced }) {
+  const path = `${organizationId}/${certificateId}.pdf`;
+
+  const { error: uploadError } = await sb()
+    .storage
+    .from(VAULT_BUCKET)
+    .upload(path, file, { contentType: 'application/pdf', upsert: false });
+
+  if (uploadError) return { data: null, error: uploadError };
+
+  const { data, error } = await sb()
+    .from('vault_documents')
+    .insert({
+      certificate_id:  certificateId,
+      organization_id: organizationId,
+      storage_path:    path,
+      fse_cofinanced:  !!fseCofinanced,
+    })
+    .select()
+    .single();
+
+  return { data, error };
+}
+
+async function fetchVaultDocuments() {
+  const { data, error } = await sb()
+    .from('vault_documents')
+    .select('*, certificates(certificate_code, holder_name, document_type, issued_at)')
+    .order('created_at', { ascending: false });
+  return { data: data || [], error };
+}
+
+// URL signée à courte durée de vie — jamais d'URL publique directe sur ce bucket.
+async function getVaultDocumentUrl(storagePath, expiresInSeconds = 120) {
+  const { data, error } = await sb()
+    .storage
+    .from(VAULT_BUCKET)
+    .createSignedUrl(storagePath, expiresInSeconds);
+  return { url: data?.signedUrl || null, error };
 }
 
 // ── Verification operations (verifier only) ───────────────────
