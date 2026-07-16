@@ -9,6 +9,8 @@
 </head>
 <body>
 
+<div class="scroll-progress" id="scroll-progress"></div>
+
 <nav class="nav">
   <a class="logo" href="index.html">
     <img src="assets/icon-512.png" alt="MOTSA">
@@ -92,30 +94,21 @@
     <p class="lead" style="margin-top:0;margin-bottom:24px">
       Le document lui-même est conservé, chiffré, pour la durée légale exacte — pas une durée choisie au hasard. 5 ans par défaut (conventions, émargements, BPF, certificats de réalisation), 10 ans si vous cochez « cofinancement FSE » à la certification. Purge automatique à l'échéance, DPA fourni systématiquement.
     </p>
-    <div class="pricing-grid reveal-stagger" style="grid-template-columns:1fr 1fr;max-width:640px">
-      <div class="price-card featured spot">
-        <div class="plan-flag">Ajout à votre offre</div>
-        <div class="plan-name">Coffre-fort</div>
-        <div class="plan-price">+189 €<small> HT / mois</small></div>
-        <p class="plan-for">Vient s'ajouter à École ou Institution. Facturé indépendamment du volume de certificats.</p>
-        <ul>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Documents stockés chiffrés au repos</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Durée légale automatique (5 ou 10 ans)</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Purge automatique à l'échéance</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Interface de recherche par titulaire</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>DPA fourni systématiquement à la souscription</li>
-        </ul>
-        <button class="btn primary full" onclick="checkout('coffre_fort')">Activer le Coffre-fort</button>
+    <div class="formula-grid reveal-stagger">
+      <div class="formula-card dark spot">
+        <div class="f-icon"><svg class="icn" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Coffre-fort</h3>
+        <p class="f-desc">+189 € HT/mois, en ajout à École ou Institution — facturé indépendamment du volume de certificats.</p>
+        <div class="f-tags">
+          <span class="f-tag">Chiffré au repos</span>
+          <span class="f-tag">Purge automatique</span>
+          <span class="f-tag">DPA systématique</span>
+        </div>
+        <button class="btn primary full" onclick="checkout('coffre_fort')" style="margin-bottom:0">Activer le Coffre-fort</button>
       </div>
-      <div class="price-card spot">
-        <div class="plan-name">Ce que le Coffre-fort n'est pas</div>
-        <div class="plan-price" style="font-size:20px;padding:6px 0">Ni un CRM, ni un ENT</div>
-        <p class="plan-for" style="margin-bottom:8px">Trois précisions pour éviter toute confusion :</p>
-        <ul style="font-size:13px">
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Ce n'est pas un espace personnel pour les diplômés — pour ça, diplome.gouv.fr + Digiposte existent déjà et sont gratuits pour les diplômes nationaux.</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Ce n'est pas une gestion commerciale ou pédagogique — MOTSA ne remplace pas Digiforma ou Dendreo, il complète ce qu'ils ne font pas : la preuve d'intégrité et la durée de conservation légale.</li>
-          <li><svg class="icn" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>La durée par défaut (5 ou 10 ans) est une recommandation basée sur les textes applicables — à faire valider par votre expert-comptable ou consultant Qualiopi selon votre situation.</li>
-        </ul>
+      <div class="formula-card light spot">
+        <h3 style="font-size:19px">Ce que ce n'est pas</h3>
+        <p class="f-desc" style="max-width:none">Pas un espace personnel diplômé — diplome.gouv.fr + Digiposte couvrent déjà les diplômes nationaux, gratuitement. Pas un CRM — MOTSA complète Digiforma ou Dendreo, il ne les remplace pas. La durée par défaut (5 ou 10 ans) est une recommandation à faire valider par votre expert-comptable ou consultant Qualiopi.</p>
       </div>
     </div>
 
