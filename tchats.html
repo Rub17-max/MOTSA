@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Tchats</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <nav class="app-nav">
+      <a href="swipe.html" data-page="swipe"><span class="dot"></span>Swipe<span class="badge-lock" style="display:none;">🔒</span></a>
+      <a href="tchats.html" data-page="tchats"><span class="dot"></span>Tchats</a>
+      <a href="team.html" data-page="team"><span class="dot"></span>Team</a>
+      <a href="annonces.html" data-page="annonces"><span class="dot"></span>Annonces</a>
+      <a href="compte.html" data-page="compte"><span class="dot"></span>Mon compte</a>
+    </nav>
+    <div class="plan-card">
+      <strong data-plan-label>Gratuit</strong>
+      5 swipes/jour · tchat avec tes matchs
+      <div style="margin-top:10px" data-plan-cta>
+        <a href="compte.html#abonnement" class="btn btn-honey btn-sm btn-block">Passer Premium</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <h3 style="margin:0;">Tchats</h3>
+      <button class="btn btn-ghost btn-sm" data-signout>Se déconnecter</button>
+    </div>
+
+    <div class="chats-layout">
+      <div class="chat-list">
+        <div class="chat-list-head">
+          <strong>Conversations</strong>
+          <div class="id-search">
+            <input id="id-search-input" placeholder="Rechercher par ID (ex. BVR-4F82Q)">
+            <button class="btn btn-honey btn-sm" id="id-search-btn">Inviter</button>
+          </div>
+          <div id="id-search-lock" style="display:none; font-size:.78rem; color:var(--ink-45); margin-top:8px;">
+            🔒 Réservé aux comptes Premium — <a href="compte.html#abonnement" style="text-decoration:underline;">en savoir plus</a>
+          </div>
+        </div>
+        <div id="conv-list"></div>
+      </div>
+
+      <div class="chat-pane" id="chat-pane">
+        <div class="empty-state"><h3>Sélectionne une conversation</h3><p>Tes matchs et invitations acceptées apparaissent ici.</p></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<nav class="mobile-nav">
+  <a href="swipe.html" data-page="swipe">🔥<span>Swipe</span></a>
+  <a href="tchats.html" data-page="tchats">💬<span>Tchats</span></a>
+  <a href="team.html" data-page="team">🐝<span>Team</span></a>
+  <a href="annonces.html" data-page="annonces">🏠<span>Annonces</span></a>
+  <a href="compte.html" data-page="compte">👤<span>Compte</span></a>
+</nav>
+
+<!-- Profile / invite modal -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal">
+    <button class="modal-close" id="close-profile">✕</button>
+    <div class="hexframe lg" style="margin:0 auto 16px;" id="pm-avatar"></div>
+    <h2 id="pm-name"></h2>
+    <p id="pm-sub" style="color:var(--ink-45);"></p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="pm-invite">Inviter dans ma Team</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="invite-status-modal">
+  <div class="modal">
+    <button class="modal-close" id="close-invite-status">✕</button>
+    <div class="hexicon" style="width:56px;height:56px;clip-path:var(--hex);background:var(--honey-tint);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.4rem;">🐝</div>
+    <h2 id="invite-status-title"></h2>
+    <p id="invite-status-text"></p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mockDemo.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/nav.js"></script>
+<script>
+let conversations = [];
+let activeConvId = null;
+let myTeam = null;
+let isPremium = false;
+
+function timeAgo(ts){
+  const m = Math.round((Date.now()-ts)/60000);
+  if (m < 1) return 'à l\'instant';
+  if (m < 60) return `${m} min`;
+  return `${Math.round(m/60)} h`;
+}
+
+function renderList(){
+  const el = document.getElementById('conv-list');
+  if (conversations.length === 0){
+    el.innerHTML = '<div class="empty-state" style="height:auto;padding:40px 20px;"><p>Aucune conversation pour l\'instant. Va swiper pour matcher !</p></div>';
+    return;
+  }
+  el.innerHTML = conversations.map(c => {
+    const last = c.messages[c.messages.length-1];
+    return `<div class="chat-item ${c.id===activeConvId?'active':''}" data-id="${c.id}">
+      <div class="hexframe sm"><span style="font-size:20px;">${c.withAvatar}</span></div>
+      <div class="meta">
+        <div class="top"><span>${c.withName}</span><span>${last?timeAgo(last.ts):''}</span></div>
+        <p>${last ? last.text : ''}</p>
+      </div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.chat-item').forEach(item => {
+    item.addEventListener('click', () => openConv(item.dataset.id));
+  });
+}
+
+function openConv(id){
+  activeConvId = id;
+  renderList();
+  const c = conversations.find(x => x.id === id);
+  const pane = document.getElementById('chat-pane');
+  pane.innerHTML = `
+    <div class="chat-pane-head" id="pane-head">
+      <div class="hexframe sm"><span style="font-size:20px;">${c.withAvatar}</span></div>
+      <div class="info"><h3>${c.withName}</h3><span>${c.kind==='match'?'Match':(c.kind==='id'?'Invitation par ID':'Contact annonce')}</span></div>
+      <div class="actions"><button class="btn btn-ghost btn-sm">Signaler</button></div>
+    </div>
+    <div class="chat-messages" id="messages"></div>
+    <div class="chat-composer">
+      <input id="msg-input" placeholder="Écrire un message…">
+      <button class="btn btn-primary btn-icon" id="send-btn">➤</button>
+    </div>`;
+  renderMessages(c);
+  if (c.kind !== 'annonce') {
+    document.getElementById('pane-head').addEventListener('click', () => openProfileModal(c));
+  }
+  document.getElementById('send-btn').addEventListener('click', () => sendMsg(c.id));
+  document.getElementById('msg-input').addEventListener('keydown', e => { if(e.key==='Enter') sendMsg(c.id); });
+}
+
+function renderMessages(c){
+  const box = document.getElementById('messages');
+  box.innerHTML = c.messages.map(m => `<div class="bubble ${m.from==='me'?'from-me':'from-them'}">${m.text}</div>`).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendMsg(convId){
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim(); if(!text) return;
+  await window.BeeversAPI.sendMessage(convId, text);
+  input.value = '';
+  conversations = await window.BeeversAPI.getConversations();
+  const c = conversations.find(x => x.id === convId);
+  renderMessages(c);
+  renderList();
+}
+
+function openProfileModal(c){
+  document.getElementById('pm-avatar').innerHTML = `<span style="font-size:48px;">${c.withAvatar}</span>`;
+  document.getElementById('pm-name').textContent = c.withName;
+  document.getElementById('pm-sub').textContent = 'Match Beevers';
+  const btn = document.getElementById('pm-invite');
+  if (myTeam && myTeam.members.find(m => m.id === c.withId)) {
+    btn.textContent = 'Déjà dans ta Team'; btn.disabled = true;
+  } else {
+    btn.textContent = 'Inviter dans ma Team'; btn.disabled = false;
+    btn.onclick = async () => {
+      await window.BeeversAPI.inviteToTeam(c.withId);
+      document.getElementById('profile-modal').classList.remove('show');
+      myTeam = await window.BeeversAPI.getMyTeam();
+    };
+  }
+  document.getElementById('profile-modal').classList.add('show');
+}
+document.getElementById('close-profile').addEventListener('click', () => document.getElementById('profile-modal').classList.remove('show'));
+
+document.getElementById('id-search-btn').addEventListener('click', async () => {
+  const id = document.getElementById('id-search-input').value.trim();
+  if (!id) return;
+  if (!isPremium) { window.BeeversUtils.toast('Fonctionnalité réservée aux comptes Premium.'); return; }
+  try {
+    const target = await window.BeeversAPI.searchUserById(id);
+    await window.BeeversAPI.sendChatInvite(target.id);
+    document.getElementById('invite-status-title').textContent = 'Invitation envoyée';
+    document.getElementById('invite-status-text').textContent = `Ta demande de discussion a été envoyée à l'utilisateur ${id}. Il/elle peut l'accepter ou la refuser.`;
+    document.getElementById('invite-status-modal').classList.add('show');
+    document.getElementById('id-search-input').value = '';
+    setTimeout(async () => { conversations = await window.BeeversAPI.getConversations(); renderList(); }, 1800);
+  } catch (err) {
+    window.BeeversUtils.toast(err.message);
+  }
+});
+document.getElementById('close-invite-status').addEventListener('click', () => document.getElementById('invite-status-modal').classList.remove('show'));
+
+(async function init(){
+  await window.BeeversNav.init('tchats');
+  myTeam = await window.BeeversAPI.getMyTeam();
+  isPremium = window.BeeversAPI.isDemo ? window.BeeversDemo._state().isPremium : false;
+  document.getElementById('id-search-lock').style.display = isPremium ? 'none' : 'block';
+  document.getElementById('id-search-btn').style.display = isPremium ? 'inline-flex' : 'none';
+  document.getElementById('id-search-input').disabled = !isPremium;
+  conversations = await window.BeeversAPI.getConversations();
+  renderList();
+})();
+</script>
+</body>
+</html>

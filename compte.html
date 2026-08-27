@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Mon compte</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <nav class="app-nav">
+      <a href="swipe.html" data-page="swipe"><span class="dot"></span>Swipe<span class="badge-lock" style="display:none;">🔒</span></a>
+      <a href="tchats.html" data-page="tchats"><span class="dot"></span>Tchats</a>
+      <a href="team.html" data-page="team"><span class="dot"></span>Team</a>
+      <a href="annonces.html" data-page="annonces"><span class="dot"></span>Annonces</a>
+      <a href="compte.html" data-page="compte"><span class="dot"></span>Mon compte</a>
+    </nav>
+    <div class="plan-card">
+      <strong data-plan-label>Gratuit</strong>
+      5 swipes/jour · tchat avec tes matchs
+      <div style="margin-top:10px" data-plan-cta>
+        <a href="compte.html#abonnement" class="btn btn-honey btn-sm btn-block">Passer Premium</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <h3 style="margin:0;">Mon compte</h3>
+      <button class="btn btn-ghost btn-sm" data-signout>Se déconnecter</button>
+    </div>
+
+    <div class="app-content">
+      <div class="account-grid">
+        <nav class="account-tabs">
+          <a href="#profil" data-tab="profil" class="active">Mon profil</a>
+          <a href="#abonnement" data-tab="abonnement">Abonnement</a>
+          <a href="#team" data-tab="team">Ma Team</a>
+          <a href="#reglages" data-tab="reglages">Réglages</a>
+          <a href="#securite" data-tab="securite">Sécurité &amp; données</a>
+          <a href="#aide" data-tab="aide">Aide &amp; support</a>
+        </nav>
+
+        <div class="account-content">
+          <section class="account-panel active" data-panel="profil">
+            <h2>Mon profil</h2>
+            <p>Toutes les informations utilisées pour le matching (régime alimentaire, propreté, loisirs, avatar, photo) se gèrent depuis l'assistant de profil.</p>
+            <a href="profil.html" class="btn btn-primary">Modifier mon profil</a>
+            <div class="settings-row">
+              <div class="txt"><strong>Visible dans le Swipe</strong><span>Désactive temporairement ton profil sans le supprimer.</span></div>
+              <div class="switch on" id="visibility-toggle"></div>
+            </div>
+          </section>
+
+          <section class="account-panel" data-panel="abonnement">
+            <h2>Abonnement</h2>
+            <div class="plan-banner">
+              <div><strong data-plan-label>Gratuit</strong><div style="font-size:.85rem; color:#C9C6D6;">5 swipes/jour · tchat avec tes matchs uniquement</div></div>
+              <div id="plan-action"></div>
+            </div>
+            <h3>Ce que débloque Premium</h3>
+            <ul class="price-list">
+              <li>Swipes illimités</li>
+              <li>Conversations illimitées</li>
+              <li>Recherche et invitation par ID utilisateur</li>
+              <li>Badge de profil certifié</li>
+            </ul>
+          </section>
+
+          <section class="account-panel" data-panel="team">
+            <h2>Ma Team</h2>
+            <div id="team-status"></div>
+          </section>
+
+          <section class="account-panel" data-panel="reglages">
+            <h2>Réglages</h2>
+            <div class="settings-row"><div class="txt"><strong>Notifications — nouveaux matchs</strong></div><div class="switch on"></div></div>
+            <div class="settings-row"><div class="txt"><strong>Notifications — messages</strong></div><div class="switch on"></div></div>
+            <div class="settings-row"><div class="txt"><strong>Notifications — invitations Team</strong></div><div class="switch on"></div></div>
+            <div class="settings-row"><div class="txt"><strong>Notifications — invitations par ID</strong></div><div class="switch on"></div></div>
+            <div class="field" style="margin-top:20px; max-width:320px;">
+              <label>Langue de l'interface</label>
+              <select><option>Français</option><option>English</option></select>
+            </div>
+          </section>
+
+          <section class="account-panel" data-panel="securite">
+            <h2>Sécurité &amp; données</h2>
+            <div class="settings-row"><div class="txt"><strong>Changer mon mot de passe</strong></div><button class="btn btn-outline btn-sm">Modifier</button></div>
+            <div class="settings-row"><div class="txt"><strong>Exporter mes données</strong><span>Format JSON, conforme RGPD.</span></div><button class="btn btn-outline btn-sm" id="export-btn">Exporter</button></div>
+            <div class="danger-zone">
+              <h3>Supprimer mon compte</h3>
+              <p>Cette action supprime définitivement ton profil, tes matchs et tes conversations après un délai de rétractation de 14 jours.</p>
+              <button class="btn btn-primary" style="background:var(--coral-dark);" id="delete-btn">Supprimer mon compte</button>
+            </div>
+          </section>
+
+          <section class="account-panel" data-panel="aide">
+            <h2>Aide &amp; support</h2>
+            <p>Une question, un problème, un profil à signaler ?</p>
+            <a href="#" class="btn btn-outline">Consulter la FAQ</a>
+            <a href="#" class="btn btn-ghost">Contacter le support</a>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<nav class="mobile-nav">
+  <a href="swipe.html" data-page="swipe">🔥<span>Swipe</span></a>
+  <a href="tchats.html" data-page="tchats">💬<span>Tchats</span></a>
+  <a href="team.html" data-page="team">🐝<span>Team</span></a>
+  <a href="annonces.html" data-page="annonces">🏠<span>Annonces</span></a>
+  <a href="compte.html" data-page="compte">👤<span>Compte</span></a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mockDemo.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/nav.js"></script>
+<script>
+function showTab(tab){
+  document.querySelectorAll('.account-tabs a').forEach(a => a.classList.toggle('active', a.dataset.tab === tab));
+  document.querySelectorAll('.account-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
+}
+document.querySelectorAll('.account-tabs a').forEach(a => {
+  a.addEventListener('click', (e) => { e.preventDefault(); showTab(a.dataset.tab); history.replaceState(null,'','#'+a.dataset.tab); });
+});
+if (location.hash) showTab(location.hash.slice(1));
+
+async function renderPlanAction(){
+  const isPremium = window.BeeversAPI.isDemo ? window.BeeversDemo._state().isPremium : false;
+  const el = document.getElementById('plan-action');
+  if (isPremium){
+    el.innerHTML = `<button class="btn btn-outline" id="cancel-premium">Résilier</button>`;
+    document.getElementById('cancel-premium').addEventListener('click', async () => {
+      await window.BeeversAPI.cancelPremium();
+      window.BeeversUtils.toast('Résiliation effectuée — Premium actif jusqu\'à la fin de la période payée.');
+      location.reload();
+    });
+  } else {
+    el.innerHTML = `<button class="btn btn-honey" id="go-premium">Passer Premium — 9,99€/mois</button>`;
+    document.getElementById('go-premium').addEventListener('click', async () => {
+      await window.BeeversAPI.startPremiumCheckout();
+      window.BeeversUtils.toast('Bienvenue en Premium 🐝');
+      location.reload();
+    });
+  }
+}
+
+async function renderTeamStatus(){
+  const team = await window.BeeversAPI.getMyTeam();
+  const el = document.getElementById('team-status');
+  if (!team){
+    el.innerHTML = `<p>Tu ne fais partie d'aucune Team pour le moment.</p><a href="swipe.html" class="btn btn-primary">Aller swiper</a>`;
+    return;
+  }
+  el.innerHTML = `
+    <p>Membres actuels : ${team.members.map(m=>m.prenom).join(', ')}</p>
+    <a href="team.html" class="btn btn-outline">Ouvrir le chat de la Team</a>
+    <button class="btn btn-ghost" id="leave-btn" style="color:var(--coral-dark);">Quitter la Team</button>`;
+  document.getElementById('leave-btn').addEventListener('click', async () => {
+    if (!confirm('Quitter la Team ?')) return;
+    await window.BeeversAPI.leaveTeam();
+    renderTeamStatus();
+  });
+}
+
+document.getElementById('visibility-toggle').addEventListener('click', function(){
+  this.classList.toggle('on');
+  window.BeeversAPI.setVisibility(this.classList.contains('on'));
+});
+
+document.getElementById('export-btn').addEventListener('click', async () => {
+  const data = await window.BeeversAPI.exportMyData();
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'beevers-mes-donnees.json'; a.click();
+});
+document.getElementById('delete-btn').addEventListener('click', async () => {
+  if (!confirm('Confirmer la suppression de ton compte Beevers ?')) return;
+  await window.BeeversAPI.deleteAccount();
+  window.location.href = 'index.html';
+});
+
+(async function init(){
+  await window.BeeversNav.init('compte');
+  renderPlanAction();
+  renderTeamStatus();
+})();
+</script>
+</body>
+</html>

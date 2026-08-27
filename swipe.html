@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Swipe</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <nav class="app-nav">
+      <a href="swipe.html" data-page="swipe"><span class="dot"></span>Swipe<span class="badge-lock" style="display:none;">🔒</span></a>
+      <a href="tchats.html" data-page="tchats"><span class="dot"></span>Tchats</a>
+      <a href="team.html" data-page="team"><span class="dot"></span>Team</a>
+      <a href="annonces.html" data-page="annonces"><span class="dot"></span>Annonces</a>
+      <a href="compte.html" data-page="compte"><span class="dot"></span>Mon compte</a>
+    </nav>
+    <div class="plan-card">
+      <strong data-plan-label>Gratuit</strong>
+      5 swipes/jour · tchat avec tes matchs
+      <div style="margin-top:10px" data-plan-cta>
+        <a href="compte.html#abonnement" class="btn btn-honey btn-sm btn-block">Passer Premium</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <h3 style="margin:0;">Swipe</h3>
+      <button class="btn btn-ghost btn-sm" data-signout>Se déconnecter</button>
+    </div>
+
+    <div class="app-content" id="swipe-app">
+      <!-- populated by js -->
+    </div>
+  </main>
+</div>
+
+<nav class="mobile-nav">
+  <a href="swipe.html" data-page="swipe">🔥<span>Swipe</span></a>
+  <a href="tchats.html" data-page="tchats">💬<span>Tchats</span></a>
+  <a href="team.html" data-page="team">🐝<span>Team</span></a>
+  <a href="annonces.html" data-page="annonces">🏠<span>Annonces</span></a>
+  <a href="compte.html" data-page="compte">👤<span>Compte</span></a>
+</nav>
+
+<div class="modal-overlay" id="match-modal">
+  <div class="modal">
+    <button class="modal-close" id="close-match">✕</button>
+    <div class="match-hexes" id="match-hexes"></div>
+    <h2>C'est un match !</h2>
+    <p id="match-text"></p>
+    <div class="modal-actions">
+      <a href="tchats.html" class="btn btn-primary" id="go-chat">Envoyer un message</a>
+      <button class="btn btn-outline" id="keep-swiping">Continuer à swiper</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mockDemo.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/nav.js"></script>
+<script>
+const app = document.getElementById('swipe-app');
+let queue = [];
+let swipesLeft = 0;
+let isPremium = false;
+
+function renderLocked(){
+  app.innerHTML = `
+    <div class="locked-panel">
+      <div class="hexicon">🐝</div>
+      <h3>Tu fais déjà partie d'une Team</h3>
+      <p>Le swipe est verrouillé tant que tu es dans une Team — pas besoin de continuer à chercher des colocs. Quitte ta Team si ta situation a changé.</p>
+      <a href="team.html" class="btn btn-primary">Gérer ma Team</a>
+    </div>`;
+}
+
+function renderEmpty(){
+  app.innerHTML = `<div class="swipe-empty"><h3>Plus de profils pour aujourd'hui</h3><p>Reviens plus tard, ou passe Premium pour swiper sans limite.</p><a href="compte.html#abonnement" class="btn btn-honey">Passer Premium</a></div>`;
+}
+
+function pipsHtml(){
+  if (swipesLeft === Infinity) return '<span class="eyebrow" style="color:var(--sage)">Illimité (Premium)</span>';
+  const total = window.BEEVERS_CONFIG.FREE_SWIPES_PER_DAY;
+  const used = total - swipesLeft;
+  let pips = '';
+  for(let i=0;i<total;i++) pips += `<span class="pip ${i<used?'used':''}"></span>`;
+  return `<span>${swipesLeft} swipe(s) restant(s) aujourd'hui</span><span class="pips">${pips}</span>`;
+}
+
+function renderStage(){
+  app.innerHTML = `
+    <div class="swipe-wrap">
+      <div class="swipe-limit">${pipsHtml()}</div>
+      <div class="swipe-stage" id="stage"></div>
+      <div class="swipe-actions">
+        <button class="pass-btn" id="btn-pass">✕</button>
+        <button class="like-btn" id="btn-like">♥</button>
+      </div>
+    </div>`;
+  renderCards();
+  document.getElementById('btn-pass').addEventListener('click', () => act('pass'));
+  document.getElementById('btn-like').addEventListener('click', () => act('like'));
+}
+
+function renderCards(){
+  const stage = document.getElementById('stage');
+  if (!stage) return;
+  stage.innerHTML = '';
+  queue.slice(0,3).reverse().forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'swipe-card';
+    card.dataset.id = c.id;
+    card.innerHTML = `
+      <div class="cover">
+        <div class="hexframe"><span style="font-size:64px;">${c.avatar}</span></div>
+        <div class="stamp like-stamp">Match</div>
+        <div class="stamp pass-stamp">Passer</div>
+      </div>
+      <div class="card-body">
+        <div class="name-row"><h3>${c.prenom}, ${c.age}</h3>${c.certifie ? '<span class="badge badge-certified">✓ Certifié</span>' : ''}</div>
+        <p style="margin:0; font-size:.85rem;">${c.ville} · ${c.regime} · ${c.proprete}</p>
+        <p style="margin:0; font-size:.84rem;">${c.bio}</p>
+        <div class="tags">${c.loisirs.map(l=>`<span>${l}</span>`).join('')}</div>
+      </div>`;
+    stage.appendChild(card);
+  });
+}
+
+async function act(direction){
+  if (swipesLeft <= 0 && swipesLeft !== Infinity) { window.BeeversUtils.toast('Limite quotidienne atteinte.'); return; }
+  const topCard = document.querySelector('.swipe-stage .swipe-card:last-child');
+  if (!topCard) return;
+  const id = topCard.dataset.id;
+  topCard.classList.add(direction);
+  try {
+    const res = await window.BeeversAPI.sendSwipe(id, direction);
+    queue = queue.filter(c => c.id !== id);
+    if (swipesLeft !== Infinity) swipesLeft--;
+    setTimeout(async () => {
+      if (res.matched) { showMatch(res.candidate); }
+      if (queue.length === 0) renderEmpty(); else { renderCards(); updateLimitBar(); }
+    }, 280);
+  } catch (err) {
+    window.BeeversUtils.toast(err.message);
+  }
+}
+
+function updateLimitBar(){
+  const el = document.querySelector('.swipe-limit');
+  if (el) el.innerHTML = pipsHtml();
+}
+
+function showMatch(candidate){
+  document.getElementById('match-text').textContent = `Toi et ${candidate.prenom} avez likés mutuellement. Discutez, ou invitez-le/la dans votre Team !`;
+  document.getElementById('match-hexes').innerHTML = `<div class="hexframe lg"><span style="font-size:48px;">🐝</span></div><div class="hexframe lg"><span style="font-size:48px;">${candidate.avatar}</span></div>`;
+  document.getElementById('match-modal').classList.add('show');
+}
+document.getElementById('close-match').addEventListener('click', () => document.getElementById('match-modal').classList.remove('show'));
+document.getElementById('keep-swiping').addEventListener('click', () => document.getElementById('match-modal').classList.remove('show'));
+
+(async function init(){
+  await window.BeeversNav.init('swipe');
+  const team = await window.BeeversAPI.getMyTeam();
+  if (team) { renderLocked(); return; }
+  swipesLeft = await window.BeeversAPI.getSwipesLeftToday();
+  queue = await window.BeeversAPI.getSwipeQueue();
+  if (queue.length === 0) { renderStage(); renderEmpty(); }
+  else renderStage();
+})();
+</script>
+</body>
+</html>

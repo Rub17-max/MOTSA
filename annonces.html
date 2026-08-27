@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Annonces</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <nav class="app-nav">
+      <a href="swipe.html" data-page="swipe"><span class="dot"></span>Swipe<span class="badge-lock" style="display:none;">🔒</span></a>
+      <a href="tchats.html" data-page="tchats"><span class="dot"></span>Tchats</a>
+      <a href="team.html" data-page="team"><span class="dot"></span>Team</a>
+      <a href="annonces.html" data-page="annonces"><span class="dot"></span>Annonces</a>
+      <a href="compte.html" data-page="compte"><span class="dot"></span>Mon compte</a>
+    </nav>
+    <div class="plan-card">
+      <strong data-plan-label>Gratuit</strong>
+      5 swipes/jour · tchat avec tes matchs
+      <div style="margin-top:10px" data-plan-cta>
+        <a href="compte.html#abonnement" class="btn btn-honey btn-sm btn-block">Passer Premium</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <h3 style="margin:0;">Annonces</h3>
+      <button class="btn btn-ghost btn-sm" data-signout>Se déconnecter</button>
+    </div>
+    <div class="app-content" id="annonces-app"></div>
+  </main>
+</div>
+
+<nav class="mobile-nav">
+  <a href="swipe.html" data-page="swipe">🔥<span>Swipe</span></a>
+  <a href="tchats.html" data-page="tchats">💬<span>Tchats</span></a>
+  <a href="team.html" data-page="team">🐝<span>Team</span></a>
+  <a href="annonces.html" data-page="annonces">🏠<span>Annonces</span></a>
+  <a href="compte.html" data-page="compte">👤<span>Compte</span></a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mockDemo.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/nav.js"></script>
+<script>
+const app = document.getElementById('annonces-app');
+let hasTeam = false;
+
+function renderSearch(results, filters={}){
+  app.innerHTML = `
+    <div class="filters-bar">
+      <input id="f-ville" placeholder="Ville" value="${filters.ville||''}">
+      <select id="f-type">
+        <option value="all">Tous types</option>
+        <option value="Chambre en coloc">Chambre en coloc</option>
+        <option value="Studio">Studio</option>
+        <option value="Coloc à créer">Coloc à créer</option>
+      </select>
+      <input id="f-budget" type="number" placeholder="Budget max (€)" value="${filters.budgetMax||''}">
+      <button class="btn btn-primary btn-sm" id="btn-search">Rechercher</button>
+    </div>
+    <div class="annonces-grid" id="grid"></div>`;
+  renderGrid(results);
+  document.getElementById('btn-search').addEventListener('click', doSearch);
+}
+
+function renderGrid(results){
+  const grid = document.getElementById('grid');
+  if (results.length === 0){ grid.innerHTML = '<p>Aucune annonce ne correspond à ces critères.</p>'; return; }
+  grid.innerHTML = results.map(a => `
+    <div class="annonce-card" data-id="${a.id}">
+      <div class="photo">${a.partenaire?'<span class="tag-partner">Partenaire</span>':''}</div>
+      <div class="info">
+        <div class="price">${window.BeeversUtils.euro(a.prix)}<span style="font-size:.7rem; color:var(--ink-45); font-weight:500;">/mois</span></div>
+        <strong style="font-size:.9rem;">${a.titre}</strong>
+        <p class="loc">${a.ville} · ${a.surface} m² · ${a.type_bien}</p>
+      </div>
+    </div>`).join('');
+  document.querySelectorAll('.annonce-card').forEach(c => c.addEventListener('click', () => renderDetail(c.dataset.id)));
+}
+
+async function doSearch(){
+  const filters = {
+    ville: document.getElementById('f-ville').value,
+    type: document.getElementById('f-type').value,
+    budgetMax: document.getElementById('f-budget').value ? +document.getElementById('f-budget').value : null,
+  };
+  const results = await window.BeeversAPI.searchAnnonces(filters);
+  renderGrid(results);
+}
+
+async function renderDetail(id){
+  const a = await window.BeeversAPI.getAnnonce(id);
+  app.innerHTML = `
+    <button class="btn btn-ghost btn-sm" id="back-btn">← Retour aux résultats</button>
+    <div class="annonce-detail" style="margin-top:20px;">
+      <div>
+        <div class="annonce-gallery"></div>
+        <h2 style="margin-top:20px;">${a.titre}</h2>
+        <p style="color:var(--ink-45);">${a.ville} — ${a.annonceur} ${a.partenaire?'<span class="badge badge-premium">Partenaire</span>':''}</p>
+        <div class="spec-grid">
+          <div><strong>${window.BeeversUtils.euro(a.prix)}</strong>par mois</div>
+          <div><strong>${a.surface} m²</strong>surface</div>
+          <div><strong>${a.type_bien}</strong>type de bien</div>
+          <div><strong>${a.dispo}</strong>disponibilité</div>
+        </div>
+        <p>${a.description}</p>
+      </div>
+      <div class="contact-card">
+        <h3>Contacter</h3>
+        <p style="font-size:.85rem;">Envoie un message à ${a.annonceur.includes('Agence')?"l'agence":"l'annonceur"} directement depuis Beevers.</p>
+        <textarea id="contact-msg" rows="3" placeholder="Bonjour, votre annonce m'intéresse..." style="width:100%; padding:10px; border-radius:10px; border:1.5px solid var(--line-strong); font-family:inherit; margin-bottom:10px;"></textarea>
+        <button class="btn btn-primary btn-block" id="contact-btn">Contacter</button>
+        <button class="btn btn-outline btn-block" id="send-team-btn" style="margin-top:10px;">Envoyer à ma Team</button>
+        ${!hasTeam ? '<p style="font-size:.76rem; color:var(--ink-45); margin-top:8px;">Rejoins une Team pour partager cette annonce.</p>' : ''}
+      </div>
+    </div>`;
+  document.getElementById('back-btn').addEventListener('click', doSearch);
+  if (!hasTeam) document.getElementById('send-team-btn').disabled = true;
+  document.getElementById('contact-btn').addEventListener('click', async () => {
+    const msg = document.getElementById('contact-msg').value || "Bonjour, votre annonce m'intéresse.";
+    await window.BeeversAPI.contactAnnonceOwner(a.id, msg);
+    window.BeeversUtils.toast('Message envoyé — direction tes tchats.');
+    setTimeout(() => window.location.href = 'tchats.html', 900);
+  });
+  document.getElementById('send-team-btn').addEventListener('click', async () => {
+    try {
+      await window.BeeversAPI.sendAnnonceToTeam(a.id);
+      window.BeeversUtils.toast('Annonce envoyée dans le chat de ta Team.');
+    } catch (err) { window.BeeversUtils.toast(err.message); }
+  });
+}
+
+(async function init(){
+  await window.BeeversNav.init('annonces');
+  hasTeam = !!(await window.BeeversAPI.getMyTeam());
+  const results = await window.BeeversAPI.searchAnnonces({});
+  renderSearch(results);
+})();
+</script>
+</body>
+</html>

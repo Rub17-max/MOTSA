@@ -1,6 +1,0 @@
-# Railway — static site config
-[phases.build]
-cmds = []
-
-[start]
-cmd = "npx serve . -p $PORT --no-clipboard"

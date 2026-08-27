@@ -1,186 +1,125 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>MOTSA — Certification et coffre-fort de preuves pour écoles et organismes de formation</title>
-  <meta name="description" content="Vérification d'authenticité gratuite pour tous, et coffre-fort de preuves Qualiopi pour conserver vos attestations la durée légale exacte.">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Trouve ta coloc, en confiance</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="scroll-progress" id="scroll-progress"></div>
-
-<nav class="nav">
-  <a class="logo" href="index.html">
-    <img src="assets/icon-512.png" alt="MOTSA">
-    MOTSA
-  </a>
-  <div class="nav-links">
-    <a class="active" href="index.html">Accueil</a>
-    <a href="tarifs.html">Tarifs</a>
-    <a href="securite.html">Sécurité</a>
-    <a href="login-issuer.html">Espace émetteur</a>
-    <a class="btn-nav keep" href="verify.html">Vérifier un document</a>
-  </div>
-</nav>
-
-<main class="wrap">
-
-  <!-- ─── Hero ─────────────────────────────────────────────── -->
-  <section class="hero">
-    <div class="reveal in-view">
-      <div class="kicker">Certification émise par l'établissement</div>
-      <h1>Vos documents,<br><em>vérifiables en 10 secondes.</em></h1>
-      <p class="lead">
-        Attestations, diplômes, certificats de réalisation — vérifiables en ligne, gratuitement, sans compte.
-      </p>
-      <div class="btn-group">
-        <a class="btn primary" href="tarifs.html">Voir les tarifs
-          <svg class="icn sm" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
-        </a>
-        <a class="btn soft" href="verify.html">Vérifier un document</a>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:18px">
-        Organismes de formation · Écoles privées · Certificateurs
-      </p>
-    </div>
-
-    <div class="hero-proof reveal in-view" aria-label="Exemple de certificat vérifié (données fictives)" style="transition-delay:120ms">
-      <div class="aurora aurora-1" aria-hidden="true"></div>
-      <div class="aurora aurora-2" aria-hidden="true"></div>
-      <div class="badge-verified" aria-hidden="true">
-        <svg class="icn" style="stroke:white" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <div style="font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:4px">Document authentique</div>
-      <p style="color:var(--muted);font-size:14px;margin:0 0 20px">Non modifié depuis son émission — 02/06/2026</p>
-      <div class="proof-row"><span>Émetteur</span><strong>Random University</strong></div>
-      <div class="proof-row"><span>Titulaire</span><strong>John Doe</strong></div>
-      <div class="proof-row"><span>Intégrité</span><strong style="color:var(--green)">Empreinte conforme</strong></div>
-      <div class="proof-row">
-        <span>ID certificat</span>
-        <strong style="font-family:'DM Mono',monospace;font-size:12px">motsa_7F3A91C24B8E60D1</strong>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── Bandeau documents (marquee) ─────────────────────── -->
-  <div class="marquee reveal in-view" aria-hidden="true">
-    <div class="marquee-track">
-      <span>Attestation</span><span>Diplôme</span><span>Certificat de réalisation</span><span>Relevé de notes</span><span>Certificat de scolarité</span><span>Habilitation</span>
-      <span>Attestation</span><span>Diplôme</span><span>Certificat de réalisation</span><span>Relevé de notes</span><span>Certificat de scolarité</span><span>Habilitation</span>
+<header class="topbar">
+  <div class="container">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <nav class="nav-links">
+      <a href="#comment-ca-marche">Comment ça marche</a>
+      <a href="#tarifs">Tarifs</a>
+      <a href="annonces.html">Annonces</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="auth.html?mode=login" class="btn btn-ghost btn-sm">Se connecter</a>
+      <a href="auth.html?mode=signup" class="btn btn-primary btn-sm">S'inscrire</a>
     </div>
   </div>
+</header>
 
-  <!-- ─── Deux formules ────────────────────────────────────── -->
-  <section class="section">
-    <div class="kicker">L'offre, en deux formules</div>
-    <h2 style="margin-bottom:32px;max-width:640px">Un principe.<br><em>Deux usages.</em></h2>
-
-    <div class="formula-grid reveal-stagger">
-      <div class="formula-card light">
-        <div class="f-icon"><svg class="icn" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-        <h3>Vérification</h3>
-        <p class="f-desc">Empreinte seule. Rien n'est stocké.</p>
-        <div class="f-tags">
-          <span class="f-tag">Empreinte seule</span>
-          <span class="f-tag">Zéro contenu transmis</span>
-        </div>
-        <div class="f-stats">
-          <div><div class="f-stat-num">0 €</div><div class="f-stat-label">Vérification, à vie</div></div>
-          <div><div class="f-stat-num">10s</div><div class="f-stat-label">Résultat immédiat</div></div>
-        </div>
+<section class="hero">
+  <div class="container">
+    <div>
+      <p class="eyebrow">Matching affinitaire · profils certifiés</p>
+      <h1>Trouve ta coloc, <em>pas juste un logement.</em></h1>
+      <p style="font-size:1.1rem; max-width:480px;">Beevers te fait swiper des profils compatibles (rythme de vie, propreté, loisirs), forme ta Team une fois matché, et t'aide à trouver le logement qui va avec.</p>
+      <div class="hero-actions">
+        <a href="auth.html?mode=signup" class="btn btn-primary">Créer mon compte gratuitement</a>
+        <a href="#comment-ca-marche" class="btn btn-outline">Voir comment ça marche</a>
       </div>
-
-      <div class="formula-card dark">
-        <div class="f-icon"><svg class="icn" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <h3>Coffre-fort Qualiopi</h3>
-        <p class="f-desc">Le document conservé, chiffré, la durée légale exacte.</p>
-        <div class="f-tags">
-          <span class="f-tag">Chiffré au repos</span>
-          <span class="f-tag">Purge automatique</span>
-        </div>
-        <div class="f-stats">
-          <div><div class="f-stat-num">5</div><div class="f-stat-label">Ans par défaut</div></div>
-          <div><div class="f-stat-num">10</div><div class="f-stat-label">Ans si FSE</div></div>
-        </div>
+      <p class="hero-note">🐝 Gratuit pour swiper · Premium à 9,99€/mois pour aller plus loin</p>
+    </div>
+    <div class="hive">
+      <div class="hive-grid">
+        <div class="cell">🦊</div><div class="cell filled">✓</div><div class="cell">🐼</div>
+        <div class="cell filled coral">♥</div><div class="cell">🦋</div><div class="cell filled sage">🐝</div>
+        <div class="cell">🦁</div><div class="cell filled">✓</div><div class="cell">🐨</div>
       </div>
-    </div>
-
-    <div class="reveal" style="margin-top:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-      <a href="securite.html" style="font-size:13.5px;color:var(--blue);font-weight:500">Comprendre le fonctionnement technique →</a>
-      <a class="btn primary" href="tarifs.html">Voir les tarifs
-        <svg class="icn sm" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13 5 20 12 13 19"/></svg>
-      </a>
-    </div>
-  </section>
-
-  <!-- ─── FAQ ──────────────────────────────────────────────── -->
-  <section class="section">
-    <div class="kicker">Questions fréquentes</div>
-    <div class="faq reveal">
-      <details>
-        <summary>Vérification ou Coffre-fort ?</summary>
-        <div class="faq-body">Vérification prouve qu'un document que vous détenez encore n'a pas été altéré, gratuitement. Coffre-fort conserve en plus le document lui-même, pour la durée légale — utile pour un audit.</div>
-      </details>
-      <details>
-        <summary>Différence avec diplome.gouv.fr ?</summary>
-        <div class="faq-body">Le registre d'État couvre les diplômes nationaux. MOTSA certifie tout le reste : attestations, certificats de réalisation, titres privés.</div>
-      </details>
-      <details>
-        <summary>Comment MOTSA vérifie un établissement ?</summary>
-        <div class="faq-body">Candidature, vérification par MOTSA, code d'activation envoyé au domaine officiel. Jamais d'inscription libre. Détails sur la page Sécurité.</div>
-      </details>
-    </div>
-  </section>
-
-</main>
-
-<footer class="footer-big">
-  <div class="cols">
-    <div>
-      <a class="logo" href="index.html" style="margin-bottom:12px">
-        <img src="assets/icon-512.png" alt="MOTSA">
-        MOTSA
-      </a>
-      <p style="font-size:13px;color:var(--muted);max-width:260px;line-height:1.6">
-        Certification et coffre-fort de preuves, émis par l'établissement.
-      </p>
-    </div>
-    <div>
-      <h5>Produit</h5>
-      <a href="verify.html">Vérifier un document</a>
-      <a href="tarifs.html">Tarifs</a>
-      <a href="securite.html">Sécurité</a>
-    </div>
-    <div>
-      <h5>Espaces clients</h5>
-      <a href="login-issuer.html">Espace émetteur</a>
-      <a href="login-verifier.html">Espace vérificateur Pro</a>
-    </div>
-    <div>
-      <h5>Contact &amp; légal</h5>
-      <a href="mailto:contact@motsa.tech">contact@motsa.tech</a>
-      <a href="legal.html">Mentions légales</a>
-      <a href="legal.html#confidentialite">Confidentialité</a>
-      <a href="legal.html#cgu">CGU</a>
     </div>
   </div>
-  <div class="base">
-    <span>© 2026 MOTSA — Intégrité documentaire certifiée par l'émetteur.</span>
-    <span>MOTSA — SAS au capital de 1 000 € · Neuilly-sur-Seine</span>
+</section>
+
+<section class="section" id="comment-ca-marche">
+  <div class="container" style="text-align:center;">
+    <p class="eyebrow">Le parcours</p>
+    <h2>De l'inscription à la colocation</h2>
+    <div class="cluster">
+      <div class="cluster-item">
+        <div class="hexicon">🔥</div>
+        <h3>Swipe</h3>
+        <p>Découvre des profils triés selon vos affinités : régime alimentaire, propreté, rythme de vie, loisirs.</p>
+      </div>
+      <div class="cluster-item">
+        <div class="hexicon">♥</div>
+        <h3>Match</h3>
+        <p>Un like mutuel ouvre le tchat. La photo réelle n'apparaît qu'à ce moment-là, jamais avant.</p>
+      </div>
+      <div class="cluster-item">
+        <div class="hexicon">🐝</div>
+        <h3>Team</h3>
+        <p>Invite tes matchs dans ta Team : groupe de discussion, médias, liens et documents partagés.</p>
+      </div>
+      <div class="cluster-item">
+        <div class="hexicon">🏠</div>
+        <h3>Logement</h3>
+        <p>Cherchez une annonce ensemble et partagez-la directement dans le tchat de la Team.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="background:var(--parchment-dim);" id="tarifs">
+  <div class="container" style="text-align:center;">
+    <p class="eyebrow">Tarifs</p>
+    <h2>Reste gratuit, ou débloque tout</h2>
+    <div class="pricing-grid" style="text-align:left;">
+      <div class="price-card">
+        <span class="eyebrow">Gratuit</span>
+        <div class="amount">0€<span>/mois</span></div>
+        <ul class="price-list">
+          <li>5 swipes par jour</li>
+          <li>Tchat avec tes matchs uniquement</li>
+          <li>Recherche et contact d'annonces</li>
+          <li>Création et participation à une Team</li>
+        </ul>
+        <a href="auth.html?mode=signup" class="btn btn-outline btn-block">Commencer gratuitement</a>
+      </div>
+      <div class="price-card is-premium">
+        <span class="eyebrow" style="color:var(--honey)">Premium</span>
+        <div class="amount">9,99€<span>/mois</span></div>
+        <ul class="price-list">
+          <li>Swipes illimités</li>
+          <li>Conversations illimitées</li>
+          <li>Recherche et invitation par ID utilisateur</li>
+          <li>Badge de profil certifié</li>
+        </ul>
+        <a href="auth.html?mode=signup" class="btn btn-honey btn-block">Passer Premium</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+      <div class="footer-links">
+        <a href="#">CGU</a>
+        <a href="#">Politique de confidentialité</a>
+        <a href="#">Mentions légales</a>
+        <a href="#">Cookies</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <p class="footer-bottom">© 2026 Beevers — Nice, France.</p>
   </div>
 </footer>
 
-<div class="mobile-tabs">
-  <a class="active" href="index.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Accueil</a>
-  <a href="verify.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Vérifier</a>
-  <a href="tarifs.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Tarifs</a>
-  <a href="login-issuer.html"><svg class="icn tab-icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Émettre</a>
-</div>
-
-<script src="interactions.js"></script>
 </body>
 </html>

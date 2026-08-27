@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Mon profil coloc</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body style="background:var(--parchment);">
+
+<header class="topbar">
+  <div class="container">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <span class="eyebrow">Création de profil</span>
+  </div>
+</header>
+
+<div class="section" style="padding-top:48px;">
+  <div class="container wizard">
+    <div class="progressbar"><div class="progressbar-fill" id="progress-fill" style="width:16%;"></div></div>
+    <div class="progress-label" id="progress-label">Étape 1 / 6 — Identité</div>
+
+    <form id="wizard-form">
+      <!-- STEP 1 : IDENTITE -->
+      <div class="wizard-step active" data-step="1">
+        <h2>Qui es-tu ?</h2>
+        <div class="field"><label for="f-prenom">Prénom</label><input id="f-prenom" required></div>
+        <div class="field"><label for="f-ville-actuelle">Ville actuelle</label><input id="f-ville-actuelle" placeholder="ex. Nice" required></div>
+        <div class="field"><label for="f-ville-recherchee">Ville(s) recherchée(s)</label><input id="f-ville-recherchee" placeholder="ex. Nice" required></div>
+        <div class="field"><label for="f-bio">Bio (300 caractères max)</label><textarea id="f-bio" rows="3" maxlength="300" placeholder="Une phrase pour te présenter…"></textarea></div>
+      </div>
+
+      <!-- STEP 2 : VISUEL -->
+      <div class="wizard-step" data-step="2">
+        <h2>Ton avatar et ta photo</h2>
+        <p>L'avatar est affiché pendant le swipe. Ta photo réelle ne sera visible qu'après un match mutuel.</p>
+        <div class="upload-pair">
+          <div>
+            <label style="font-size:.82rem; font-weight:700; margin-bottom:8px; display:block;">Avatar (visible en swipe)</label>
+            <div class="chip-grid" id="avatar-picker">
+              <span class="chip avatar-chip" data-emoji="🐝">🐝</span>
+              <span class="chip avatar-chip" data-emoji="🦊">🦊</span>
+              <span class="chip avatar-chip" data-emoji="🐼">🐼</span>
+              <span class="chip avatar-chip" data-emoji="🦋">🦋</span>
+              <span class="chip avatar-chip" data-emoji="🦁">🦁</span>
+              <span class="chip avatar-chip" data-emoji="🐨">🐨</span>
+              <span class="chip avatar-chip" data-emoji="🦋">🐺</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:.82rem; font-weight:700; margin-bottom:8px; display:block;">Photo réelle (révélée après match)</label>
+            <div class="upload-box" id="photo-box">
+              <div class="hexframe md" id="photo-preview">📷</div>
+              <span>Importer une photo</span>
+              <small>Utilisée dans les tchats et la Team uniquement</small>
+            </div>
+            <input type="file" id="photo-input" accept="image/*" style="display:none;">
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 : SITUATION -->
+      <div class="wizard-step" data-step="3">
+        <h2>Ta situation</h2>
+        <div class="field">
+          <label>Statut</label>
+          <div class="segmented" id="statut-segment">
+            <button type="button" data-val="Étudiant(e)" class="selected">Étudiant(e)</button>
+            <button type="button" data-val="Actif(ve)">Actif(ve)</button>
+          </div>
+        </div>
+        <div class="field"><label for="f-etudes">Études / profession</label><input id="f-etudes" placeholder="ex. Master 1 Droit — Université Côte d'Azur"></div>
+        <div class="field"><label for="f-langues">Langue(s) parlée(s)</label><input id="f-langues" placeholder="ex. Français, Anglais"></div>
+      </div>
+
+      <!-- STEP 4 : RECHERCHE LOGEMENT -->
+      <div class="wizard-step" data-step="4">
+        <h2>Ce que tu recherches</h2>
+        <div class="field">
+          <label>Type de logement recherché</label>
+          <div class="segmented" id="type-segment">
+            <button type="button" data-val="Chambre en coloc" class="selected">Chambre en coloc</button>
+            <button type="button" data-val="Coloc à créer">Coloc à créer</button>
+            <button type="button" data-val="Solo">Solo</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="f-budget">Budget mensuel max (€)</label>
+          <input id="f-budget" type="number" min="0" step="10" placeholder="ex. 550" required>
+        </div>
+        <div class="field">
+          <label for="f-dispo">Disponible à partir de</label>
+          <input id="f-dispo" type="date" required>
+        </div>
+      </div>
+
+      <!-- STEP 5 : MODE DE VIE -->
+      <div class="wizard-step" data-step="5">
+        <h2>Ton mode de vie</h2>
+        <div class="field">
+          <label for="f-regime">Régime alimentaire</label>
+          <select id="f-regime" required>
+            <option>Omnivore</option><option>Végétarien(ne)</option><option>Végane</option>
+            <option>Halal</option><option>Casher</option><option>Sans restriction</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Propreté / rangement</label>
+          <div class="segmented" id="proprete-segment">
+            <button type="button" data-val="Très ordonné(e)" class="selected">Très ordonné(e)</button>
+            <button type="button" data-val="Plutôt ordonné(e)">Plutôt ordonné(e)</button>
+            <button type="button" data-val="Décontracté(e)">Décontracté(e)</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Rythme de vie</label>
+          <div class="segmented" id="rythme-segment">
+            <button type="button" data-val="Couche-tôt" class="selected">Couche-tôt</button>
+            <button type="button" data-val="Couche-tard">Couche-tard</button>
+            <button type="button" data-val="Variable">Variable</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Tabac</label>
+          <div class="segmented" id="tabac-segment">
+            <button type="button" data-val="Non-fumeur(se)" class="selected">Non-fumeur(se)</button>
+            <button type="button" data-val="Fumeur(se)">Fumeur(se)</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Réception (soirées à la coloc)</label>
+          <div class="segmented" id="reception-segment">
+            <button type="button" data-val="Oui" class="selected">Oui</button>
+            <button type="button" data-val="Occasionnellement">Occasionnellement</button>
+            <button type="button" data-val="Non">Non</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Animaux</label>
+          <div class="segmented" id="animaux-segment">
+            <button type="button" data-val="J'ai un animal">J'ai un animal</button>
+            <button type="button" data-val="J'accepte" class="selected">J'accepte</button>
+            <button type="button" data-val="Je n'accepte pas">Je n'accepte pas</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 6 : AFFINITES -->
+      <div class="wizard-step" data-step="6">
+        <h2>Tes loisirs (3 minimum)</h2>
+        <div class="chip-grid" id="loisirs-picker">
+          <span class="chip">Sport</span><span class="chip">Musique</span><span class="chip">Cuisine</span>
+          <span class="chip">Jeux vidéo</span><span class="chip">Lecture</span><span class="chip">Sorties</span>
+          <span class="chip">Cinéma</span><span class="chip">Voyages</span><span class="chip">Yoga</span>
+          <span class="chip">Photo</span><span class="chip">Surf</span><span class="chip">Bricolage</span>
+        </div>
+        <div class="field" style="margin-top:24px;">
+          <label style="display:flex; align-items:center; gap:10px;">
+            <span class="switch on" id="visibility-switch"></span>
+            Rendre mon profil visible dans le Swipe
+          </label>
+        </div>
+      </div>
+
+      <div class="wizard-actions">
+        <button type="button" class="btn btn-ghost" id="btn-prev" style="visibility:hidden;">← Précédent</button>
+        <button type="button" class="btn btn-primary" id="btn-next">Suivant →</button>
+        <button type="submit" class="btn btn-primary" id="btn-submit" style="display:none;">Valider mon profil ✓</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mockDemo.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script>
+const TOTAL_STEPS = 6;
+let current = 1;
+const data = { loisirs: [], avatar: '🐝', photo: null };
+
+function segmented(id, key){
+  const el = document.getElementById(id);
+  el.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if(!btn) return;
+    [...el.children].forEach(c => c.classList.remove('selected'));
+    btn.classList.add('selected');
+    data[key] = btn.dataset.val;
+  });
+  data[key] = el.querySelector('.selected')?.dataset.val;
+}
+['statut-segment','type-segment','proprete-segment','rythme-segment','tabac-segment','reception-segment','animaux-segment']
+  .forEach(id => segmented(id, id.replace('-segment','')));
+
+document.getElementById('avatar-picker').addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip'); if(!chip) return;
+  document.querySelectorAll('#avatar-picker .chip').forEach(c=>c.classList.remove('selected'));
+  chip.classList.add('selected');
+  data.avatar = chip.dataset.emoji;
+  document.getElementById('photo-preview').textContent = chip.dataset.emoji;
+});
+document.getElementById('avatar-picker').firstElementChild.classList.add('selected');
+
+document.getElementById('photo-box').addEventListener('click', () => document.getElementById('photo-input').click());
+document.getElementById('photo-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0]; if(!file) return;
+  const url = await window.BeeversAPI.uploadProfilePhoto(file);
+  data.photo = url;
+  const prev = document.getElementById('photo-preview');
+  prev.innerHTML = `<img src="${url}" alt="Photo de profil">`;
+});
+
+document.getElementById('loisirs-picker').addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip'); if(!chip) return;
+  chip.classList.toggle('selected');
+  const val = chip.textContent;
+  if (chip.classList.contains('selected')) data.loisirs.push(val);
+  else data.loisirs = data.loisirs.filter(l => l !== val);
+});
+
+const visSwitch = document.getElementById('visibility-switch');
+visSwitch.addEventListener('click', () => visSwitch.classList.toggle('on'));
+
+function updateStep(){
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.toggle('active', +s.dataset.step === current));
+  document.getElementById('progress-fill').style.width = (current/TOTAL_STEPS*100) + '%';
+  const labels = ['Identité','Avatar & photo','Situation','Recherche logement','Mode de vie','Affinités'];
+  document.getElementById('progress-label').textContent = `Étape ${current} / ${TOTAL_STEPS} — ${labels[current-1]}`;
+  document.getElementById('btn-prev').style.visibility = current === 1 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').style.display = current === TOTAL_STEPS ? 'none' : 'inline-flex';
+  document.getElementById('btn-submit').style.display = current === TOTAL_STEPS ? 'inline-flex' : 'none';
+}
+
+function validateStep(step){
+  if (step === 1) {
+    if(!document.getElementById('f-prenom').value || !document.getElementById('f-ville-actuelle').value || !document.getElementById('f-ville-recherchee').value){
+      window.BeeversUtils.toast('Merci de compléter les champs obligatoires.'); return false;
+    }
+  }
+  if (step === 4) {
+    if(!document.getElementById('f-budget').value || !document.getElementById('f-dispo').value){
+      window.BeeversUtils.toast('Merci d\'indiquer ton budget et ta date de disponibilité.'); return false;
+    }
+  }
+  if (step === 6 && data.loisirs.length < 3) {
+    window.BeeversUtils.toast('Sélectionne au moins 3 loisirs.'); return false;
+  }
+  return true;
+}
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  if(!validateStep(current)) return;
+  if (current < TOTAL_STEPS) { current++; updateStep(); window.scrollTo({top:0, behavior:'smooth'}); }
+});
+document.getElementById('btn-prev').addEventListener('click', () => {
+  if (current > 1) { current--; updateStep(); window.scrollTo({top:0, behavior:'smooth'}); }
+});
+
+document.getElementById('wizard-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if(!validateStep(6)) return;
+  const profile = {
+    prenom: document.getElementById('f-prenom').value,
+    ville_actuelle: document.getElementById('f-ville-actuelle').value,
+    ville_recherchee: document.getElementById('f-ville-recherchee').value,
+    bio: document.getElementById('f-bio').value,
+    avatar: data.avatar,
+    photo: data.photo,
+    statut: data.statut,
+    etudes: document.getElementById('f-etudes').value,
+    langues: document.getElementById('f-langues').value,
+    type_logement: data.type,
+    budget: document.getElementById('f-budget').value,
+    disponibilite: document.getElementById('f-dispo').value,
+    regime: document.getElementById('f-regime').value,
+    proprete: data.proprete,
+    rythme: data.rythme,
+    tabac: data.tabac,
+    reception: data.reception,
+    animaux: data.animaux,
+    loisirs: data.loisirs,
+    is_visible: visSwitch.classList.contains('on'),
+    complete: true,
+  };
+  await window.BeeversAPI.upsertMyProfile(profile);
+  window.BeeversUtils.toast('Profil enregistré !');
+  window.location.href = 'swipe.html';
+});
+
+updateStep();
+</script>
+</body>
+</html>

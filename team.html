@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Ma Team</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <nav class="app-nav">
+      <a href="swipe.html" data-page="swipe"><span class="dot"></span>Swipe<span class="badge-lock" style="display:none;">🔒</span></a>
+      <a href="tchats.html" data-page="tchats"><span class="dot"></span>Tchats</a>
+      <a href="team.html" data-page="team"><span class="dot"></span>Team</a>
+      <a href="annonces.html" data-page="annonces"><span class="dot"></span>Annonces</a>
+      <a href="compte.html" data-page="compte"><span class="dot"></span>Mon compte</a>
+    </nav>
+    <div class="plan-card">
+      <strong data-plan-label>Gratuit</strong>
+      5 swipes/jour · tchat avec tes matchs
+      <div style="margin-top:10px" data-plan-cta>
+        <a href="compte.html#abonnement" class="btn btn-honey btn-sm btn-block">Passer Premium</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <h3 style="margin:0;">Team</h3>
+      <button class="btn btn-ghost btn-sm" data-signout>Se déconnecter</button>
+    </div>
+    <div id="team-app"></div>
+  </main>
+</div>
+
+<nav class="mobile-nav">
+  <a href="swipe.html" data-page="swipe">🔥<span>Swipe</span></a>
+  <a href="tchats.html" data-page="tchats">💬<span>Tchats</span></a>
+  <a href="team.html" data-page="team">🐝<span>Team</span></a>
+  <a href="annonces.html" data-page="annonces">🏠<span>Annonces</span></a>
+  <a href="compte.html" data-page="compte">👤<span>Compte</span></a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mockDemo.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/nav.js"></script>
+<script>
+const app = document.getElementById('team-app');
+
+function renderNoTeam(){
+  app.innerHTML = `
+    <div class="app-content">
+      <div class="locked-panel" style="margin:60px auto;">
+        <div class="hexicon">🐝</div>
+        <h3>Tu n'as pas encore de Team</h3>
+        <p>Matche avec quelqu'un dans Swipe, puis invite-le/la dans ta Team depuis son profil dans tes Tchats.</p>
+        <a href="swipe.html" class="btn btn-primary">Aller swiper</a>
+      </div>
+    </div>`;
+}
+
+function renderTeam(team){
+  const messages = team.messages || [];
+  const sharedAnnonces = team.sharedAnnonces || [];
+  app.innerHTML = `
+    <div class="team-layout">
+      <div style="display:flex; flex-direction:column;">
+        <div class="team-header">
+          <strong>${team.members.map(m=>m.prenom).join(', ')}</strong>
+          <div class="team-members">${team.members.map(m=>`<div class="hexframe sm"><span style="font-size:18px;">${m.avatar}</span></div>`).join('')}</div>
+          <button class="btn btn-ghost btn-sm" id="leave-team-btn" style="margin-left:14px;">Quitter la Team</button>
+        </div>
+        <div class="chat-messages" id="team-messages" style="flex:1;"></div>
+        <div class="chat-composer">
+          <input id="team-msg-input" placeholder="Écrire à la Team…">
+          <button class="btn btn-primary btn-icon" id="team-send-btn">➤</button>
+        </div>
+      </div>
+      <aside class="team-side">
+        <div class="team-tabs">
+          <button class="active" data-tab="medias">Médias</button>
+          <button data-tab="liens">Liens</button>
+          <button data-tab="docs">Documents</button>
+        </div>
+        <div class="team-tab-panel active" data-panel="medias">
+          <div class="media-grid"><div></div><div></div><div></div><div></div></div>
+          <p style="font-size:.78rem; margin-top:12px;">Les photos partagées dans le chat apparaissent ici automatiquement.</p>
+        </div>
+        <div class="team-tab-panel" data-panel="liens">
+          ${sharedAnnonces.length ? sharedAnnonces.map(a=>`<div class="link-row"><div class="icon">🏠</div><div>${a.titre}<br><span style="color:var(--ink-45);">${window.BeeversUtils.euro(a.prix)}/mois</span></div></div>`).join('') : '<p style="font-size:.82rem;">Aucun lien partagé pour l\'instant.</p>'}
+        </div>
+        <div class="team-tab-panel" data-panel="docs">
+          <p style="font-size:.82rem;">Les documents partagés (dossier locataire, pièces...) apparaîtront ici.</p>
+        </div>
+      </aside>
+    </div>`;
+
+  const box = document.getElementById('team-messages');
+  box.innerHTML = messages.map(m => {
+    if (m.attachment) return `<div class="annonce-card-chat"><img src="" alt=""><div><strong>${m.text}</strong></div></div>`;
+    return `<div class="bubble ${m.from==='me'?'from-me':'from-them'}">${m.text}</div>`;
+  }).join('') || '<div class="bubble system">Team créée — dites bonjour 👋</div>';
+  box.scrollTop = box.scrollHeight;
+
+  document.querySelectorAll('.team-tabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.team-tabs button').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.team-tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`.team-tab-panel[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+    });
+  });
+
+  document.getElementById('team-send-btn').addEventListener('click', async () => {
+    const input = document.getElementById('team-msg-input');
+    const text = input.value.trim(); if(!text) return;
+    await window.BeeversAPI.sendTeamMessage(team.id, text);
+    input.value = '';
+    const updated = await window.BeeversAPI.getMyTeam();
+    renderTeam(updated);
+  });
+
+  document.getElementById('leave-team-btn').addEventListener('click', async () => {
+    if (!confirm('Quitter la Team ? Le Swipe et les nouveaux tchats seront à nouveau disponibles.')) return;
+    await window.BeeversAPI.leaveTeam();
+    window.BeeversUtils.toast('Tu as quitté la Team.');
+    init();
+  });
+}
+
+async function init(){
+  await window.BeeversNav.init('team');
+  const team = await window.BeeversAPI.getMyTeam();
+  if (!team) renderNoTeam(); else renderTeam(team);
+}
+init();
+</script>
+</body>
+</html>

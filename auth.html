@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beevers — Connexion / Inscription</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-visual">
+    <a href="index.html" class="brand"><span class="hexmark"></span>Beevers</a>
+    <h1 style="color:var(--parchment); margin-top:40px; font-size:2.1rem;">Ta prochaine coloc<br>commence par un swipe.</h1>
+    <p style="color:#C9C6D6; max-width:360px;">Profils certifiés, matching affinitaire, et une Team pour tout organiser une fois que vous êtes prêts.</p>
+    <div class="hive-grid" style="margin-top:40px;">
+      <div class="cell">🦊</div><div class="cell filled">✓</div><div class="cell">🐼</div>
+      <div class="cell filled coral">♥</div><div class="cell">🦋</div><div class="cell filled sage">🐝</div>
+    </div>
+  </div>
+
+  <div class="auth-form-side">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button id="tab-signup" class="active">S'inscrire</button>
+        <button id="tab-login">Se connecter</button>
+      </div>
+
+      <div id="form-error" class="form-error"></div>
+
+      <div class="oauth-row">
+        <button class="oauth-btn" id="btn-google">🔵 Continuer avec Google</button>
+        <button class="oauth-btn" id="btn-apple"> Continuer avec Apple</button>
+      </div>
+      <div class="divider">ou par e-mail</div>
+
+      <!-- SIGNUP FORM -->
+      <form id="signup-form">
+        <div class="field">
+          <label for="su-prenom">Prénom</label>
+          <input id="su-prenom" type="text" required placeholder="Ton prénom">
+        </div>
+        <div class="field">
+          <label for="su-birthdate">Date de naissance</label>
+          <input id="su-birthdate" type="date" required>
+          <div class="field-hint">Beevers est réservé aux 18 ans et plus.</div>
+        </div>
+        <div class="field">
+          <label for="su-genre">Genre</label>
+          <select id="su-genre" required>
+            <option value="">Sélectionner…</option>
+            <option>Femme</option>
+            <option>Homme</option>
+            <option>Autre / préfère ne pas dire</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="su-email">E-mail</label>
+          <input id="su-email" type="email" required placeholder="toi@exemple.com">
+        </div>
+        <div class="field">
+          <label for="su-password">Mot de passe</label>
+          <input id="su-password" type="password" required minlength="8" placeholder="8 caractères minimum">
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="su-cgu" required style="margin-top:2px;">
+          <span>J'accepte les <a href="#" style="text-decoration:underline;">CGU</a> et la <a href="#" style="text-decoration:underline;">politique de confidentialité</a> de Beevers.</span>
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">Créer mon compte</button>
+      </form>
+
+      <!-- LOGIN FORM -->
+      <form id="login-form" style="display:none;">
+        <div class="field">
+          <label for="li-email">E-mail</label>
+          <input id="li-email" type="email" required placeholder="toi@exemple.com">
+        </div>
+        <div class="field">
+          <label for="li-password">Mot de passe</label>
+          <input id="li-password" type="password" required>
+        </div>
+        <p style="text-align:right; margin:-8px 0 16px;"><a href="#" style="font-size:.8rem; color:var(--ink-45); text-decoration:underline;">Mot de passe oublié ?</a></p>
+        <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+      </form>
+
+      <p class="form-note" id="switch-note">Déjà un compte ? <a href="#" id="link-to-login" style="text-decoration:underline; color:var(--ink);">Connecte-toi</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/mockDemo.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script>
+const tabSignup = document.getElementById('tab-signup');
+const tabLogin = document.getElementById('tab-login');
+const signupForm = document.getElementById('signup-form');
+const loginForm = document.getElementById('login-form');
+const switchNote = document.getElementById('switch-note');
+const errBox = document.getElementById('form-error');
+
+function showSignup(){
+  tabSignup.classList.add('active'); tabLogin.classList.remove('active');
+  signupForm.style.display='block'; loginForm.style.display='none';
+  switchNote.innerHTML = 'Déjà un compte ? <a href="#" id="link-to-login" style="text-decoration:underline;color:var(--ink);">Connecte-toi</a>';
+  document.getElementById('link-to-login').onclick = (e)=>{e.preventDefault(); showLogin();};
+}
+function showLogin(){
+  tabLogin.classList.add('active'); tabSignup.classList.remove('active');
+  loginForm.style.display='block'; signupForm.style.display='none';
+  switchNote.innerHTML = 'Pas encore de compte ? <a href="#" id="link-to-signup" style="text-decoration:underline;color:var(--ink);">Inscris-toi</a>';
+  document.getElementById('link-to-signup').onclick = (e)=>{e.preventDefault(); showSignup();};
+}
+tabSignup.addEventListener('click', showSignup);
+tabLogin.addEventListener('click', showLogin);
+if (new URLSearchParams(location.search).get('mode') === 'login') showLogin();
+
+function showError(msg){ errBox.textContent = msg; errBox.classList.add('show'); }
+function clearError(){ errBox.classList.remove('show'); }
+
+document.getElementById('btn-google').addEventListener('click', () => window.BeeversAPI.signInWithOAuth('google'));
+document.getElementById('btn-apple').addEventListener('click', () => window.BeeversAPI.signInWithOAuth('apple'));
+
+signupForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearError();
+  const prenom = document.getElementById('su-prenom').value;
+  const birthdate = document.getElementById('su-birthdate').value;
+  const genre = document.getElementById('su-genre').value;
+  const email = document.getElementById('su-email').value;
+  const password = document.getElementById('su-password').value;
+  try {
+    await window.BeeversAPI.signUpWithEmail({ email, password, birthdate, prenom });
+    window.BeeversAPI.upsertMyProfile && await window.BeeversAPI.upsertMyProfile({ prenom, genre, birthdate });
+    window.location.href = 'profil.html';
+  } catch (err) {
+    showError(err.message || "Une erreur est survenue.");
+  }
+});
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearError();
+  const email = document.getElementById('li-email').value;
+  const password = document.getElementById('li-password').value;
+  try {
+    await window.BeeversAPI.signInWithEmail({ email, password });
+    window.location.href = 'swipe.html';
+  } catch (err) {
+    showError(err.message || "Identifiants invalides.");
+  }
+});
+</script>
+</body>
+</html>
